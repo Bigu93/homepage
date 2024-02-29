@@ -144,9 +144,3 @@ body {
   border: none;
   color: inherit;
 }
-
-.link-item.focused {
-  background-color: #f0f0f0; /* Light grey background */
-  color: #000; /* Black text color */
-  outline: 2px solid #000; /* Black outline */
-}

@@ -23,7 +23,7 @@ export default {
             content: data.content,
             author: data.author,
             fetchedAt: Date.now().toString(),
-          }),
+          })
         );
       });
   },
@@ -53,7 +53,7 @@ export default {
     const query = options.join(" ") || null;
     if (query) {
       window.location.href = `https://duckduckgo.com/?q=${encodeURIComponent(
-        query,
+        query
       )}`;
     } else {
       render("No query, redirecting to DDG!");
@@ -67,7 +67,6 @@ export default {
         shortcutsOutput += `<div class="shortcuts"><p class="${s.color}">~/${s.category}</p>`;
         Object.entries(s.items).forEach(([name, link]) => {
           shortcutsOutput += `<p><span class="${s.color}">> </span><a class="shortcut" href="${link}">${name}</a></p>`;
-          linkIndex++;
         });
         shortcutsOutput += "</div>";
       });
