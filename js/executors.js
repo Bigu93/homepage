@@ -95,7 +95,7 @@ export default {
     output.innerHTML = "";
     input.focus();
   },
-  uname: () => {
+  whoami: () => {
     const text = `NULL_BYTE`;
     let i = 0;
 

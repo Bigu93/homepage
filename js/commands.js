@@ -32,7 +32,7 @@ export default [
     execute: (args) => executor.motd(args),
   },
   {
-    name: ["uname"],
+    name: ["whoami"],
     description: "Displays secret name",
     execute: executor.uname,
   },
