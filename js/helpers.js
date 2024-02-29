@@ -77,4 +77,44 @@ const getWeather = () => {
 
 const getDate = () => {};
 
-export { render, error, getWeather, getDate, dateDiffInMinutes };
+const attachLinkNavigation = () => {
+  const links = document.querySelectorAll(".link-item");
+  let currentIndex = 0;
+
+  const updateFocus = (index) => {
+    links.forEach((link, i) => {
+      if (i === index) {
+        link.classList.add("focused");
+      } else {
+        link.classList.remove("focused");
+      }
+    });
+  };
+
+  if (links.length > 0) updateFocus(currentIndex);
+
+  document.addEventListener("keydown", function (e) {
+    switch (e.key) {
+      case "ArrowUp":
+        currentIndex = currentIndex > 0 ? currentIndex - 1 : links.length - 1;
+        updateFocus(currentIndex);
+        break;
+      case "ArrowDown":
+        currentIndex = currentIndex < links.length - 1 ? currentIndex + 1 : 0;
+        updateFocus(currentIndex);
+        break;
+      case "Enter":
+        window.open(links[currentIndex].href, "_blank");
+        break;
+    }
+  });
+};
+
+export {
+  render,
+  error,
+  getWeather,
+  getDate,
+  dateDiffInMinutes,
+  attachLinkNavigation,
+};

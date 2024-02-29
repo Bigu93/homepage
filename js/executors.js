@@ -63,14 +63,17 @@ export default {
   ls: () => {
     if (shortcuts) {
       let shortcutsOutput = '<div class="shortcuts-container">';
+      let linkIndex = 0;
       shortcuts.forEach((s) => {
         shortcutsOutput += `<div class="shortcuts"><p class="${s.color}">~/${s.category}</p>`;
         Object.entries(s.items).forEach(([name, link]) => {
           shortcutsOutput += `<p><span class="${s.color}">> </span><a class="shortcut" href="${link}">${name}</a></p>`;
+          linkIndex++;
         });
         shortcutsOutput += "</div>";
       });
       render(shortcutsOutput + "</div><br />");
+      attachLinkNavigation();
     } else {
       error("yellow", "No Shortcuts", "Add some with the `add` command!");
     }
