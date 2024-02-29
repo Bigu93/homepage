@@ -6,10 +6,6 @@ import shortcuts from "./shortcuts.js";
 const input = document.getElementById("input");
 const output = document.getElementById("output");
 
-const focusOnInput = () => input.focus();
-focusOnInput();
-document.addEventListener("click", focusOnInput);
-
 input.addEventListener("keydown", function (e) {
   if (e.key === "Enter") {
     const userInput = input.value.trim().split(" ");
@@ -18,7 +14,7 @@ input.addEventListener("keydown", function (e) {
     render(`<span class="red">$&nbsp;</span>${input.value}`);
     try {
       const commandDetails = commands.find((c) =>
-        c.name.map((n) => n.toLowerCase()).includes(command),
+        c.name.map((n) => n.toLowerCase()).includes(command)
       );
       if (commandDetails) {
         if (command === "help") commandDetails.execute(commands);
