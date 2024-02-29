@@ -23,7 +23,7 @@ export default {
             content: data.content,
             author: data.author,
             fetchedAt: Date.now().toString(),
-          }),
+          })
         );
       });
   },
@@ -53,7 +53,7 @@ export default {
     const query = options.join(" ") || null;
     if (query) {
       window.location.href = `https://duckduckgo.com/?q=${encodeURIComponent(
-        query,
+        query
       )}`;
     } else {
       render("No query, redirecting to DDG!");
@@ -63,7 +63,6 @@ export default {
   ls: () => {
     if (shortcuts) {
       let shortcutsOutput = '<div class="shortcuts-container">';
-      let linkIndex = 0;
       shortcuts.forEach((s) => {
         shortcutsOutput += `<div class="shortcuts"><p class="${s.color}">~/${s.category}</p>`;
         Object.entries(s.items).forEach(([name, link]) => {
@@ -73,7 +72,6 @@ export default {
         shortcutsOutput += "</div>";
       });
       render(shortcutsOutput + "</div><br />");
-      attachLinkNavigation();
     } else {
       error("yellow", "No Shortcuts", "Add some with the `add` command!");
     }

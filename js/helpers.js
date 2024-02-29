@@ -26,7 +26,7 @@ const getWeather = () => {
     error(
       "red",
       "Unauthorized",
-      "API key and location are not set, run `weather set` for instructions",
+      "API key and location are not set, run `weather set` for instructions"
     );
     return;
   }
@@ -35,20 +35,20 @@ const getWeather = () => {
     cached = JSON.parse(cached);
     if (dateDiffInMinutes(cached.fetchedAt, Date.now()) < 15) {
       render(
-        `It's ${cached.temp} °F out in ${cached.name}, ${cached.state}. Expect ${cached.desc}.`,
+        `It's ${cached.temp} °F out in ${cached.name}, ${cached.state}. Expect ${cached.desc}.`
       );
       return;
     }
   }
   fetch(
-    `https://api.openweathermap.org/geo/1.0/direct?q=${loc}&appid=${WEATHER_API_KEY}`,
+    `https://api.openweathermap.org/geo/1.0/direct?q=${loc}&appid=${WEATHER_API_KEY}`
   )
     .then((geoRes) => geoRes.json())
     .then((geoData) => {
       geoData = geoData[0];
       let cacheData = { ...geoData };
       fetch(
-        `https://api.openweathermap.org/data/2.5/weather?units=imperial&lat=${geoData.lat}&lon=${geoData.lon}&appid=${WEATHER_API_KEY}`,
+        `https://api.openweathermap.org/data/2.5/weather?units=imperial&lat=${geoData.lat}&lon=${geoData.lon}&appid=${WEATHER_API_KEY}`
       )
         .then((weatherRes) => weatherRes.json())
         .then((weatherData) => {
@@ -60,7 +60,7 @@ const getWeather = () => {
             fetchedAt: Date.now().toString(),
           };
           render(
-            `It's ${cacheData.temp} °F out in ${cacheData.name}, ${cacheData.state}. Expect ${cacheData.desc}.`,
+            `It's ${cacheData.temp} °F out in ${cacheData.name}, ${cacheData.state}. Expect ${cacheData.desc}.`
           );
           localStorage.setItem("cachedWeather", JSON.stringify(cacheData));
         })
@@ -77,44 +77,4 @@ const getWeather = () => {
 
 const getDate = () => {};
 
-const attachLinkNavigation = () => {
-  const links = document.querySelectorAll(".link-item");
-  let currentIndex = 0;
-
-  const updateFocus = (index) => {
-    links.forEach((link, i) => {
-      if (i === index) {
-        link.classList.add("focused");
-      } else {
-        link.classList.remove("focused");
-      }
-    });
-  };
-
-  if (links.length > 0) updateFocus(currentIndex);
-
-  document.addEventListener("keydown", function (e) {
-    switch (e.key) {
-      case "ArrowUp":
-        currentIndex = currentIndex > 0 ? currentIndex - 1 : links.length - 1;
-        updateFocus(currentIndex);
-        break;
-      case "ArrowDown":
-        currentIndex = currentIndex < links.length - 1 ? currentIndex + 1 : 0;
-        updateFocus(currentIndex);
-        break;
-      case "Enter":
-        window.open(links[currentIndex].href, "_blank");
-        break;
-    }
-  });
-};
-
-export {
-  render,
-  error,
-  getWeather,
-  getDate,
-  dateDiffInMinutes,
-  attachLinkNavigation,
-};
+export { render, error, getWeather, getDate, dateDiffInMinutes };

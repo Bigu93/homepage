@@ -17,7 +17,7 @@ export default [
     execute: executor.help,
   },
   {
-    name: ["clear"],
+    name: ["clear", "cls"],
     description: "Clears the output history",
     execute: executor.clear,
   },
