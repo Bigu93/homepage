@@ -26,7 +26,8 @@ input.addEventListener("keydown", function (e) {
         if (shortcutDetails) {
           console.log(shortcutDetails);
           render(`Redirecting to ${shortcutDetails[0]}...`);
-          window.open(shortcutDetails[1], "_blank");
+          open(shortcutDetails[1]);
+          focus();
         } else error("yellow", command, "command not found");
       }
     } catch (e) {
