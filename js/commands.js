@@ -34,6 +34,6 @@ export default [
   {
     name: ["whoami"],
     description: "Displays secret name",
-    execute: executor.uname,
+    execute: executor.whoami,
   },
 ];
