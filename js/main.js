@@ -43,11 +43,13 @@ input.addEventListener("keydown", function (e) {
 window.addEventListener("load", () => {
   executors.ls();
   executors.motd();
-  let filenames = ["purple-mountains.jpg"];
+
+  const totalImages = 7;
+  const randomNumber = Math.floor(Math.random() * totalImages) + 1;
+  const selectedImage = `${randomNumber}.jpg`;
+
   let root = document.getElementsByTagName("html")[0];
-  root.style.backgroundImage = `url("./backgrounds/${
-    filenames[Math.floor(Math.random() * filenames.length)]
-  }")`;
+  root.style.backgroundImage = `url("./backgrounds/${selectedImage}")`;
   root.style.backgroundSize = "cover";
   root.style.backgroundPosition = "center";
 });
