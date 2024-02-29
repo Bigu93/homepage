@@ -97,22 +97,13 @@ export default {
   },
   uname: () => {
     const text = `NULL_BYTE`;
-    const cursorHtml = `<span class="blinking-cursor">|</span></p>`;
     let i = 0;
-
-    output.innerHTML = "";
-    output.innerHTML += cursorHtml;
 
     function typeWriter() {
       if (i < text.length) {
-        output.innerHTML = text.substring(0, i + 1) + cursorHtml;
+        output.innerHTML += text.charAt(i);
         i++;
         setTimeout(typeWriter, 350);
-      } else {
-        output.innerHTML = text + `</p>`;
-        setTimeout(() => {
-          output.innerHTML = text + `</p>`;
-        }, 500);
       }
     }
 
