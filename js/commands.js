@@ -29,6 +29,6 @@ export default [
   {
     name: ["motd"],
     description: "Displays a random famous quote",
-    execute: executor.motd,
+    execute: (args) => executor.motd(args),
   },
 ];

@@ -52,7 +52,7 @@ export default [
   },
   {
     category: "Info",
-    color: "gray",
+    color: "green",
     items: {
       tugazeta: "https://tugazeta.pl/",
       sekurak: "https://sekurak.pl/",
@@ -65,7 +65,7 @@ export default [
   },
   {
     category: "Shopping",
-    color: "gray",
+    color: "cyan",
     items: {
       allegro: "https://allegro.pl/",
       olx: "https://www.olx.pl/",
@@ -77,7 +77,7 @@ export default [
   },
   {
     category: "Gaming",
-    color: "orange",
+    color: "blue",
     items: {
       "/r/gaming": "https://www.reddit.com/r/gaming/",
       "gry-online": "https://www.gry-online.pl/",
@@ -87,7 +87,7 @@ export default [
   },
   {
     category: "VIP List",
-    color: "black",
+    color: "light-gray",
     items: {
       gynvael: "https://gynvael.coldwind.pl/",
       network_chuck: "https://learn.networkchuck.com/",

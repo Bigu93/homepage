@@ -2,10 +2,13 @@ import { dateDiffInMinutes, error, getWeather, render } from "./helpers.js";
 import shortcuts from "./shortcuts.js";
 
 export default {
-  motd: () => {
+  motd: (args) => {
+    let shouldFetchNew = args.includes("n");
     let cachedQuote = localStorage.getItem("cachedQuote");
-    if (cachedQuote) {
+
+    if (cachedQuote && !shouldFetchNew) {
       cachedQuote = JSON.parse(cachedQuote);
+
       if (
         dateDiffInMinutes(parseInt(cachedQuote.fetchedAt), Date.now()) < 720
       ) {
@@ -13,6 +16,7 @@ export default {
         return;
       }
     }
+
     fetch("https://api.quotable.io/random")
       .then((res) => res.json())
       .then((data) => {
