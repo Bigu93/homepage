@@ -27,7 +27,7 @@ export default {
             content: data.content,
             author: data.author,
             fetchedAt: Date.now().toString(),
-          }),
+          })
         );
       });
   },
@@ -57,7 +57,7 @@ export default {
     const query = options.join(" ") || null;
     if (query) {
       window.location.href = `https://duckduckgo.com/?q=${encodeURIComponent(
-        query,
+        query
       )}`;
     } else {
       render("No query, redirecting to DDG!");
@@ -96,6 +96,17 @@ export default {
     input.focus();
   },
   uname: () => {
-    output.innerHTML = `<p><span class="light-grey">NULL_BYTE</span></p>`;
+    const text = `<p><span class="cyan">NULL_BYTE</span></p>`;
+    let i = 0;
+
+    function typeWriter() {
+      if (i < text.length) {
+        output.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typeWriter, 100);
+      }
+    }
+
+    typeWriter();
   },
 };
