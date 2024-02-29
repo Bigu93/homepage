@@ -6,6 +6,7 @@ export default [
       gmail: "https://mail.google.com/mail/u/0/#inbox",
       facebook: "https://www.facebook.com/",
       twitter: "https://twitter.com",
+      google: "https://www.google.com/",
     },
   },
   {

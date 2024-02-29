@@ -95,4 +95,7 @@ export default {
     output.innerHTML = "";
     input.focus();
   },
+  uname: () => {
+    output.innerHTML = `<p><span class="light-grey">NULL_BYTE</span></p>`;
+  },
 };
