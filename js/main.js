@@ -14,7 +14,7 @@ input.addEventListener("keydown", function (e) {
     render(`<span class="red">$&nbsp;</span>${input.value}`);
     try {
       const commandDetails = commands.find((c) =>
-        c.name.map((n) => n.toLowerCase()).includes(command),
+        c.name.map((n) => n.toLowerCase()).includes(command)
       );
       if (commandDetails) {
         if (command === "help") commandDetails.execute(commands);
@@ -26,7 +26,7 @@ input.addEventListener("keydown", function (e) {
         if (shortcutDetails) {
           console.log(shortcutDetails);
           render(`Redirecting to ${shortcutDetails[0]}...`);
-          window.location.href = shortcutDetails[1];
+          window.open(shortcutDetails[1], "_blank");
         } else error("yellow", command, "command not found");
       }
     } catch (e) {
