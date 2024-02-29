@@ -20,7 +20,7 @@ input.addEventListener("keydown", function (e) {
     render(`<span class="red">$&nbsp;</span>${input.value}`);
     try {
       const commandDetails = commands.find((c) =>
-        c.name.map((n) => n.toLowerCase()).includes(command),
+        c.name.map((n) => n.toLowerCase()).includes(command)
       );
       if (commandDetails) {
         if (command === "help") commandDetails.execute(commands);
@@ -47,12 +47,8 @@ window.addEventListener("load", () => {
   executors.ls();
   executors.motd();
 
-  const totalImages = 7;
-  const randomNumber = Math.floor(Math.random() * totalImages) + 1;
-  const selectedImage = `${randomNumber}.jpg`;
-
   let root = document.getElementsByTagName("html")[0];
-  root.style.backgroundImage = `url("./backgrounds/${selectedImage}")`;
+  root.style.backgroundImage = `url("./backgrounds/null_byte.png")`;
   root.style.backgroundSize = "cover";
   root.style.backgroundPosition = "center";
 });
