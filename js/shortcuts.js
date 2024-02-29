@@ -26,6 +26,7 @@ export default [
     items: {
       Linkedin: "https://linkedin.com",
       Twitter: "https://twitter.com",
+      GPT: "https://chat.openai.com",
     },
   },
   {
@@ -36,6 +37,14 @@ export default [
       YouTube: "https://www.youtube.com/",
       Twitch: "https://www.twitch.tv/",
       Pepper: "https://www.pepper.pl/dlaciebie",
+    },
+  },
+  {
+    category: "Info",
+    color: "gray",
+    items: {
+      tugazeta: "https://tugazeta.pl/",
+      sekurak: "https://sekurak.pl/",
     },
   },
 ];
