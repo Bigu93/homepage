@@ -6,9 +6,11 @@ import shortcuts from "./shortcuts.js";
 const input = document.getElementById("input");
 const output = document.getElementById("output");
 
+const focusOnInput = () => input.focus();
+focusOnInput();
+document.addEventListener("click", focusOnInput);
+
 input.addEventListener("keydown", function (e) {
-  const focusOnInput = () => this.focus();
-  document.addEventListener("click", focusOnInput);
   if (e.key === "Enter") {
     const userInput = input.value.trim().split(" ");
     const command = userInput[0].toLowerCase();
