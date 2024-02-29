@@ -31,4 +31,9 @@ export default [
     description: "Displays a random famous quote",
     execute: (args) => executor.motd(args),
   },
+  {
+    name: ["uname"],
+    description: "Displays secret name",
+    execute: executor.uname,
+  },
 ];
