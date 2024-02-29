@@ -100,18 +100,18 @@ export default {
     const cursorHtml = `<span class="blinking-cursor">|</span></p>`;
     let i = 0;
 
-    input.innerHTML = "";
-    input.innerHTML += cursorHtml;
+    output.innerHTML = "";
+    output.innerHTML += cursorHtml;
 
     function typeWriter() {
       if (i < text.length) {
-        input.innerHTML = text.substring(0, i + 1) + cursorHtml;
+        output.innerHTML = text.substring(0, i + 1) + cursorHtml;
         i++;
         setTimeout(typeWriter, 100);
       } else {
-        input.innerHTML = text + `</p>`;
+        output.innerHTML = text + `</p>`;
         setTimeout(() => {
-          input.innerHTML = text + `</p>`;
+          output.innerHTML = text + `</p>`;
         }, 500);
       }
     }
