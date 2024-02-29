@@ -48,7 +48,8 @@ window.addEventListener("load", () => {
   executors.motd();
 
   let root = document.getElementsByTagName("html")[0];
-  root.style.backgroundImage = `url("./backgrounds/null_byte.png")`;
-  root.style.backgroundSize = "cover";
+  root.style.backgroundImage = `url("./backgrounds/null_byte.jpg")`;
+  root.style.backgroundSize = "contain";
+  root.style.backgroundRepeat = "no-repeat";
   root.style.backgroundPosition = "center";
 });
