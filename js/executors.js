@@ -96,7 +96,7 @@ export default {
     input.focus();
   },
   uname: () => {
-    const text = `<p><span class="cyan">NULL_BYTE</span></p>`;
+    const text = `NULL_BYTE`;
     let i = 0;
 
     function typeWriter() {
