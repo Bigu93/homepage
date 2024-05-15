@@ -104,4 +104,20 @@ export default [
       homelab: "https://ladomierz.duckdns.org/#/",
     },
   },
+  {
+    category: "CTFs",
+    color: "red",
+    items: {
+      CyberChef: "https://gchq.github.io/CyberChef/",
+      Hex: "https://hexed.it/",
+      OnlineConverter:
+        "https://www.rapidtables.com/convert/number/ascii-hex-bin-dec-converter.html",
+      XOR: "https://xor.pw/",
+      Regex: "https://www.debuggex.com/",
+      ASCII: "https://www.asciitable.com/",
+      QuipQuip: "https://quipqiup.com/",
+      Crackstation: "https://crackstation.net/",
+      PentestBook: "https://pentestbook.six2dez.com/",
+    },
+  },
 ];
