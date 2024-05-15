@@ -38,6 +38,7 @@ export default [
       linkedin: "https://linkedin.com",
       gpt: "https://chat.openai.com",
       tsp: "https://thesoulpaths.cz/",
+      buto: "https://butosklep.pl/panel",
     },
   },
   {
@@ -94,6 +95,13 @@ export default [
       network_chuck: "https://learn.networkchuck.com/",
       ippsec: "https://www.youtube.com/@ippsec/videos",
       hammond: "https://www.youtube.com/@_JohnHammond/videos",
+    },
+  },
+  {
+    category: "Home lab",
+    color: "green",
+    items: {
+      homelab: "https://ladomierz.duckdns.org/#/",
     },
   },
 ];

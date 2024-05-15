@@ -103,7 +103,7 @@ export default {
       if (i < text.length) {
         output.innerHTML += text.charAt(i);
         i++;
-        setTimeout(typeWriter, 350);
+        setTimeout(typeWriter, 150);
       }
     }
 
