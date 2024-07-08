@@ -46,7 +46,7 @@ export default [
     color: "purple",
     items: {
       wykop: "https://wykop.pl/",
-      yoytube: "https://www.youtube.com/",
+      youtube: "https://www.youtube.com/",
       twitch: "https://www.twitch.tv/",
       pepper: "https://www.pepper.pl/dlaciebie",
       ytmusic: "https://music.youtube.com/",
