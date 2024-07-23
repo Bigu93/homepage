@@ -35,10 +35,13 @@ export default [
     category: "Work",
     color: "green",
     items: {
+      trello: "https://trello.com",
       linkedin: "https://linkedin.com",
       gpt: "https://chat.openai.com",
+      claude: "https://claude.ai/new",
       tsp: "https://thesoulpaths.cz/",
-      buto: "https://butosklep.pl/panel",
+      "buto panel": "https://butosklep.pl/panel",
+      "bing ads": "https://ui.ads.microsoft.com/campaign/vnext/overview",
     },
   },
   {
@@ -101,7 +104,11 @@ export default [
     category: "Home lab",
     color: "green",
     items: {
-      homelab: "https://ladomierz.duckdns.org/#/",
+      "homelab dashboard": "https://ladomierz.duckdns.org/",
+      "home chat": "https://chat.ladomierz.duckdns.org/",
+      bookmarks: "https://bookmark.ladomierz.duckdns.org/bookmarks",
+      dns: "https://adguard.ladomierz.duckdns.org/",
+      pentest: "https://pentest.ladomierz.duckdns.org/projects/",
     },
   },
   {
