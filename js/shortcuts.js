@@ -29,6 +29,7 @@ export default [
       hacktricks: "https://book.hacktricks.xyz/welcome/readme",
       hackersploit: "https://hackersploit.org/penetration-testing-tutorials/",
       cryptohack: "https://cryptohack.org/",
+      "hakcing articles": "https://www.hackingarticles.in/",
     },
   },
   {
