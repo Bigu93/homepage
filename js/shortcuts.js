@@ -142,6 +142,13 @@ export default [
         "https://www.zenarmor.com/docs/network-security-tutorials/best-firewalls-for-schools",
       cuckoo: "https://sandbox.pikker.ee/",
       canary_tokens: "https://canarytokens.org/nest/",
+      "HTML Standard": "https://html.spec.whatwg.org/multipage/parsing.html",
+      WebGoat: "https://github.com/WebGoat/WebGoat?tab=readme-ov-file",
+      "mXSS cheatsheet": "https://sonarsource.github.io/mxss-cheatsheet/",
+      "OWASP cheatsheet": "https://cheatsheetseries.owasp.org/index.html",
+      "Offensive Sec cheatsheet": "https://cheatsheet.haax.fr/",
+      "XSS rat":
+        "https://thexssrat.notion.site/Uncle-rat-s-notes-0ca25196b8c84147bf35a5c84d6b18de",
     },
   },
 ];
