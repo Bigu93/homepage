@@ -128,4 +128,20 @@ export default [
       PentestBook: "https://pentestbook.six2dez.com/",
     },
   },
+  {
+    category: "Pentest knowledge",
+    color: "grey",
+    items: {
+      NTHW: "https://github.com/notthehiddenwiki/NTHW",
+      "Exploit notes": "https://exploit-notes.hdks.org/",
+      SecurityLinks: "https://security-links.hdks.org/",
+      Praetorian: "https://www.praetorian.com/blog/",
+      haveibeenpwned: "https://haveibeenpwned.com/",
+      "/r/blackhat": "https://www.reddit.com/r/blackhat/?rdt=35278",
+      zenarmor:
+        "https://www.zenarmor.com/docs/network-security-tutorials/best-firewalls-for-schools",
+      cuckoo: "https://sandbox.pikker.ee/",
+      canary_tokens: "https://canarytokens.org/nest/",
+    },
+  },
 ];
