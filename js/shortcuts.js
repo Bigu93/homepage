@@ -150,6 +150,8 @@ export default [
       "Offensive Sec cheatsheet": "https://cheatsheet.haax.fr/",
       "XSS rat":
         "https://thexssrat.notion.site/Uncle-rat-s-notes-0ca25196b8c84147bf35a5c84d6b18de",
+      "Awesome BugBounty":
+        "https://github.com/fardeen-ahmed/Bug-bounty-Writeups",
     },
   },
 ];
