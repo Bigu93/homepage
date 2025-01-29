@@ -40,6 +40,7 @@ export default [
       linkedin: "https://linkedin.com",
       gpt: "https://chat.openai.com",
       claude: "https://claude.ai/new",
+      DeepSeek: "https://chat.deepseek.com/",
       tsp: "https://thesoulpaths.cz/",
       "buto panel": "https://butosklep.pl/panel",
       "bing ads": "https://ui.ads.microsoft.com/campaign/vnext/overview",
