@@ -23,6 +23,7 @@ export default [
     color: "blue",
     items: {
       ChatGPT: "https://chatgpt.com/",
+      Perplexity: "https://www.perplexity.ai/",
       Claude: "https://claude.ai/new",
       Gemini: "https://gemini.google.com/app",
       DeepSeek: "https://chat.deepseek.com/",
