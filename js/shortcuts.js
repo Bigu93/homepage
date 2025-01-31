@@ -117,8 +117,7 @@ export default [
       "homelab dashboard": "https://ladomierz.duckdns.org/",
       "home chat": "https://chat.ladomierz.duckdns.org/",
       bookmarks: "https://bookmark.ladomierz.duckdns.org/bookmarks",
-      dns: "https://adguard.ladomierz.duckdns.org/",
-      pentest: "https://pentest.ladomierz.duckdns.org/projects/",
+      dns: "https://adguard.ladomierz.duckdns.org/"
     },
   },
   {
