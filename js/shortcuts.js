@@ -19,6 +19,17 @@ export default [
     },
   },
   {
+    category: "AI",
+    color: "blue",
+    items: {
+      ChatGPT: "https://chatgpt.com/",
+      Claude: "https://claude.ai/new",
+      Gemini: "https://gemini.google.com/app",
+      DeepSeek: "https://chat.deepseek.com/",
+      "Google AI studio": "https://aistudio.google.com/",
+    },
+  },
+  {
     category: "H4ck1ng",
     color: "red",
     items: {
@@ -38,10 +49,6 @@ export default [
     items: {
       trello: "https://trello.com",
       linkedin: "https://linkedin.com",
-      gpt: "https://chat.openai.com",
-      claude: "https://claude.ai/new",
-      DeepSeek: "https://chat.deepseek.com/",
-      tsp: "https://thesoulpaths.cz/",
       "buto panel": "https://butosklep.pl/panel",
       "bing ads": "https://ui.ads.microsoft.com/campaign/vnext/overview",
     },
