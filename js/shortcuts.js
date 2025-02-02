@@ -117,7 +117,7 @@ export default [
       "homelab dashboard": "https://ladomierz.duckdns.org/",
       "home chat": "https://chat.ladomierz.duckdns.org/",
       bookmarks: "https://bookmark.ladomierz.duckdns.org/bookmarks",
-      dns: "https://adguard.ladomierz.duckdns.org/"
+      dns: "https://adguard.ladomierz.duckdns.org/",
     },
   },
   {
@@ -161,6 +161,7 @@ export default [
       "Awesome BugBounty":
         "https://github.com/fardeen-ahmed/Bug-bounty-Writeups",
       HackerRecipes: "https://www.thehacker.recipes/",
+      "Red Team Notes": "https://www.ired.team/",
     },
   },
 ];
