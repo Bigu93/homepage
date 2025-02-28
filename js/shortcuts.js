@@ -135,6 +135,7 @@ export default [
       Crackstation: "https://crackstation.net/",
       PentestBook: "https://pentestbook.six2dez.com/",
       "Practical CTF": "https://book.jorianwoltjer.com/",
+      john_ermac: "https://johnermac.github.io/menu/",
     },
   },
   {
