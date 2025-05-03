@@ -165,4 +165,26 @@ export default [
       "Red Team Notes": "https://www.ired.team/",
     },
   },
+  {
+    category: "Sport",
+    color: "purple",
+    items: {
+      Bugański:
+        "https://czlowiekuruszsie.pl/lekcje/filar-i-pierwsze-2-tygodnie/",
+    },
+  },
+  {
+    category: "Books & Knowledge",
+    color: "blue",
+    items: {
+      "Anna's Archive": "https://pl.annas-archive.org/",
+      BTDigg: "https://btdig.com/",
+      "Polish fiction":
+        "https://libgen.is/fiction/?q=&criteria=&language=Polish&format=",
+      "Polish non-fiction":
+        "https://libgen.is/search.php?&req=polish&phrase=1&view=simple&column=language&sort=id&sortmode=DESC",
+      "Polish IT":
+        "https://libgen.is/search.php?&req=Helion&phrase=1&view=simple&column=publisher&sort=id&sortmode=DESC&page=2",
+    },
+  },
 ];
