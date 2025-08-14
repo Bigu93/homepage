@@ -9,7 +9,6 @@ An iTerm-inspired startpage page for faster web browsing. Because everything's b
 You have two main options:
 
 1. ### Local File
-
    - To run locally, you can simply clone the repository:
 
      ```bash
@@ -23,7 +22,6 @@ You have two main options:
 2. ### Github Pages
 
    To access the site from multiple computers, or just to save the few MB of RAM, you can host the site on Github Pages.
-
    - [Fork the repository](https://github.com/peterrauscher/startpage/fork)
    - Go to the repository page
    - Go to Settings > Pages > Build and Deployment
