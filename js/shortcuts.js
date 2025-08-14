@@ -118,6 +118,7 @@ export default [
       "home chat": "https://chat.ladomierz.duckdns.org/",
       bookmarks: "https://bookmark.ladomierz.duckdns.org/bookmarks",
       dns: "https://adguard.ladomierz.duckdns.org/",
+      "proxy manager": "https://proxy.ladomierz.duckdns.org/",
     },
   },
   {
