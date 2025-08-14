@@ -119,6 +119,10 @@ export default [
       bookmarks: "https://bookmark.ladomierz.duckdns.org/bookmarks",
       dns: "https://adguard.ladomierz.duckdns.org/",
       "proxy manager": "https://proxy.ladomierz.duckdns.org/",
+      cyberchef: "https://cyberchef.ladomierz.duckdns.org/",
+      speedtest: "https://speed.ladomierz.duckdns.org/",
+      portainer: "https://speed.ladomierz.duckdns.org/",
+      nmap: "https://nmap.ladomierz.duckdns.org/",
     },
   },
   {
