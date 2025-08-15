@@ -123,7 +123,7 @@ export default [
       portainer: "http://portainer.lan",
       nmap: "http://nmap.lan",
       gitea: "http://gitea.lan",
-      n8n: "http://n8n.lan"
+      n8n: "http://n8n.lan",
     },
   },
   {
