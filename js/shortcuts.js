@@ -121,7 +121,7 @@ export default [
       cyberchef: "http://cyberchef.lan",
       speedtest: "http://speed.lan",
       portainer: "http://portainer.lan",
-      nmap: "http://nmap.lan",
+      torrent: "http://torrent.lan",
       gitea: "http://gitea.lan",
       n8n: "http://n8n.lan"
     },
