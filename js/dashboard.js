@@ -74,6 +74,13 @@ function filterData(q) {
 /* =========================
    Render
 ========================= */
+function recordOpen() {
+stats[link] = { count: (stats[link]?.count || 0) + 1, last: Date.now() };
+saveState();
+countBadge.textContent = String(stats[link].count);
+countBadge.title = `Last: ${new Date(stats[link].last).toLocaleString()}`;
+}
+
 function buildLink(name, link) {
   const li = document.createElement("li");
   li.className = "link";
@@ -118,11 +125,12 @@ function buildLink(name, link) {
     render(currentItems);
   });
 
-  a.addEventListener("click", () => {
-    stats[link] = { count: (stats[link]?.count || 0) + 1, last: Date.now() };
-    saveState();
-    countBadge.textContent = String(stats[link].count);
-    countBadge.title = `Last: ${new Date(stats[link].last).toLocaleString()}`;
+  a.addEventListener("click", (e) => {
+    recordOpen();
+  });
+
+  a.addEventListener("auxclick", (e) => {
+    if (e.button === 1) recordOpen();
   });
 
   a.append(img, label, badgeWrap, star);
