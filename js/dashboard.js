@@ -14,15 +14,17 @@ const normalize = (s) => s.toLowerCase().replace(/[_-]/g, " ");
 function render(items) {
   grid.innerHTML = "";
 
-  items.forEach(cat => {
+  items.forEach((cat) => {
     const card = document.createElement("section");
     card.className = "card";
 
     const h = document.createElement("h2");
     const dot = document.createElement("span");
     dot.className = "dot";
-    dot.style.background = getComputedStyle(document.documentElement)
-      .getPropertyValue(`--${(cat.color || "light-gray").replace(".", "")}`) || "var(--light-gray)";
+    dot.style.background =
+      getComputedStyle(document.documentElement).getPropertyValue(
+        `--${(cat.color || "light-gray").replace(".", "")}`,
+      ) || "var(--light-gray)";
     const title = document.createElement("span");
     title.className = cat.color || "light-gray";
     title.textContent = `~/${cat.category}`;
@@ -68,11 +70,12 @@ function filterData(q) {
   if (!q) return data;
   const n = normalize(q);
   return data
-    .map(cat => {
-      const filteredEntries = Object.entries(cat.items).filter(([name, url]) =>
-        normalize(name).includes(n) ||
-        normalize(cat.category).includes(n) ||
-        url.toLowerCase().includes(n)
+    .map((cat) => {
+      const filteredEntries = Object.entries(cat.items).filter(
+        ([name, url]) =>
+          normalize(name).includes(n) ||
+          normalize(cat.category).includes(n) ||
+          url.toLowerCase().includes(n),
       );
       if (filteredEntries.length === 0) return null;
       return { ...cat, items: Object.fromEntries(filteredEntries) };
