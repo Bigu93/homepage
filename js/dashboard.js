@@ -81,10 +81,10 @@ function filterData(q) {
    Render
 ========================= */
 function recordOpen() {
-stats[link] = { count: (stats[link]?.count || 0) + 1, last: Date.now() };
-saveState();
-countBadge.textContent = String(stats[link].count);
-countBadge.title = `Last: ${new Date(stats[link].last).toLocaleString()}`;
+  stats[link] = { count: (stats[link]?.count || 0) + 1, last: Date.now() };
+  saveState();
+  countBadge.textContent = String(stats[link].count);
+  countBadge.title = `Last: ${new Date(stats[link].last).toLocaleString()}`;
 }
 
 function buildLink(name, link) {
