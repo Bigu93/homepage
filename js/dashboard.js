@@ -5,6 +5,8 @@ const filter = document.getElementById("filter");
 const count = document.getElementById("count");
 const shuffleBtn = document.getElementById("shuffle");
 const compactBtn = document.getElementById("compact");
+const collapseAllBtn = document.getElementById("collapseAll");
+const expandAllBtn = document.getElementById("expandAll");
 
 /* =========================
    Local storage helpers
@@ -97,8 +99,8 @@ function buildLink(name, link) {
   const s = stats[link];
   const countBadge = document.createElement("span");
   countBadge.className = "badge";
-  countBadge.textContent = s?.count ? s.count : "";
-  countBadge.title = s?.last ? `Last: ${new Date(s.last).toLocaleString()}` : "Not opened yet";
+  countBadge.textContent = String(s?.count ?? 0);
+  countBadge.title = s?.last ? `Last: ${new Date(s.last).toLocaleString()}` : "Never opened";
   badgeWrap.appendChild(countBadge);
 
   const star = document.createElement("button");
@@ -119,7 +121,7 @@ function buildLink(name, link) {
   a.addEventListener("click", () => {
     stats[link] = { count: (stats[link]?.count || 0) + 1, last: Date.now() };
     saveState();
-    countBadge.textContent = stats[link].count;
+    countBadge.textContent = String(stats[link].count);
     countBadge.title = `Last: ${new Date(stats[link].last).toLocaleString()}`;
   });
 
@@ -209,16 +211,18 @@ function render(items) {
 }
 
 /* =========================
+   Collapse/Expand all
+========================= */
+function setAllCollapsed(items, shouldCollapse) {
+  collapsed.clear();
+  if (shouldCollapse) items.forEach((c) => collapsed.add(c.category));
+  saveState();
+  render(currentItems);
+}
+
+/* =========================
    Keyboard quick-open
 ========================= */
-// strategy:
-// - Keep a flat list of all *visible* anchors in DOM order.
-// - '/' focuses filter.
-// - j/k or ArrowDown/ArrowUp moves a "soft focus".
-// - Enter opens the selected link.
-// - 1..9 opens the nth visible link.
-// - Esc clears selection or filter.
-
 let linkList = [];
 let selIndex = -1;
 
@@ -277,6 +281,11 @@ document.addEventListener("keydown", (e) => {
     } else if (e.key === "Escape") {
       selIndex = -1; applySelection();
     }
+    else if (e.key.toLowerCase() === "c") {
+      setAllCollapsed(currentItems, true);
+    } else if (e.key.toLowerCase() === "u") {
+      setAllCollapsed(currentItems, false);
+    }
   }
 });
 
@@ -292,6 +301,8 @@ shuffleBtn.addEventListener("click", () => {
 compactBtn.addEventListener("click", () => {
   document.body.classList.toggle("compact");
 });
+collapseAllBtn?.addEventListener("click", () => setAllCollapsed(currentItems, true));
+expandAllBtn?.addEventListener("click", () => setAllCollapsed(currentItems, false));
 
 window.addEventListener("load", () => {
   render(data);
