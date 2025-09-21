@@ -41,7 +41,7 @@ export default [
       hacktricks: "https://book.hacktricks.xyz/welcome/readme",
       hackersploit: "https://hackersploit.org/penetration-testing-tutorials/",
       cryptohack: "https://cryptohack.org/",
-      "hakcing articles": "https://www.hackingarticles.in/",
+      "hacking articles": "https://www.hackingarticles.in/",
     },
   },
   {
@@ -146,7 +146,7 @@ export default [
   },
   {
     category: "Pentest knowledge",
-    color: "grey",
+    color: "gray",
     items: {
       NTHW: "https://github.com/notthehiddenwiki/NTHW",
       "Exploit notes": "https://exploit-notes.hdks.org/",
