@@ -11,10 +11,15 @@ const compactBtn = document.getElementById("compact");
 ========================= */
 const LS = {
   get(key, fallback) {
-    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
-    catch { return fallback; }
+    try {
+      return JSON.parse(localStorage.getItem(key)) ?? fallback;
+    } catch {
+      return fallback;
+    }
   },
-  set(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+  set(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  },
 };
 
 const favorites = new Set(LS.get("favorites", []));
@@ -58,10 +63,11 @@ function filterData(q) {
   const n = normalize(q);
   return data
     .map((cat) => {
-      const filtered = Object.entries(cat.items).filter(([name, url]) =>
-        normalize(name).includes(n) ||
-        normalize(cat.category).includes(n) ||
-        url.toLowerCase().includes(n)
+      const filtered = Object.entries(cat.items).filter(
+        ([name, url]) =>
+          normalize(name).includes(n) ||
+          normalize(cat.category).includes(n) ||
+          url.toLowerCase().includes(n),
       );
       if (filtered.length === 0) return null;
       return { ...cat, items: Object.fromEntries(filtered) };
@@ -98,7 +104,9 @@ function buildLink(name, link) {
   const countBadge = document.createElement("span");
   countBadge.className = "badge";
   countBadge.textContent = s?.count ? s.count : "";
-  countBadge.title = s?.last ? `Last: ${new Date(s.last).toLocaleString()}` : "Not opened yet";
+  countBadge.title = s?.last
+    ? `Last: ${new Date(s.last).toLocaleString()}`
+    : "Not opened yet";
   badgeWrap.appendChild(countBadge);
 
   const star = document.createElement("button");
@@ -108,7 +116,8 @@ function buildLink(name, link) {
   star.title = "Add/remove favorite";
   if (favorites.has(link)) star.classList.add("on");
   star.addEventListener("click", (ev) => {
-    ev.preventDefault(); ev.stopPropagation();
+    ev.preventDefault();
+    ev.stopPropagation();
     if (favorites.has(link)) favorites.delete(link);
     else favorites.add(link);
     star.classList.toggle("on");
@@ -223,7 +232,9 @@ let linkList = [];
 let selIndex = -1;
 
 function refreshKeyboardIndex() {
-  linkList = [...grid.querySelectorAll(".links a")].filter(el => el.offsetParent !== null);
+  linkList = [...grid.querySelectorAll(".links a")].filter(
+    (el) => el.offsetParent !== null,
+  );
   selIndex = -1;
 }
 
@@ -275,7 +286,8 @@ document.addEventListener("keydown", (e) => {
       e.preventDefault();
       openSelected(true);
     } else if (e.key === "Escape") {
-      selIndex = -1; applySelection();
+      selIndex = -1;
+      applySelection();
     }
   }
 });

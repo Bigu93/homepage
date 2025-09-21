@@ -330,55 +330,100 @@ body.compact .link a {
 }
 
 /* ——— Pinned row layout ——— */
-.card.pinned .links { 
+.card.pinned .links {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: .35rem .5rem;
+  gap: 0.35rem 0.5rem;
 }
-.pinned-links .link a { padding:.45rem .5rem; }
+.pinned-links .link a {
+  padding: 0.45rem 0.5rem;
+}
 
 /* ——— Collapsible cards ——— */
-.card .card-title{
-  background:none; border:0; padding:0; margin:0; cursor:pointer; color:inherit;
-  font:inherit; text-align:left;
+.card .card-title {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: left;
 }
-.card.is-collapsed .links{ display:none; }
-.card.is-collapsed h2::after{
-  content:"▸"; margin-left:.4rem; opacity:.8;
+.card.is-collapsed .links {
+  display: none;
 }
-.card:not(.is-collapsed) h2::after{
-  content:"▾"; margin-left:.4rem; opacity:.8;
+.card.is-collapsed h2::after {
+  content: "▸";
+  margin-left: 0.4rem;
+  opacity: 0.8;
+}
+.card:not(.is-collapsed) h2::after {
+  content: "▾";
+  margin-left: 0.4rem;
+  opacity: 0.8;
 }
 
 /* ——— Stats badges ——— */
-.badge-wrap{ margin-left:auto; display:inline-flex; gap:.35rem; }
-.badge{
-  min-width: 1.35rem; text-align:center;
-  font-size:.78rem; line-height:1.05rem;
-  padding:.08rem .25rem; border-radius:8px;
-  background: rgba(255,255,255,.08); color: var(--fg);
-  border: 1px solid rgba(255,255,255,.12);
+.badge-wrap {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 0.35rem;
+}
+.badge {
+  min-width: 1.35rem;
+  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.05rem;
+  padding: 0.08rem 0.25rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--fg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 /* ——— Favorite star ——— */
-.star{
-  margin-left:.4rem; width:1.15rem; height:1.15rem; border-radius:6px;
-  border:1px solid rgba(255,255,255,.12);
-  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-  display:inline-flex; align-items:center; justify-content:center;
-  cursor:pointer; opacity:.75;
+.star {
+  margin-left: 0.4rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.02)
+  );
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.75;
 }
-.star::before{ content:"☆"; font-size:.95rem; line-height:1; }
-.star.on{ color:var(--yellow); opacity:1; }
-.star.on::before{ content:"★"; }
+.star::before {
+  content: "☆";
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.star.on {
+  color: var(--yellow);
+  opacity: 1;
+}
+.star.on::before {
+  content: "★";
+}
 
 /* show star on hover for a cleaner look on desktop */
-.link a .star{ visibility:hidden; }
-.link a:hover .star{ visibility:visible; }
+.link a .star {
+  visibility: hidden;
+}
+.link a:hover .star {
+  visibility: visible;
+}
 
 /* ——— Keyboard selection highlight ——— */
-.kbd-focus{
-  outline:2px solid var(--ring) !important;
-  outline-offset:2px;
+.kbd-focus {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px;
   transform: translateX(2px);
 }
