@@ -5,7 +5,6 @@
   font-display:swap;
 }
 
-<<<<<<< HEAD
 :root{
   /* brand */
   --bg:#0b0f14;
@@ -149,117 +148,10 @@ main{ padding: 10px 18px 18px; flex:1 }
   background: rgba(255,255,255,.05);
   transform: translateX(2px);
   text-decoration:none;
-=======
-:root {
-  --bg: #010c0e;
-  --fg: #c0caf5;
-  --black: #15161e;
-  --red: #f7768e;
-  --green: #9ece6a;
-  --yellow: #e0af68;
-  --blue: #7aa2f7;
-  --purple: #bb9af7;
-  --cyan: #7dcfff;
-  --light-gray: #a9b1d6;
-  --gray: #010c0e;
-  --card: #15161ee6;
-  --ring: #3b82f6;
-}
-
-* {
-  box-sizing: border-box;
-}
-html,
-body {
-  height: 100%;
-  margin: 0;
-}
-html {
-  font-family: "Hack", monospace;
-  color: var(--fg);
-  background: var(--gray);
-}
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100svh;
-}
-
-.topbar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 1rem;
-  align-items: center;
-  padding: 1rem 1.25rem;
-}
-.topbar h1 {
-  margin: 0;
-  color: var(--yellow);
-}
-.search-wrap {
-  max-width: 520px;
-}
-#filter {
-  width: 100%;
-  padding: 0.7rem 0.9rem;
-  border-radius: 12px;
-  background: var(--black);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--fg);
-}
-#filter:focus {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-.quick-actions button {
-  background: var(--black);
-  color: var(--fg);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 0.6rem 0.75rem;
-  cursor: pointer;
-}
-.quick-actions button:focus {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-main {
-  flex: 1;
-  padding: 0.75rem 1.25rem 1.25rem;
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
-}
-
-.card {
-  background: var(--card);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 0.9rem 0.9rem 0.2rem;
-}
-.card h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-  letter-spacing: 0.02em;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-.card h2 .dot {
-  width: 0.6rem;
-  height: 0.6rem;
-  border-radius: 999px;
-  display: inline-block;
->>>>>>> 6e9451db696b00956b9af58a4305f593d3707335
 }
 .link a:focus{ outline:2px solid var(--ring); outline-offset:2px }
 .link img{ width:19px; height:19px; border-radius:5px; flex:0 0 19px }
 
-<<<<<<< HEAD
 /* ——— Footer ——— */
 .footer{ padding: 6px 18px 18px; color:var(--muted); font-size:.9rem; opacity:.9 }
 
@@ -277,81 +169,4 @@ body.compact .link a{ padding:.4rem .45rem }
 /* ——— Motion respect ——— */
 @media (prefers-reduced-motion: reduce){
   *{ animation:none !important; transition:none !important }
-=======
-.links {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.link a {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.45rem 0.5rem;
-  border-radius: 10px;
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-  text-decoration-thickness: 0.06em;
-}
-.link a:hover {
-  background: rgba(255, 255, 255, 0.04);
-}
-.link a:focus {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-.link img {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  flex: 0 0 18px;
-}
-
-.footer {
-  padding: 0.5rem 1.25rem 1rem;
-  color: var(--light-gray);
-  opacity: 0.8;
-  font-size: 0.9rem;
-}
-
-/* colors */
-.green {
-  color: var(--green);
-}
-.cyan {
-  color: var(--cyan);
-}
-.purple {
-  color: var(--purple);
-}
-.red {
-  color: var(--red);
-}
-.yellow {
-  color: var(--yellow);
-}
-.blue {
-  color: var(--blue);
-}
-.light-gray {
-  color: var(--light-gray);
-}
-.gray {
-  color: var(--light-gray);
-}
-.black {
-  color: var(--black);
-}
-/* If you want to keep "grey" in data: */
-.grey {
-  color: var(--light-gray);
-}
-
-/* optional compact mode */
-.compact .links a {
-  padding: 0.3rem 0.45rem;
->>>>>>> 6e9451db696b00956b9af58a4305f593d3707335
 }
