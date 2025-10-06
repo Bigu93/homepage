@@ -78,6 +78,7 @@ function filterData(q) {
 /* =========================
    Render
 ========================= */
+<<<<<<< HEAD
 function formatBadgeTitle(stat) {
   if (!stat?.last) return "Never opened";
   const relative = timeAgo(stat.last);
@@ -102,6 +103,13 @@ function recordOpen(link) {
   stats[link] = updated;
   saveState();
   updateBadgeDisplays(link);
+=======
+function recordOpen() {
+  stats[link] = { count: (stats[link]?.count || 0) + 1, last: Date.now() };
+  saveState();
+  countBadge.textContent = String(stats[link].count);
+  countBadge.title = `Last: ${new Date(stats[link].last).toLocaleString()}`;
+>>>>>>> ecc5af561bc46b445d392ca577ee10caf059bd9a
 }
 
 function buildLink(name, link) {
