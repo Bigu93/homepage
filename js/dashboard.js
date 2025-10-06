@@ -3,8 +3,6 @@ import data from "./shortcuts.js";
 const grid = document.getElementById("grid");
 const filter = document.getElementById("filter");
 const count = document.getElementById("count");
-const shuffleBtn = document.getElementById("shuffle");
-const compactBtn = document.getElementById("compact");
 const collapseAllBtn = document.getElementById("collapseAll");
 const expandAllBtn = document.getElementById("expandAll");
 
@@ -80,11 +78,30 @@ function filterData(q) {
 /* =========================
    Render
 ========================= */
-function recordOpen() {
-stats[link] = { count: (stats[link]?.count || 0) + 1, last: Date.now() };
-saveState();
-countBadge.textContent = String(stats[link].count);
-countBadge.title = `Last: ${new Date(stats[link].last).toLocaleString()}`;
+function formatBadgeTitle(stat) {
+  if (!stat?.last) return "Never opened";
+  const relative = timeAgo(stat.last);
+  const absolute = new Date(stat.last).toLocaleString();
+  return `Last opened ${relative} ago (${absolute})`;
+}
+
+function updateBadgeDisplays(link) {
+  document.querySelectorAll(".badge").forEach((badge) => {
+    if (badge.dataset.url === link) {
+      const stat = stats[link];
+      badge.textContent = String(stat.count);
+      badge.title = formatBadgeTitle(stat);
+      badge.setAttribute("aria-label", badge.title);
+    }
+  });
+}
+
+function recordOpen(link) {
+  const current = stats[link] ?? { count: 0, last: 0 };
+  const updated = { count: current.count + 1, last: Date.now() };
+  stats[link] = updated;
+  saveState();
+  updateBadgeDisplays(link);
 }
 
 function buildLink(name, link) {
@@ -113,9 +130,9 @@ function buildLink(name, link) {
   const countBadge = document.createElement("span");
   countBadge.className = "badge";
   countBadge.textContent = String(s?.count ?? 0);
-  countBadge.title = s?.last
-    ? `Last: ${new Date(s.last).toLocaleString()}`
-    : "Never opened";
+  countBadge.title = formatBadgeTitle(s);
+  countBadge.dataset.url = link;
+  countBadge.setAttribute("aria-label", countBadge.title);
   badgeWrap.appendChild(countBadge);
 
   const star = document.createElement("button");
@@ -134,12 +151,12 @@ function buildLink(name, link) {
     render(currentItems);
   });
 
-  a.addEventListener("click", (e) => {
-    recordOpen();
+  a.addEventListener("click", () => {
+    recordOpen(link);
   });
 
   a.addEventListener("auxclick", (e) => {
-    if (e.button === 1) recordOpen();
+    if (e.button === 1) recordOpen(link);
   });
 
   a.append(img, label, badgeWrap, star);
@@ -222,7 +239,7 @@ function render(items) {
   items.forEach((cat) => grid.appendChild(buildCard(cat)));
 
   const totalLinks = items.reduce((n, c) => n + Object.keys(c.items).length, 0);
-  count.textContent = `${items.length} groups • ${totalLinks} links • ${favorites.size} favorites`;
+  count.textContent = `${items.length} groups | ${totalLinks} links | ${favorites.size} favorites`;
 
   refreshKeyboardIndex();
 }
@@ -259,11 +276,9 @@ function applySelection() {
   }
 }
 
-function openSelected(newTab = true) {
+function openSelected() {
   if (selIndex < 0 || !linkList[selIndex]) return;
-  const href = linkList[selIndex].href;
   linkList[selIndex].click();
-  if (newTab) window.open(href, "_blank", "noopener");
 }
 
 document.addEventListener("keydown", (e) => {
@@ -279,7 +294,7 @@ document.addEventListener("keydown", (e) => {
       e.preventDefault();
       selIndex = idx;
       applySelection();
-      openSelected(true);
+      openSelected();
     }
     return;
   }
@@ -296,7 +311,7 @@ document.addEventListener("keydown", (e) => {
       applySelection();
     } else if (e.key === "Enter") {
       e.preventDefault();
-      openSelected(true);
+      openSelected();
     } else if (e.key === "Escape") {
       selIndex = -1;
       applySelection();
@@ -312,14 +327,6 @@ document.addEventListener("keydown", (e) => {
    Events
 ========================= */
 filter.addEventListener("input", (e) => render(filterData(e.target.value)));
-shuffleBtn.addEventListener("click", () => {
-  const base = filter.value ? filterData(filter.value) : data;
-  const shuffled = [...base].sort(() => Math.random() - 0.5);
-  render(shuffled);
-});
-compactBtn.addEventListener("click", () => {
-  document.body.classList.toggle("compact");
-});
 collapseAllBtn?.addEventListener("click", () =>
   setAllCollapsed(currentItems, true),
 );
