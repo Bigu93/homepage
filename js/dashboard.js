@@ -327,6 +327,20 @@ document.addEventListener("keydown", (e) => {
    Events
 ========================= */
 filter.addEventListener("input", (e) => render(filterData(e.target.value)));
+filter.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  const matches = currentItems.flatMap((cat) => Object.entries(cat.items));
+  if (matches.length !== 1) return;
+
+  e.preventDefault();
+  const [, url] = matches[0];
+  const targetLink = linkList.find((a) => a.dataset.url === url);
+  if (targetLink) {
+    filter.blur();
+    targetLink.focus();
+    targetLink.click();
+  }
+});
 collapseAllBtn?.addEventListener("click", () =>
   setAllCollapsed(currentItems, true),
 );
