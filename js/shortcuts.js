@@ -63,6 +63,7 @@ export default [
       twitch: "https://www.twitch.tv/",
       pepper: "https://www.pepper.pl/dlaciebie",
       ytmusic: "https://music.youtube.com/",
+      ggdeals: "https://gg.deals/"
     },
   },
   {
