@@ -7,7 +7,7 @@ export default [
       facebook: "https://www.facebook.com/",
       twitter: "https://twitter.com",
       google: "https://www.google.com/",
-      proton:"https://account.protonvpn.com/dashboardV2"
+      proton: "https://account.protonvpn.com/dashboardV2",
     },
   },
   {
@@ -23,8 +23,8 @@ export default [
     category: "Courses",
     color: "cyan",
     items: {
-      "xss_rat": "https://thexssrat.podia.com/",
-      "docker": "https://labs.iximiuz.com/dashboard",
+      xss_rat: "https://thexssrat.podia.com/",
+      docker: "https://labs.iximiuz.com/dashboard",
       docs: "https://devdocs.io/",
     },
   },
@@ -179,15 +179,14 @@ export default [
       "Awesome BugBounty":
         "https://github.com/fardeen-ahmed/Bug-bounty-Writeups",
       HackerRecipes: "https://www.thehacker.recipes/",
-      "Red Team Notes": "https://www.ired.team/"
+      "Red Team Notes": "https://www.ired.team/",
     },
   },
   {
     category: "Sport",
     color: "purple",
     items: {
-      Bugański:
-        "https://czlowiekuruszsie.pl/",
+      Bugański: "https://czlowiekuruszsie.pl/",
     },
   },
   {
