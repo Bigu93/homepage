@@ -7,6 +7,7 @@ export default [
       facebook: "https://www.facebook.com/",
       twitter: "https://twitter.com",
       google: "https://www.google.com/",
+      proton:"https://account.protonvpn.com/dashboardV2"
     },
   },
   {
@@ -15,6 +16,15 @@ export default [
     items: {
       github: "https://github.com/Bigu93",
       "dev.to": "https://dev.to",
+      docs: "https://devdocs.io/",
+    },
+  },
+  {
+    category: "Courses",
+    color: "cyan",
+    items: {
+      "xss_rat": "https://thexssrat.podia.com/",
+      "docker": "https://labs.iximiuz.com/dashboard",
       docs: "https://devdocs.io/",
     },
   },
@@ -169,8 +179,7 @@ export default [
       "Awesome BugBounty":
         "https://github.com/fardeen-ahmed/Bug-bounty-Writeups",
       HackerRecipes: "https://www.thehacker.recipes/",
-      "Red Team Notes": "https://www.ired.team/",
-      "Docker knowledge": "https://labs.iximiuz.com/dashboard"
+      "Red Team Notes": "https://www.ired.team/"
     },
   },
   {
@@ -178,7 +187,7 @@ export default [
     color: "purple",
     items: {
       Bugański:
-        "https://czlowiekuruszsie.pl/lekcje/filar-i-pierwsze-2-tygodnie/",
+        "https://czlowiekuruszsie.pl/",
     },
   },
   {
