@@ -1,77 +1,80 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050505" />
+    <title>Startpage</title>
+    <link rel="icon" href="favicon.png" />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#050505" />
-  <title>Startpage</title>
-  <link rel="icon" href="favicon.png" />
-  <link rel="stylesheet" href="styles/main.css" />
-</head>
-
-<body>
-  <!-- App Shell -->
-  <div class="app-shell">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">
-          <span class="logo-icon">⌘</span>
-        </div>
-      </div>
-
-      <nav class="sidebar-nav">
-        <button class="nav-item active" data-cat="all">
-          <span class="icon">◎</span>
-          <span class="label">Overview</span>
-        </button>
-
-        <div class="nav-divider"></div>
-
-        <div id="sidebar-categories" class="nav-group">
-          <!-- Categories injected here -->
-        </div>
-      </nav>
-
-      <div class="sidebar-footer">
-        <button id="theme-toggle" class="nav-item" title="Toggle Theme">
-          <span class="icon">◑</span>
-          <span class="label">Theme</span>
-        </button>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Header -->
-      <header class="header">
-        <div class="greeting-wrap">
-          <h1 id="greeting">Good Morning,</h1>
-          <p id="date-display">Friday, October 16</p>
+  <body>
+    <!-- App Shell -->
+    <div class="app-shell">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <span class="logo-icon">⌘</span>
+          </div>
         </div>
 
-        <div class="timer-wrap">
-          <span id="clock" class="clock">12:00</span>
+        <nav class="sidebar-nav">
+          <button class="nav-item active" data-cat="all">
+            <span class="icon">◎</span>
+            <span class="label">Overview</span>
+          </button>
+
+          <div class="nav-divider"></div>
+
+          <div id="sidebar-categories" class="nav-group">
+            <!-- Categories injected here -->
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button id="theme-toggle" class="nav-item" title="Toggle Theme">
+            <span class="icon">◑</span>
+            <span class="label">Theme</span>
+          </button>
         </div>
+      </aside>
 
-        <div class="search-container">
-          <input id="filter" type="text" placeholder="Search shortcuts..." autocomplete="off" />
-          <div class="search-icon">🔍</div>
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+          <div class="greeting-wrap">
+            <h1 id="greeting">Good Morning,</h1>
+            <p id="date-display">Friday, October 16</p>
+          </div>
+
+          <div class="timer-wrap">
+            <span id="clock" class="clock">12:00</span>
+          </div>
+
+          <div class="search-container">
+            <input
+              id="filter"
+              type="text"
+              placeholder="Search shortcuts..."
+              autocomplete="off"
+            />
+            <div class="search-icon">🔍</div>
+          </div>
+        </header>
+
+        <!-- Dynamic View -->
+        <div id="view-container" class="view-container">
+          <!-- Content injected here (Grid) -->
         </div>
-      </header>
+      </main>
+    </div>
 
-      <!-- Dynamic View -->
-      <div id="view-container" class="view-container">
-        <!-- Content injected here (Grid) -->
-      </div>
-    </main>
-  </div>
+    <!-- Background Decoration -->
+    <div class="ambient-light"></div>
 
-  <!-- Background Decoration -->
-  <div class="ambient-light"></div>
-
-  <script type="module" src="js/dashboard.js"></script>
-</body>
-
+    <script type="module" src="js/dashboard.js"></script>
+  </body>
 </html>
