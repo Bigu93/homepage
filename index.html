@@ -1,44 +1,80 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#050505" />
-    <title>Startpage</title>
-    <link rel="icon" href="favicon.png" />
-    <link rel="stylesheet" href="styles/main.css" />
-  </head>
-  <body>
-    <header class="topbar">
-      <h1>~/</h1>
-      <div class="search-wrap">
-        <input
-          id="filter"
-          type="search"
-          placeholder="Filter (name or category)"
-          aria-label="Filter shortcuts"
-          autofocus
-        />
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#050505" />
+  <title>Startpage</title>
+  <link rel="icon" href="favicon.png" />
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+
+<body>
+  <!-- App Shell -->
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">⌘</span>
+        </div>
       </div>
-      <div class="quick-actions">
-        <button id="collapseAll" title="Collapse all categories">
-          Collapse all
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-cat="all">
+          <span class="icon">◎</span>
+          <span class="label">Overview</span>
         </button>
-        <button id="expandAll" title="Expand all categories">Expand all</button>
+
+        <div class="nav-divider"></div>
+
+        <div id="sidebar-categories" class="nav-group">
+          <!-- Categories injected here -->
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="theme-toggle" class="nav-item" title="Toggle Theme">
+          <span class="icon">◑</span>
+          <span class="label">Theme</span>
+        </button>
       </div>
-    </header>
+    </aside>
 
-    <main>
-      <div
-        id="grid"
-        class="grid"
-        role="navigation"
-        aria-label="Shortcuts"
-      ></div>
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- Header -->
+      <header class="header">
+        <div class="greeting-wrap">
+          <h1 id="greeting">Good Morning,</h1>
+          <p id="date-display">Friday, October 16</p>
+        </div>
+
+        <div class="timer-wrap">
+          <span id="clock" class="clock">12:00</span>
+        </div>
+
+        <div class="search-container">
+          <input id="filter" type="text" placeholder="Type to command..." autocomplete="off" autofocus />
+          <div class="search-icon">🔍</div>
+        </div>
+      </header>
+
+      <!-- Dynamic View -->
+      <div id="view-container" class="view-container">
+        <!-- Content injected here (Grid) -->
+      </div>
+
     </main>
+  </div>
 
-    <footer class="footer"><span id="count"></span></footer>
+  <!-- Background Decoration -->
+  <div class="ambient-light"></div>
 
-    <script type="module" src="js/dashboard.js"></script>
-  </body>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+
 </html>

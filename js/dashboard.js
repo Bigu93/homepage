@@ -1,353 +1,216 @@
 import data from "./shortcuts.js";
 
-const grid = document.getElementById("grid");
-const filter = document.getElementById("filter");
-const count = document.getElementById("count");
-const collapseAllBtn = document.getElementById("collapseAll");
-const expandAllBtn = document.getElementById("expandAll");
-
 /* =========================
-   Local storage helpers
+   State & DOM
 ========================= */
-const LS = {
-  get(key, fallback) {
-    try {
-      return JSON.parse(localStorage.getItem(key)) ?? fallback;
-    } catch {
-      return fallback;
-    }
-  },
-  set(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-  },
+const state = {
+  activeCategory: "all",
+  searchQuery: "",
+  favorites: new Set(JSON.parse(localStorage.getItem("favorites") || "[]")),
 };
 
-const favorites = new Set(LS.get("favorites", []));
-const collapsed = new Set(LS.get("collapsedCategories", []));
-const stats = LS.get("linkStats", {});
+const dom = {
+  sidebarCats: document.getElementById("sidebar-categories"),
+  viewContainer: document.getElementById("view-container"),
+  filterInput: document.getElementById("filter"),
+  clock: document.getElementById("clock"),
+  dateDisplay: document.getElementById("date-display"),
+  greeting: document.getElementById("greeting"),
+  sidebarNav: document.querySelector(".sidebar-nav"),
+};
 
 /* =========================
-   Utilities
+   Icons (Lucide/Heroicons SVG strings)
 ========================= */
-const favicon = (url) =>
-  `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url)}&sz=64`;
-
-const normalize = (s) => s.toLowerCase().replace(/[_-]/g, " ");
-
-function saveState() {
-  LS.set("favorites", [...favorites]);
-  LS.set("collapsedCategories", [...collapsed]);
-  LS.set("linkStats", stats);
-}
-
-function timeAgo(t) {
-  if (!t) return "";
-  const s = Math.max(1, Math.floor((Date.now() - t) / 1000));
-  const mins = Math.floor(s / 60);
-  if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  const days = Math.floor(hrs / 24);
-  if (days < 30) return `${days}d`;
-  const months = Math.floor(days / 30);
-  if (months < 12) return `${months}mo`;
-  const years = Math.floor(months / 12);
-  return `${years}y`;
-}
+const ICONS = {
+  default: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>`,
+  home: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  code: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+  "graduation-cap": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+  cpu: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>`,
+  terminal: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>`,
+  briefcase: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+  "gamepad-2": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect x="2" y="6" width="20" height="12" rx="2"/></svg>`,
+  newspaper: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>`,
+  "shopping-cart": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>`,
+  joystick: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 17a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2Z"/><path d="M6 15v-2"/><path d="M12 15V9"/><circle cx="12" cy="6" r="3"/></svg>`,
+  star: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  server: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`,
+  flag: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`,
+  shield: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  activity: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
+  book: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+};
 
 /* =========================
-   Filtering
+   Logic
 ========================= */
-function filterData(q) {
-  if (!q) return data;
-  const n = normalize(q);
-  return data
-    .map((cat) => {
-      const filtered = Object.entries(cat.items).filter(
-        ([name, url]) =>
-          normalize(name).includes(n) ||
-          normalize(cat.category).includes(n) ||
-          url.toLowerCase().includes(n),
-      );
-      if (filtered.length === 0) return null;
-      return { ...cat, items: Object.fromEntries(filtered) };
-    })
-    .filter(Boolean);
+
+function getFavicon(url) {
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url)}&sz=64`;
 }
 
-/* =========================
-   Render
-========================= */
-function formatBadgeTitle(stat) {
-  if (!stat?.last) return "Never opened";
-  const relative = timeAgo(stat.last);
-  const absolute = new Date(stat.last).toLocaleString();
-  return `Last opened ${relative} ago (${absolute})`;
+function updateTime() {
+  const now = new Date();
+  dom.clock.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  dom.dateDisplay.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+
+  const hour = now.getHours();
+  let greeting = "Good Evening,";
+  if (hour < 12) greeting = "Good Morning,";
+  else if (hour < 18) greeting = "Good Afternoon,";
+
+  // Optional: Add user name if you want "Good Morning, Marcin"
+  dom.greeting.textContent = greeting;
 }
 
-function updateBadgeDisplays(link) {
-  document.querySelectorAll(".badge").forEach((badge) => {
-    if (badge.dataset.url === link) {
-      const stat = stats[link];
-      badge.textContent = String(stat.count);
-      badge.title = formatBadgeTitle(stat);
-      badge.setAttribute("aria-label", badge.title);
-    }
+function renderSidebar() {
+  dom.sidebarCats.innerHTML = "";
+  data.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = `nav-item ${state.activeCategory === cat.category ? "active" : ""}`;
+    btn.onclick = () => setActiveCategory(cat.category);
+
+    // Icon
+    const iconSpan = document.createElement("span");
+    iconSpan.className = "icon";
+    iconSpan.innerHTML = ICONS[cat.icon] || ICONS.default;
+
+    // Label
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "label";
+    labelSpan.textContent = cat.category;
+
+    btn.append(iconSpan, labelSpan);
+    dom.sidebarCats.appendChild(btn);
   });
 }
 
-function recordOpen(link) {
-  const current = stats[link] ?? { count: 0, last: 0 };
-  const updated = { count: current.count + 1, last: Date.now() };
-  stats[link] = updated;
-  saveState();
-  updateBadgeDisplays(link);
+function setActiveCategory(cat) {
+  state.activeCategory = cat;
+
+  // Update sidebar UI
+  document.querySelectorAll(".nav-item").forEach(el => {
+    el.classList.remove("active");
+    // Check if it's the specific category button or the "All" button
+    const isAll = cat === 'all' && el.dataset.cat === 'all';
+    const isCat = el.textContent.trim() === cat;
+    if (isAll || isCat) el.classList.add("active");
+  });
+
+  renderView();
 }
 
-function buildLink(name, link) {
-  const li = document.createElement("li");
-  li.className = "link";
+function renderLinkCard(name, url, categoryColor) {
+  const card = document.createElement("a");
+  card.href = url;
+  card.className = "link-card";
+  card.target = "_blank";
+  card.rel = "noopener noreferrer";
 
-  const a = document.createElement("a");
-  a.href = link;
-  a.target = "_blank";
-  a.rel = "noopener noreferrer";
-  a.title = link;
-  a.dataset.url = link;
+  const icon = document.createElement("img");
+  icon.src = getFavicon(url);
+  icon.loading = "lazy";
 
-  const img = document.createElement("img");
-  img.loading = "lazy";
-  img.decoding = "async";
-  img.src = favicon(link);
-  img.alt = "";
-
-  const label = document.createElement("span");
-  label.textContent = name;
-
-  const badgeWrap = document.createElement("span");
-  badgeWrap.className = "badge-wrap";
-  const s = stats[link];
-  const countBadge = document.createElement("span");
-  countBadge.className = "badge";
-  countBadge.textContent = String(s?.count ?? 0);
-  countBadge.title = formatBadgeTitle(s);
-  countBadge.dataset.url = link;
-  countBadge.setAttribute("aria-label", countBadge.title);
-  badgeWrap.appendChild(countBadge);
-
-  const star = document.createElement("button");
-  star.type = "button";
-  star.className = "star";
-  star.setAttribute("aria-label", "Toggle favorite");
-  star.title = "Add/remove favorite";
-  if (favorites.has(link)) star.classList.add("on");
-  star.addEventListener("click", (ev) => {
-    ev.preventDefault();
-    ev.stopPropagation();
-    if (favorites.has(link)) favorites.delete(link);
-    else favorites.add(link);
-    star.classList.toggle("on");
-    saveState();
-    render(currentItems);
-  });
-
-  a.addEventListener("click", () => {
-    recordOpen(link);
-  });
-
-  a.addEventListener("auxclick", (e) => {
-    if (e.button === 1) recordOpen(link);
-  });
-
-  a.append(img, label, badgeWrap, star);
-  li.appendChild(a);
-  return li;
-}
-
-function buildCard(category) {
-  const card = document.createElement("section");
-  card.className = "card";
-  if (collapsed.has(category.category)) card.classList.add("is-collapsed");
-
-  const h = document.createElement("h2");
-  const dot = document.createElement("span");
-  dot.className = "dot";
-  const title = document.createElement("button");
-  title.className = `card-title ${category.color || "light-gray"}`;
-  title.textContent = `~/${category.category}`;
-  title.type = "button";
-  title.title = "Collapse/expand";
-
-  title.addEventListener("click", () => {
-    if (collapsed.has(category.category)) collapsed.delete(category.category);
-    else collapsed.add(category.category);
-    saveState();
-    card.classList.toggle("is-collapsed");
-  });
-
-  h.append(dot, title);
-  card.appendChild(h);
-
-  const ul = document.createElement("ul");
-  ul.className = "links";
-
-  Object.entries(category.items).forEach(([name, link]) => {
-    ul.appendChild(buildLink(name, link));
-  });
-
-  card.appendChild(ul);
-  return card;
-}
-
-function buildPinnedRow(items) {
-  const favs = items
-    .flatMap((cat) => Object.entries(cat.items))
-    .filter(([_, link]) => favorites.has(link));
-
-  if (favs.length === 0) return null;
-
-  const card = document.createElement("section");
-  card.className = "card pinned";
-  const h = document.createElement("h2");
-  const dot = document.createElement("span");
-  dot.className = "dot";
-  dot.style.color = "var(--yellow)";
   const title = document.createElement("span");
-  title.className = "yellow";
-  title.textContent = "~/Pinned";
-  h.append(dot, title);
-  card.appendChild(h);
+  title.className = "link-title";
+  title.textContent = name;
 
-  const ul = document.createElement("ul");
-  ul.className = "links pinned-links";
-  favs.forEach(([name, link]) => {
-    ul.appendChild(buildLink(name, link));
-  });
-  card.appendChild(ul);
+  const favBtn = document.createElement("button");
+  favBtn.className = `fav-btn ${state.favorites.has(url) ? "active" : ""}`;
+  favBtn.innerHTML = ICONS.star;
+  favBtn.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (state.favorites.has(url)) state.favorites.delete(url);
+    else state.favorites.add(url);
+    localStorage.setItem("favorites", JSON.stringify([...state.favorites]));
+    renderView(); // re-render to update UI
+  };
+
+  card.append(icon, title, favBtn);
   return card;
 }
 
-let currentItems = data;
+function renderView() {
+  dom.viewContainer.innerHTML = "";
+  const query = state.searchQuery.toLowerCase();
 
-function render(items) {
-  currentItems = items;
-  grid.innerHTML = "";
+  // Filter Data
+  let filteredData = data;
 
-  const pinned = buildPinnedRow(items);
-  if (pinned) grid.appendChild(pinned);
+  // 1. Search Filter (Global)
+  if (query) {
+    // Flatten everything
+    const allLinks = [];
+    data.forEach(cat => {
+      Object.entries(cat.items).forEach(([name, url]) => {
+        if (name.toLowerCase().includes(query) || url.toLowerCase().includes(query)) {
+          allLinks.push({ name, url, category: cat.category, color: cat.color });
+        }
+      });
+    });
 
-  items.forEach((cat) => grid.appendChild(buildCard(cat)));
+    // Render Results
+    if (allLinks.length === 0) {
+      dom.viewContainer.innerHTML = `<div class="empty-state">No results found for "${state.searchQuery}"</div>`;
+      return;
+    }
 
-  const totalLinks = items.reduce((n, c) => n + Object.keys(c.items).length, 0);
-  count.textContent = `${items.length} groups | ${totalLinks} links | ${favorites.size} favorites`;
-
-  refreshKeyboardIndex();
-}
-
-/* =========================
-   Collapse/Expand all
-========================= */
-function setAllCollapsed(items, shouldCollapse) {
-  collapsed.clear();
-  if (shouldCollapse) items.forEach((c) => collapsed.add(c.category));
-  saveState();
-  render(currentItems);
-}
-
-/* =========================
-   Keyboard quick-open
-========================= */
-let linkList = [];
-let selIndex = -1;
-
-function refreshKeyboardIndex() {
-  linkList = [...grid.querySelectorAll(".links a")].filter(
-    (el) => el.offsetParent !== null,
-  );
-  selIndex = -1;
-}
-
-function applySelection() {
-  linkList.forEach((a) => a.classList.remove("kbd-focus"));
-  if (selIndex >= 0 && linkList[selIndex]) {
-    const el = linkList[selIndex];
-    el.classList.add("kbd-focus");
-    el.scrollIntoView({ block: "nearest", inline: "nearest" });
+    const grid = document.createElement("div");
+    grid.className = "grid-view";
+    allLinks.forEach(link => {
+      grid.appendChild(renderLinkCard(link.name, link.url, link.color));
+    });
+    dom.viewContainer.appendChild(grid);
+    return;
   }
+
+  // 2. Category Filter
+  if (state.activeCategory !== 'all') {
+    filteredData = data.filter(c => c.category === state.activeCategory);
+  }
+
+  // Render Groups
+  filteredData.forEach(cat => {
+    const section = document.createElement("section");
+    section.className = "category-section";
+
+    const header = document.createElement("h2");
+    header.className = `category-header ${cat.color}`;
+    header.innerHTML = `<span class="cat-dot"></span>${cat.category}`;
+
+    const grid = document.createElement("div");
+    grid.className = "grid-view";
+
+    Object.entries(cat.items).forEach(([name, url]) => {
+      grid.appendChild(renderLinkCard(name, url, cat.color));
+    });
+
+    section.append(header, grid);
+    dom.viewContainer.appendChild(section);
+  });
 }
 
-function openSelected() {
-  if (selIndex < 0 || !linkList[selIndex]) return;
-  linkList[selIndex].click();
-}
+// Event Listeners
+dom.filterInput.addEventListener("input", (e) => {
+  state.searchQuery = e.target.value;
+  renderView();
+});
 
+// Sidebar "Overview" click
+document.querySelector('[data-cat="all"]').onclick = () => setActiveCategory('all');
+
+// Init
+setInterval(updateTime, 1000);
+updateTime();
+renderSidebar();
+renderView();
+
+// Global Keybinds
 document.addEventListener("keydown", (e) => {
-  if (e.key === "/" && document.activeElement !== filter) {
+  if (e.key === "/" && document.activeElement !== dom.filterInput) {
     e.preventDefault();
-    filter.focus();
-    return;
+    dom.filterInput.focus();
   }
-
-  if (!isNaN(e.key) && e.key !== "0" && !e.metaKey && !e.ctrlKey && !e.altKey) {
-    const idx = parseInt(e.key, 10) - 1;
-    if (linkList[idx]) {
-      e.preventDefault();
-      selIndex = idx;
-      applySelection();
-      openSelected();
-    }
-    return;
-  }
-
-  const typing = document.activeElement === filter;
-  if (!typing) {
-    if (e.key === "j" || e.key === "ArrowDown") {
-      e.preventDefault();
-      selIndex = Math.min(linkList.length - 1, selIndex + 1);
-      applySelection();
-    } else if (e.key === "k" || e.key === "ArrowUp") {
-      e.preventDefault();
-      selIndex = Math.max(-1, selIndex - 1);
-      applySelection();
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      openSelected();
-    } else if (e.key === "Escape") {
-      selIndex = -1;
-      applySelection();
-    } else if (e.key.toLowerCase() === "c") {
-      setAllCollapsed(currentItems, true);
-    } else if (e.key.toLowerCase() === "u") {
-      setAllCollapsed(currentItems, false);
-    }
-  }
-});
-
-/* =========================
-   Events
-========================= */
-filter.addEventListener("input", (e) => render(filterData(e.target.value)));
-filter.addEventListener("keydown", (e) => {
-  if (e.key !== "Enter") return;
-  const matches = currentItems.flatMap((cat) => Object.entries(cat.items));
-  if (matches.length !== 1) return;
-
-  e.preventDefault();
-  const [, url] = matches[0];
-  const targetLink = linkList.find((a) => a.dataset.url === url);
-  if (targetLink) {
-    filter.blur();
-    targetLink.focus();
-    targetLink.click();
-  }
-});
-collapseAllBtn?.addEventListener("click", () =>
-  setAllCollapsed(currentItems, true),
-);
-expandAllBtn?.addEventListener("click", () =>
-  setAllCollapsed(currentItems, false),
-);
-
-window.addEventListener("load", () => {
-  render(data);
 });

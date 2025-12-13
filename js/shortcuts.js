@@ -9,6 +9,7 @@ export default [
       google: "https://www.google.com/",
       proton: "https://account.protonvpn.com/dashboardV2",
     },
+    icon: "home",
   },
   {
     category: "Dev",
@@ -18,6 +19,7 @@ export default [
       "dev.to": "https://dev.to",
       docs: "https://devdocs.io/",
     },
+    icon: "code",
   },
   {
     category: "Courses",
@@ -27,6 +29,7 @@ export default [
       docker: "https://labs.iximiuz.com/dashboard",
       docs: "https://devdocs.io/",
     },
+    icon: "graduation-cap",
   },
   {
     category: "AI",
@@ -39,6 +42,7 @@ export default [
       DeepSeek: "https://chat.deepseek.com/",
       "Google AI studio": "https://aistudio.google.com/",
     },
+    icon: "cpu",
   },
   {
     category: "H4ck1ng",
@@ -53,6 +57,7 @@ export default [
       cryptohack: "https://cryptohack.org/",
       "hacking articles": "https://www.hackingarticles.in/",
     },
+    icon: "terminal",
   },
   {
     category: "Work",
@@ -63,6 +68,7 @@ export default [
       "buto panel": "https://butosklep.pl/panel",
       "bing ads": "https://ui.ads.microsoft.com/campaign/vnext/overview",
     },
+    icon: "briefcase",
   },
   {
     category: "Fun",
@@ -75,6 +81,7 @@ export default [
       ytmusic: "https://music.youtube.com/",
       ggdeals: "https://gg.deals/",
     },
+    icon: "gamepad-2",
   },
   {
     category: "Info",
@@ -88,6 +95,7 @@ export default [
       gaming_news: "https://brutalist.report/topic/gaming?limit=10",
       "/r/polska": "https://www.reddit.com/r/Polska/",
     },
+    icon: "newspaper",
   },
   {
     category: "Shopping",
@@ -100,6 +108,7 @@ export default [
       rockmetalshop: "https://rockmetalshop.pl/",
       kfd: "https://sklep.kfd.pl/",
     },
+    icon: "shopping-cart",
   },
   {
     category: "Gaming",
@@ -110,6 +119,7 @@ export default [
       gog: "https://www.gog.com/",
       steam: "https://store.steampowered.com/",
     },
+    icon: "joystick",
   },
   {
     category: "VIP List",
@@ -120,6 +130,7 @@ export default [
       ippsec: "https://www.youtube.com/@ippsec/videos",
       hammond: "https://www.youtube.com/@_JohnHammond/videos",
     },
+    icon: "star",
   },
   {
     category: "Home lab",
@@ -136,6 +147,7 @@ export default [
       gitea: "http://gitea.lan",
       n8n: "http://n8n.lan",
     },
+    icon: "server",
   },
   {
     category: "CTFs",
@@ -154,6 +166,7 @@ export default [
       "Practical CTF": "https://book.jorianwoltjer.com/",
       john_ermac: "https://johnermac.github.io/menu/",
     },
+    icon: "flag",
   },
   {
     category: "Pentest knowledge",
@@ -181,6 +194,7 @@ export default [
       HackerRecipes: "https://www.thehacker.recipes/",
       "Red Team Notes": "https://www.ired.team/",
     },
+    icon: "shield",
   },
   {
     category: "Sport",
@@ -188,6 +202,7 @@ export default [
     items: {
       Bugański: "https://czlowiekuruszsie.pl/",
     },
+    icon: "activity",
   },
   {
     category: "Books & Knowledge",
@@ -202,5 +217,6 @@ export default [
       "Polish IT":
         "https://libgen.is/search.php?&req=Helion&phrase=1&view=simple&column=publisher&sort=id&sortmode=DESC&page=2",
     },
+    icon: "book",
   },
 ];
