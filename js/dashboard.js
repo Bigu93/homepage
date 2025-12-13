@@ -52,8 +52,15 @@ function getFavicon(url) {
 
 function updateTime() {
   const now = new Date();
-  dom.clock.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  dom.dateDisplay.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+  dom.clock.textContent = now.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  dom.dateDisplay.textContent = now.toLocaleDateString([], {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
   const hour = now.getHours();
   let greeting = "Good Evening,";
@@ -66,7 +73,7 @@ function updateTime() {
 
 function renderSidebar() {
   dom.sidebarCats.innerHTML = "";
-  data.forEach(cat => {
+  data.forEach((cat) => {
     const btn = document.createElement("button");
     btn.className = `nav-item ${state.activeCategory === cat.category ? "active" : ""}`;
     btn.onclick = () => setActiveCategory(cat.category);
@@ -90,10 +97,10 @@ function setActiveCategory(cat) {
   state.activeCategory = cat;
 
   // Update sidebar UI
-  document.querySelectorAll(".nav-item").forEach(el => {
+  document.querySelectorAll(".nav-item").forEach((el) => {
     el.classList.remove("active");
     // Check if it's the specific category button or the "All" button
-    const isAll = cat === 'all' && el.dataset.cat === 'all';
+    const isAll = cat === "all" && el.dataset.cat === "all";
     const isCat = el.textContent.trim() === cat;
     if (isAll || isCat) el.classList.add("active");
   });
@@ -143,10 +150,18 @@ function renderView() {
   if (query) {
     // Flatten everything
     const allLinks = [];
-    data.forEach(cat => {
+    data.forEach((cat) => {
       Object.entries(cat.items).forEach(([name, url]) => {
-        if (name.toLowerCase().includes(query) || url.toLowerCase().includes(query)) {
-          allLinks.push({ name, url, category: cat.category, color: cat.color });
+        if (
+          name.toLowerCase().includes(query) ||
+          url.toLowerCase().includes(query)
+        ) {
+          allLinks.push({
+            name,
+            url,
+            category: cat.category,
+            color: cat.color,
+          });
         }
       });
     });
@@ -159,7 +174,7 @@ function renderView() {
 
     const grid = document.createElement("div");
     grid.className = "grid-view";
-    allLinks.forEach(link => {
+    allLinks.forEach((link) => {
       grid.appendChild(renderLinkCard(link.name, link.url, link.color));
     });
     dom.viewContainer.appendChild(grid);
@@ -167,12 +182,12 @@ function renderView() {
   }
 
   // 2. Category Filter
-  if (state.activeCategory !== 'all') {
-    filteredData = data.filter(c => c.category === state.activeCategory);
+  if (state.activeCategory !== "all") {
+    filteredData = data.filter((c) => c.category === state.activeCategory);
   }
 
   // Render Groups
-  filteredData.forEach(cat => {
+  filteredData.forEach((cat) => {
     const section = document.createElement("section");
     section.className = "category-section";
 
@@ -199,7 +214,8 @@ dom.filterInput.addEventListener("input", (e) => {
 });
 
 // Sidebar "Overview" click
-document.querySelector('[data-cat="all"]').onclick = () => setActiveCategory('all');
+document.querySelector('[data-cat="all"]').onclick = () =>
+  setActiveCategory("all");
 
 // Init
 setInterval(updateTime, 1000);
