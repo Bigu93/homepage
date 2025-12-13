@@ -193,7 +193,8 @@ export default [
         "https://github.com/fardeen-ahmed/Bug-bounty-Writeups",
       HackerRecipes: "https://www.thehacker.recipes/",
       "Red Team Notes": "https://www.ired.team/",
-      "Red Team LLM": "https://cph-sec.gitbook.io/ai-llm-red-team-handbook-and-field-manual"
+      "Red Team LLM":
+        "https://cph-sec.gitbook.io/ai-llm-red-team-handbook-and-field-manual",
     },
     icon: "shield",
   },
