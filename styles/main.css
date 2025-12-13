@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
   /* Colors - Deep Dark Blue/Black Theme */
@@ -30,14 +30,13 @@
   --radius-md: 12px;
 
   /* Effects */
-  --shadow-card:
-    0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-glow: 0 0 20px var(--accent-glow);
-  --backdrop-blur: 20px;
-  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-bounce: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --blur-glass: 20px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* --- Reset & Base --- */
 * {
   box-sizing: border-box;
 }
@@ -52,25 +51,22 @@ body {
   font-family: 'Inter', sans-serif;
   overflow: hidden;
   /* App feel */
-  overflow-x: hidden;
 }
 
-body {
-  background-color: var(--bg-color);
-  background-image: var(--bg-gradient);
-  background-attachment: fixed;
-  color: var(--fg-primary);
-  font-family:
-    "Inter",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
+/* --- App Shell --- */
+.app-shell {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100%;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-subtle);
+  backdrop-filter: blur(var(--blur-glass));
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
@@ -90,34 +86,16 @@ body {
 
 .sidebar-nav {
   flex: 1;
-  max-width: 600px;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
 }
 
-#filter {
-  width: 100%;
-  padding: 12px 20px;
-  font-size: 1rem;
-  color: var(--fg-primary);
-  background: var(--surface-2);
-  border: 1px solid var(--border-color);
-  border-radius: 99px;
-  /* Pill shape */
-  outline: none;
-  transition: all var(--transition-fast);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-#filter::placeholder {
-  color: var(--fg-secondary);
-}
-
-#filter:focus {
-  background: var(--surface-1);
-  border-color: var(--accent-primary);
-  box-shadow:
-    0 0 0 4px var(--accent-glow),
-    inset 0 2px 4px rgba(0, 0, 0, 0.1);
+.nav-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 0.5rem 0;
 }
 
 /* Nav Items */
@@ -149,25 +127,23 @@ body {
   /* Left stripe indicator */
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--gap-grid);
-  align-items: start;
-  /* Prevents cards from stretching to match height */
+.nav-item .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
 }
 
-/* --- Cards --- */
-.card {
-  background: var(--surface-glass);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  transition:
-    transform var(--transition-fast),
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
+.nav-item.active .icon {
+  opacity: 1;
+  color: var(--accent-primary);
+}
+
+/* --- Main Content --- */
+.main-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -309,13 +285,12 @@ body {
   color: #60a5fa;
 }
 
-/* --- Pinned Section --- */
-.card.pinned {
-  grid-column: 1 / -1;
-  /* Span full width */
-  background: linear-gradient(to right, rgba(20, 20, 25, 0.6), rgba(30, 30, 35, 0.6));
-  border-color: rgba(250, 204, 21, 0.2);
-  /* Subtle yellow tint */
+.red {
+  color: #fb7185;
+}
+
+.green {
+  color: #4ade80;
 }
 
 .purple {
