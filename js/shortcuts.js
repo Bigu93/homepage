@@ -81,6 +81,7 @@ export default [
       ytmusic: "https://music.youtube.com/",
       ggdeals: "https://gg.deals/",
       torrent: "https://polskie-torrenty.eu/",
+      xtorrent: "https://xtorrenty.org/"
     },
     icon: "gamepad-2",
   },
