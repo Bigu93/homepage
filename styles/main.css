@@ -34,7 +34,9 @@
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  --theme-transition:
+    background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 /* Light Theme Overrides */
@@ -483,9 +485,11 @@ body {
 
 /* 1. Sidebar Active Glow */
 .nav-item.active {
-  background: linear-gradient(90deg,
-      rgba(99, 102, 241, 0.1) 0%,
-      transparent 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(99, 102, 241, 0.1) 0%,
+    transparent 100%
+  );
   color: #fff;
   box-shadow: inset 3px 0 0 var(--accent-primary);
   text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
@@ -517,12 +521,14 @@ body {
   right: 0;
   bottom: 0;
   left: 0;
-  background: linear-gradient(120deg,
-      transparent 30%,
-      rgba(255, 255, 255, 0.05) 45%,
-      rgba(255, 255, 255, 0.1) 50%,
-      rgba(255, 255, 255, 0.05) 55%,
-      transparent 70%);
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.05) 45%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 55%,
+    transparent 70%
+  );
   transform: translateX(-100%);
   transition: transform 0.6s;
   z-index: 1;
