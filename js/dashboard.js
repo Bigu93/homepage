@@ -7,6 +7,7 @@ const state = {
   activeCategory: "all",
   searchQuery: "",
   favorites: new Set(JSON.parse(localStorage.getItem("favorites") || "[]")),
+  theme: localStorage.getItem("theme") || "dark",
 };
 
 const dom = {
@@ -17,12 +18,14 @@ const dom = {
   dateDisplay: document.getElementById("date-display"),
   greeting: document.getElementById("greeting"),
   sidebarNav: document.querySelector(".sidebar-nav"),
+  themeToggle: document.getElementById("theme-toggle"),
 };
 
 /* =========================
    Icons (Lucide/Heroicons SVG strings)
 ========================= */
 const ICONS = {
+  // ... existing icons ...
   default: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>`,
   home: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   code: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
@@ -40,6 +43,8 @@ const ICONS = {
   shield: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
   activity: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
   book: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+  moon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`,
+  sun: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`,
 };
 
 /* =========================
@@ -67,8 +72,33 @@ function updateTime() {
   if (hour < 12) greeting = "Good Morning,";
   else if (hour < 18) greeting = "Good Afternoon,";
 
-  // Optional: Add user name if you want "Good Morning, Marcin"
-  dom.greeting.textContent = greeting;
+  dom.greeting.textContent = `${greeting} Marcin`;
+}
+
+function toggleTheme() {
+  const isDark = state.theme === "dark";
+  state.theme = isDark ? "light" : "dark";
+
+  applyTheme();
+  localStorage.setItem("theme", state.theme);
+}
+
+function applyTheme() {
+  const isDark = state.theme === "dark";
+  document.documentElement.setAttribute("data-theme", state.theme);
+
+  // Update toggle button icon/text
+  const icon = dom.themeToggle.querySelector(".icon");
+  icon.innerHTML = isDark ? ICONS.moon : ICONS.sun;
+
+  // Simple rotation animation for fun
+  icon.animate([
+    { transform: 'rotate(0deg) scale(0.5)' },
+    { transform: 'rotate(360deg) scale(1)' }
+  ], {
+    duration: 500,
+    easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+  });
 }
 
 function renderSidebar() {
@@ -217,9 +247,13 @@ dom.filterInput.addEventListener("input", (e) => {
 document.querySelector('[data-cat="all"]').onclick = () =>
   setActiveCategory("all");
 
+// Theme Toggle
+dom.themeToggle.onclick = toggleTheme;
+
 // Init
 setInterval(updateTime, 1000);
 updateTime();
+applyTheme(); // Apply initial theme
 renderSidebar();
 renderView();
 

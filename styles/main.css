@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  /* Colors - Deep Dark Blue/Black Theme */
+  /* Colors - Deep Dark Blue/Black Theme (Default) */
   --bg-app: #030712;
   --bg-sidebar: rgba(17, 24, 39, 0.4);
   --bg-content: radial-gradient(circle at 50% 0%, #172033 0%, #030712 60%);
@@ -34,6 +34,30 @@
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Light Theme Overrides */
+[data-theme="light"] {
+  --bg-app: #f9fafb;
+  --bg-sidebar: rgba(255, 255, 255, 0.7);
+  --bg-content: radial-gradient(circle at 50% 0%, #e0e7ff 0%, #f9fafb 60%);
+
+  --surface-1: rgba(255, 255, 255, 0.6);
+  --surface-2: rgba(255, 255, 255, 0.8);
+  --surface-hover: #ffffff;
+
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --border-highlight: rgba(0, 0, 0, 0.1);
+
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --text-dim: #9ca3af;
+
+  --accent-primary: #4f46e5;
+  --accent-glow: rgba(79, 70, 229, 0.2);
+
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* --- Reset & Base --- */
@@ -50,7 +74,7 @@ body {
   color: var(--text-main);
   font-family: "Inter", sans-serif;
   overflow: hidden;
-  /* App feel */
+  transition: var(--theme-transition);
 }
 
 /* --- App Shell --- */
@@ -71,6 +95,7 @@ body {
   flex-direction: column;
   padding: 1.5rem 1rem;
   z-index: 20;
+  transition: var(--theme-transition);
 }
 
 .sidebar-header {
@@ -96,6 +121,7 @@ body {
   height: 1px;
   background: var(--border-subtle);
   margin: 0.5rem 0;
+  transition: var(--theme-transition);
 }
 
 /* Nav Items */
@@ -150,6 +176,7 @@ body {
   position: relative;
   background: var(--bg-content);
   background-size: cover;
+  transition: var(--theme-transition);
 }
 
 .header {
@@ -157,11 +184,17 @@ body {
   min-height: 120px;
   padding: 2rem 3rem 1rem;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  /* Align bottom to header content */
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 2rem;
   z-index: 10;
+}
+
+.greeting-wrap {
+  flex: 1;
+  min-width: 200px;
 }
 
 .greeting-wrap h1 {
@@ -169,7 +202,7 @@ body {
   font-size: 2rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  background: linear-gradient(to right, #fff, #9ca3af);
+  background: linear-gradient(to right, var(--text-main), var(--text-muted));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -181,10 +214,15 @@ body {
   font-size: 0.95rem;
 }
 
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
 .timer-wrap {
-  position: absolute;
-  top: 2rem;
-  right: 3rem;
+  text-align: right;
   font-variant-numeric: tabular-nums;
   color: var(--text-dim);
   font-weight: 600;
@@ -196,7 +234,6 @@ body {
   width: 100%;
   max-width: 500px;
   position: relative;
-  margin-top: 1rem;
 }
 
 .search-container input {
@@ -446,11 +483,9 @@ body {
 
 /* 1. Sidebar Active Glow */
 .nav-item.active {
-  background: linear-gradient(
-    90deg,
-    rgba(99, 102, 241, 0.1) 0%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(99, 102, 241, 0.1) 0%,
+      transparent 100%);
   color: #fff;
   box-shadow: inset 3px 0 0 var(--accent-primary);
   text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
@@ -482,14 +517,12 @@ body {
   right: 0;
   bottom: 0;
   left: 0;
-  background: linear-gradient(
-    120deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.05) 45%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0.05) 55%,
-    transparent 70%
-  );
+  background: linear-gradient(120deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.05) 45%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0.05) 55%,
+      transparent 70%);
   transform: translateX(-100%);
   transition: transform 0.6s;
   z-index: 1;
