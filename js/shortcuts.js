@@ -80,7 +80,7 @@ export default [
       pepper: "https://www.pepper.pl/dlaciebie",
       ytmusic: "https://music.youtube.com/",
       ggdeals: "https://gg.deals/",
-      torrent: "https://polskie-torrenty.eu/"
+      torrent: "https://polskie-torrenty.eu/",
     },
     icon: "gamepad-2",
   },
