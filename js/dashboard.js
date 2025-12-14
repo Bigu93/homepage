@@ -92,13 +92,16 @@ function applyTheme() {
   icon.innerHTML = isDark ? ICONS.moon : ICONS.sun;
 
   // Simple rotation animation for fun
-  icon.animate([
-    { transform: 'rotate(0deg) scale(0.5)' },
-    { transform: 'rotate(360deg) scale(1)' }
-  ], {
-    duration: 500,
-    easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
-  });
+  icon.animate(
+    [
+      { transform: "rotate(0deg) scale(0.5)" },
+      { transform: "rotate(360deg) scale(1)" },
+    ],
+    {
+      duration: 500,
+      easing: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+    },
+  );
 }
 
 function renderSidebar() {
