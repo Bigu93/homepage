@@ -41,7 +41,7 @@ export default [
       Gemini: "https://gemini.google.com/app",
       DeepSeek: "https://chat.deepseek.com/",
       "Google AI studio": "https://aistudio.google.com/",
-      "GLM":"https://chat.z.ai/"
+      GLM: "https://chat.z.ai/",
     },
     icon: "cpu",
   },
