@@ -18,8 +18,8 @@ export default [
       github: "https://github.com/Bigu93",
       "dev.to": "https://dev.to",
       docs: "https://devdocs.io/",
-      "idosell-npm":"https://www.npmjs.com/package/idosell",
-      "idosell-doc":"https://idosell-converter.vercel.app/"
+      "idosell-npm": "https://www.npmjs.com/package/idosell",
+      "idosell-doc": "https://idosell-converter.vercel.app/",
     },
     icon: "code",
   },
