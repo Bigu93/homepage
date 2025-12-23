@@ -49,10 +49,88 @@ const ICONS = {
 
 /* =========================
    Logic
-========================= */
+ ========================= */
 
+// Favicon Cache Configuration
+const FAVICON_CACHE_KEY = "favicons_cache";
+const FAVICON_CACHE_EXPIRY_DAYS = 7; // Cache favicons for 7 days
+
+/**
+ * Get favicon URL with caching
+ * @param {string} url - The URL to get favicon for
+ * @returns {string} - The favicon URL
+ */
 function getFavicon(url) {
-  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url)}&sz=64`;
+  const cache = getFaviconCache();
+  const cacheKey = url;
+  
+  // Check if favicon is cached and not expired
+  if (cache[cacheKey]) {
+    const cached = cache[cacheKey];
+    const now = Date.now();
+    const expiryTime = cached.timestamp + (FAVICON_CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+    
+    if (now < expiryTime) {
+      return cached.faviconUrl;
+    }
+  }
+  
+  // Generate new favicon URL
+  const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url)}&sz=64`;
+  
+  // Cache the favicon URL
+  cache[cacheKey] = {
+    faviconUrl: faviconUrl,
+    timestamp: Date.now()
+  };
+  
+  // Save to localStorage
+  try {
+    localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(cache));
+  } catch (e) {
+    console.warn("Failed to save favicon cache:", e);
+  }
+  
+  return faviconUrl;
+}
+
+/**
+ * Get favicon cache from localStorage
+ * @returns {Object} - The cache object
+ */
+function getFaviconCache() {
+  try {
+    const cached = localStorage.getItem(FAVICON_CACHE_KEY);
+    return cached ? JSON.parse(cached) : {};
+  } catch (e) {
+    console.warn("Failed to parse favicon cache:", e);
+    return {};
+  }
+}
+
+/**
+ * Clear expired favicon cache entries
+ */
+function clearExpiredFaviconCache() {
+  const cache = getFaviconCache();
+  const now = Date.now();
+  const expiryTime = now - (FAVICON_CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+  
+  let hasExpired = false;
+  for (const key in cache) {
+    if (cache[key].timestamp < expiryTime) {
+      delete cache[key];
+      hasExpired = true;
+    }
+  }
+  
+  if (hasExpired) {
+    try {
+      localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(cache));
+    } catch (e) {
+      console.warn("Failed to save favicon cache after cleanup:", e);
+    }
+  }
 }
 
 function updateTime() {
@@ -254,6 +332,7 @@ document.querySelector('[data-cat="all"]').onclick = () =>
 dom.themeToggle.onclick = toggleTheme;
 
 // Init
+clearExpiredFaviconCache(); // Clean up expired favicon cache entries
 setInterval(updateTime, 1000);
 updateTime();
 applyTheme(); // Apply initial theme
