@@ -63,34 +63,35 @@ const FAVICON_CACHE_EXPIRY_DAYS = 7; // Cache favicons for 7 days
 function getFavicon(url) {
   const cache = getFaviconCache();
   const cacheKey = url;
-  
+
   // Check if favicon is cached and not expired
   if (cache[cacheKey]) {
     const cached = cache[cacheKey];
     const now = Date.now();
-    const expiryTime = cached.timestamp + (FAVICON_CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
-    
+    const expiryTime =
+      cached.timestamp + FAVICON_CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+
     if (now < expiryTime) {
       return cached.faviconUrl;
     }
   }
-  
+
   // Generate new favicon URL
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url)}&sz=64`;
-  
+
   // Cache the favicon URL
   cache[cacheKey] = {
     faviconUrl: faviconUrl,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   };
-  
+
   // Save to localStorage
   try {
     localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(cache));
   } catch (e) {
     console.warn("Failed to save favicon cache:", e);
   }
-  
+
   return faviconUrl;
 }
 
@@ -114,8 +115,8 @@ function getFaviconCache() {
 function clearExpiredFaviconCache() {
   const cache = getFaviconCache();
   const now = Date.now();
-  const expiryTime = now - (FAVICON_CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
-  
+  const expiryTime = now - FAVICON_CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+
   let hasExpired = false;
   for (const key in cache) {
     if (cache[key].timestamp < expiryTime) {
@@ -123,7 +124,7 @@ function clearExpiredFaviconCache() {
       hasExpired = true;
     }
   }
-  
+
   if (hasExpired) {
     try {
       localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(cache));
