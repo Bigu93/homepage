@@ -1,4 +1,6 @@
 import data from "./shortcuts.js";
+import { exportConfig, importConfig } from "./config-manager.js";
+import { getAllData } from "./link-manager.js";
 
 /* =========================
    State & DOM
@@ -14,11 +16,15 @@ const dom = {
   sidebarCats: document.getElementById("sidebar-categories"),
   viewContainer: document.getElementById("view-container"),
   filterInput: document.getElementById("filter"),
+  searchInput: document.getElementById("search-input"),
   clock: document.getElementById("clock"),
   dateDisplay: document.getElementById("date-display"),
   greeting: document.getElementById("greeting"),
   sidebarNav: document.querySelector(".sidebar-nav"),
   themeToggle: document.getElementById("theme-toggle"),
+  exportConfigBtn: document.getElementById("export-config"),
+  importConfigBtn: document.getElementById("import-config"),
+  importFileInput: document.getElementById("import-file-input"),
 };
 
 /* =========================
@@ -177,7 +183,8 @@ function applyTheme() {
 
 function renderSidebar() {
   dom.sidebarCats.innerHTML = "";
-  data.forEach((cat) => {
+  const allData = getAllData();
+  allData.forEach((cat) => {
     const btn = document.createElement("button");
     btn.className = `nav-item ${state.activeCategory === cat.category ? "active" : ""}`;
     btn.onclick = () => setActiveCategory(cat.category);
@@ -208,12 +215,14 @@ function setActiveCategory(cat) {
   renderView();
 }
 
-function renderLinkCard(name, url, categoryColor) {
+function renderLinkCard(name, url, categoryColor, categoryName) {
   const card = document.createElement("a");
   card.href = url;
   card.className = "link-card";
   card.target = "_blank";
   card.rel = "noopener noreferrer";
+  card.dataset.category = categoryName;
+  card.dataset.name = name;
 
   const icon = document.createElement("img");
   icon.src = getFavicon(url);
@@ -242,12 +251,13 @@ function renderLinkCard(name, url, categoryColor) {
 function renderView() {
   dom.viewContainer.innerHTML = "";
   const query = state.searchQuery.toLowerCase();
+  const allData = getAllData();
 
-  let filteredData = data;
+  let filteredData = allData;
 
   if (query) {
     const allLinks = [];
-    data.forEach((cat) => {
+    allData.forEach((cat) => {
       Object.entries(cat.items).forEach(([name, url]) => {
         if (
           name.toLowerCase().includes(query) ||
@@ -271,14 +281,14 @@ function renderView() {
     const grid = document.createElement("div");
     grid.className = "grid-view";
     allLinks.forEach((link) => {
-      grid.appendChild(renderLinkCard(link.name, link.url, link.color));
+      grid.appendChild(renderLinkCard(link.name, link.url, link.color, link.category));
     });
     dom.viewContainer.appendChild(grid);
     return;
   }
 
   if (state.activeCategory !== "all") {
-    filteredData = data.filter((c) => c.category === state.activeCategory);
+    filteredData = allData.filter((c) => c.category === state.activeCategory);
   }
 
   filteredData.forEach((cat) => {
@@ -293,7 +303,7 @@ function renderView() {
     grid.className = "grid-view";
 
     Object.entries(cat.items).forEach(([name, url]) => {
-      grid.appendChild(renderLinkCard(name, url, cat.color));
+      grid.appendChild(renderLinkCard(name, url, cat.color, cat.category));
     });
 
     section.append(header, grid);
@@ -311,6 +321,47 @@ document.querySelector('[data-cat="all"]').onclick = () =>
 
 dom.themeToggle.onclick = toggleTheme;
 
+/* =========================
+   Config Export/Import
+   ========================= */
+
+// Export configuration
+dom.exportConfigBtn?.addEventListener("click", () => {
+  try {
+    exportConfig();
+  } catch (error) {
+    console.error("Export failed:", error);
+    alert("Failed to export configuration: " + error.message);
+  }
+});
+
+// Import configuration - trigger file input
+dom.importConfigBtn?.addEventListener("click", () => {
+  dom.importFileInput.click();
+});
+
+// Import configuration - handle file selection
+dom.importFileInput?.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (confirm("Importing configuration will overwrite your current settings. Continue?")) {
+    importConfig(file)
+      .then(() => {
+        // Page will reload automatically on successful import
+      })
+      .catch((error) => {
+        console.error("Import failed:", error);
+        alert("Failed to import configuration: " + error.message);
+        // Reset file input
+        e.target.value = "";
+      });
+  } else {
+    // Reset file input if cancelled
+    e.target.value = "";
+  }
+});
+
 clearExpiredFaviconCache();
 setInterval(updateTime, 1000);
 updateTime();
@@ -318,8 +369,14 @@ applyTheme();
 renderSidebar();
 renderView();
 
+// Listen for shortcuts changes from link manager
+document.addEventListener("shortcutsChanged", () => {
+  renderSidebar();
+  renderView();
+});
+
 document.addEventListener("keydown", (e) => {
-  if (e.key === "/" && document.activeElement !== dom.filterInput) {
+  if (e.key === "/" && document.activeElement !== dom.filterInput && document.activeElement !== dom.searchInput) {
     e.preventDefault();
     dom.filterInput.focus();
   }

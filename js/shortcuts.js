@@ -1,4 +1,4 @@
-export default [
+const defaultShortcuts = [
   {
     category: "Main",
     color: "yellow",
@@ -227,3 +227,8 @@ export default [
     icon: "book",
   },
 ];
+
+export default defaultShortcuts;
+
+// Also export as window property for link-manager access
+window.defaultShortcuts = defaultShortcuts;

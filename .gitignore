@@ -1,5 +1,8 @@
 .vscode/
 .github
-.kilocode
+.kilocode/
 .vscode
 plans/
+.nojekyll
+.prettierrc
+.kilocodemodes
