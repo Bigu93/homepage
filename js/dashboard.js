@@ -53,7 +53,7 @@ const ICONS = {
 
 // Favicon Cache Configuration
 const FAVICON_CACHE_KEY = "favicons_cache";
-const FAVICON_CACHE_EXPIRY_DAYS = 7; // Cache favicons for 7 days
+const FAVICON_CACHE_EXPIRY_DAYS = 30; // Cache favicons for 30 days
 
 /**
  * Get favicon URL with caching
