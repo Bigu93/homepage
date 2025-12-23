@@ -25,7 +25,6 @@ const dom = {
    Icons (Lucide/Heroicons SVG strings)
 ========================= */
 const ICONS = {
-  // ... existing icons ...
   default: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>`,
   home: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   code: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
@@ -51,9 +50,8 @@ const ICONS = {
    Logic
  ========================= */
 
-// Favicon Cache Configuration
 const FAVICON_CACHE_KEY = "favicons_cache";
-const FAVICON_CACHE_EXPIRY_DAYS = 30; // Cache favicons for 30 days
+const FAVICON_CACHE_EXPIRY_DAYS = 30;
 
 /**
  * Get favicon URL with caching
@@ -64,7 +62,6 @@ function getFavicon(url) {
   const cache = getFaviconCache();
   const cacheKey = url;
 
-  // Check if favicon is cached and not expired
   if (cache[cacheKey]) {
     const cached = cache[cacheKey];
     const now = Date.now();
@@ -76,16 +73,13 @@ function getFavicon(url) {
     }
   }
 
-  // Generate new favicon URL
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url)}&sz=64`;
 
-  // Cache the favicon URL
   cache[cacheKey] = {
     faviconUrl: faviconUrl,
     timestamp: Date.now(),
   };
 
-  // Save to localStorage
   try {
     localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(cache));
   } catch (e) {
@@ -166,11 +160,9 @@ function applyTheme() {
   const isDark = state.theme === "dark";
   document.documentElement.setAttribute("data-theme", state.theme);
 
-  // Update toggle button icon/text
   const icon = dom.themeToggle.querySelector(".icon");
   icon.innerHTML = isDark ? ICONS.moon : ICONS.sun;
 
-  // Simple rotation animation for fun
   icon.animate(
     [
       { transform: "rotate(0deg) scale(0.5)" },
@@ -190,12 +182,10 @@ function renderSidebar() {
     btn.className = `nav-item ${state.activeCategory === cat.category ? "active" : ""}`;
     btn.onclick = () => setActiveCategory(cat.category);
 
-    // Icon
     const iconSpan = document.createElement("span");
     iconSpan.className = "icon";
     iconSpan.innerHTML = ICONS[cat.icon] || ICONS.default;
 
-    // Label
     const labelSpan = document.createElement("span");
     labelSpan.className = "label";
     labelSpan.textContent = cat.category;
@@ -208,10 +198,8 @@ function renderSidebar() {
 function setActiveCategory(cat) {
   state.activeCategory = cat;
 
-  // Update sidebar UI
   document.querySelectorAll(".nav-item").forEach((el) => {
     el.classList.remove("active");
-    // Check if it's the specific category button or the "All" button
     const isAll = cat === "all" && el.dataset.cat === "all";
     const isCat = el.textContent.trim() === cat;
     if (isAll || isCat) el.classList.add("active");
@@ -244,7 +232,7 @@ function renderLinkCard(name, url, categoryColor) {
     if (state.favorites.has(url)) state.favorites.delete(url);
     else state.favorites.add(url);
     localStorage.setItem("favorites", JSON.stringify([...state.favorites]));
-    renderView(); // re-render to update UI
+    renderView();
   };
 
   card.append(icon, title, favBtn);
@@ -255,12 +243,9 @@ function renderView() {
   dom.viewContainer.innerHTML = "";
   const query = state.searchQuery.toLowerCase();
 
-  // Filter Data
   let filteredData = data;
 
-  // 1. Search Filter (Global)
   if (query) {
-    // Flatten everything
     const allLinks = [];
     data.forEach((cat) => {
       Object.entries(cat.items).forEach(([name, url]) => {
@@ -278,7 +263,6 @@ function renderView() {
       });
     });
 
-    // Render Results
     if (allLinks.length === 0) {
       dom.viewContainer.innerHTML = `<div class="empty-state">No results found for "${state.searchQuery}"</div>`;
       return;
@@ -293,12 +277,10 @@ function renderView() {
     return;
   }
 
-  // 2. Category Filter
   if (state.activeCategory !== "all") {
     filteredData = data.filter((c) => c.category === state.activeCategory);
   }
 
-  // Render Groups
   filteredData.forEach((cat) => {
     const section = document.createElement("section");
     section.className = "category-section";
@@ -319,28 +301,23 @@ function renderView() {
   });
 }
 
-// Event Listeners
 dom.filterInput.addEventListener("input", (e) => {
   state.searchQuery = e.target.value;
   renderView();
 });
 
-// Sidebar "Overview" click
 document.querySelector('[data-cat="all"]').onclick = () =>
   setActiveCategory("all");
 
-// Theme Toggle
 dom.themeToggle.onclick = toggleTheme;
 
-// Init
-clearExpiredFaviconCache(); // Clean up expired favicon cache entries
+clearExpiredFaviconCache();
 setInterval(updateTime, 1000);
 updateTime();
-applyTheme(); // Apply initial theme
+applyTheme();
 renderSidebar();
 renderView();
 
-// Global Keybinds
 document.addEventListener("keydown", (e) => {
   if (e.key === "/" && document.activeElement !== dom.filterInput) {
     e.preventDefault();
