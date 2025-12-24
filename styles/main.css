@@ -284,7 +284,6 @@ body {
   transform: translateY(-50%);
   opacity: 0.5;
   pointer-events: none;
-  margin-top: -2px; /* Adjust to match input padding */
 }
 
 /* --- Filter Container (for shortcuts search) --- */
@@ -475,12 +474,6 @@ body {
 .category-section {
   margin-bottom: 3rem;
   animation: fadeIn 0.4s ease forwards;
-  transition: all var(--transition);
-}
-
-.category-section:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
 }
 
 .category-header {
@@ -493,11 +486,17 @@ body {
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
-  transition: color var(--transition);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: transparent;
+  transition: all var(--transition);
+  cursor: default;
 }
 
 .category-header:hover {
+  background: var(--surface-1);
   color: var(--text-main);
+  transform: translateX(4px);
 }
 
 .cat-dot {
@@ -1831,6 +1830,14 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: transparent;
+  transition: all var(--transition);
+}
+
+.notes-header:hover {
+  background: var(--surface-1);
 }
 
 .add-note-btn {
@@ -2577,6 +2584,14 @@ body {
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: transparent;
+  transition: all var(--transition);
+}
+
+.rss-header:hover {
+  background: var(--surface-1);
 }
 
 .rss-header .category-header {
@@ -3490,6 +3505,14 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: transparent;
+  transition: all var(--transition);
+}
+
+.calendar-header:hover {
+  background: var(--surface-1);
 }
 
 .add-event-btn {
