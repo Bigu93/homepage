@@ -279,8 +279,8 @@ body {
 
 .search-icon {
   position: absolute;
-  left: 25px;
-  top: 50%;
+  left: 15px;
+  top: 70px;
   transform: translateY(-50%);
   opacity: 0.5;
   pointer-events: none;
