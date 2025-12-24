@@ -298,6 +298,8 @@ function renderView() {
     const header = document.createElement("h2");
     header.className = `category-header ${cat.color}`;
     header.innerHTML = `<span class="cat-dot"></span>${cat.category}`;
+    header.style.cursor = "pointer";
+    header.onclick = () => setActiveCategory(cat.category);
 
     const grid = document.createElement("div");
     grid.className = "grid-view";
