@@ -235,7 +235,7 @@ body {
   min-height: 80px;
   padding: 1rem 3rem 1rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 2rem;
@@ -244,7 +244,7 @@ body {
 
 .header-left {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
   flex: 3;
 }
