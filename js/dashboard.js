@@ -145,7 +145,7 @@ function updateTime() {
     month: "long",
     day: "numeric",
   });
-  dom.dateDisplay.innerHTML = `${dateText} - <span id="clock">${timeText}</span>`;
+  dom.dateDisplay.innerHTML = `${dateText} • <span id="clock">${timeText}</span>`;
   
   dom.clock = document.getElementById("clock");
 
