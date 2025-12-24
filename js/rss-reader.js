@@ -3,11 +3,6 @@
    ========================= */
 
 const STORAGE_KEY = "rss_reader_data";
-const CORS_PROXIES = [
-  "https://api.allorigins.win/get?url=",
-  "https://corsproxy.io/?",
-  "https://api.codetabs.com/v1/proxy?quest="
-];
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes cache
 
 /* =========================
@@ -74,37 +69,22 @@ function generateId() {
    ========================= */
 
 async function fetchRSSFeed(url) {
-  let lastError = null;
-  
-  for (let i = 0; i < CORS_PROXIES.length; i++) {
-    const proxy = CORS_PROXIES[i];
-    try {
-      const response = await fetch(proxy + encodeURIComponent(url), {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json, text/xml, application/xml, */*',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      if (!data || !data.contents) {
-        throw new Error("No content received from proxy");
-      }
-      
-      return data.contents;
-    } catch (error) {
-      lastError = error;
-      console.warn(`Proxy ${i + 1}/${CORS_PROXIES.length} failed:`, error.message);
-      continue;
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    
+    return await response.text();
+  } catch (error) {
+    throw new Error(`Failed to fetch feed: ${error.message}`);
   }
-  
-  throw new Error(`All proxies failed. Last error: ${lastError?.message || 'Unknown error'}`);
 }
 
 function validateFeedXML(xmlString) {
