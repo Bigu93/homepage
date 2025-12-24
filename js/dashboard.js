@@ -261,9 +261,6 @@ function renderView() {
 
   let filteredData = allData;
 
-  if (rssSection) dom.viewContainer.appendChild(rssSection);
-  if (notesSection) dom.viewContainer.appendChild(notesSection);
-
   if (query) {
     const allLinks = [];
     allData.forEach((cat) => {
