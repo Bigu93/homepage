@@ -2,8 +2,7 @@ name: Continuous Deployment
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "feature/improvements-implementation", "main" ]
 
 permissions:
   contents: write
