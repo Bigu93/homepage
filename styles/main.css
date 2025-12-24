@@ -284,6 +284,10 @@ body {
   transform: translateY(-50%);
   opacity: 0.5;
   pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
 }
 
 /* --- Filter Container (for shortcuts search) --- */
@@ -1840,6 +1844,12 @@ body {
   background: var(--surface-1);
 }
 
+.notes-header:hover .category-header {
+  background: var(--surface-1);
+  color: var(--text-main);
+  transform: translateX(4px);
+}
+
 .add-note-btn {
   background: transparent;
   border: 1px solid var(--border-subtle);
@@ -2592,6 +2602,12 @@ body {
 
 .rss-header:hover {
   background: var(--surface-1);
+}
+
+.rss-header:hover .category-header {
+  background: var(--surface-1);
+  color: var(--text-main);
+  transform: translateX(4px);
 }
 
 .rss-header .category-header {
