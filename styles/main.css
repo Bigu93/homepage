@@ -284,6 +284,7 @@ body {
   transform: translateY(-50%);
   opacity: 0.5;
   pointer-events: none;
+  margin-top: -2px; /* Adjust to match input padding */
 }
 
 /* --- Filter Container (for shortcuts search) --- */
@@ -474,6 +475,12 @@ body {
 .category-section {
   margin-bottom: 3rem;
   animation: fadeIn 0.4s ease forwards;
+  transition: all var(--transition);
+}
+
+.category-section:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .category-header {
@@ -486,6 +493,11 @@ body {
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
+  transition: color var(--transition);
+}
+
+.category-header:hover {
+  color: var(--text-main);
 }
 
 .cat-dot {

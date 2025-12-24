@@ -3,7 +3,11 @@
    ========================= */
 
 const STORAGE_KEY = "rss_reader_data";
-const CORS_PROXY = "https://api.allorigins.win/get?url=";
+const CORS_PROXIES = [
+  "https://api.allorigins.win/get?url=",
+  "https://corsproxy.io/?",
+  "https://api.codetabs.com/v1/proxy?quest="
+];
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes cache
 
 /* =========================
@@ -70,17 +74,80 @@ function generateId() {
    ========================= */
 
 async function fetchRSSFeed(url) {
-  try {
-    const response = await fetch(CORS_PROXY + encodeURIComponent(url));
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  let lastError = null;
+  
+  for (let i = 0; i < CORS_PROXIES.length; i++) {
+    const proxy = CORS_PROXIES[i];
+    try {
+      const response = await fetch(proxy + encodeURIComponent(url), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json, text/xml, application/xml, */*',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Validate that we got content
+      if (!data || !data.contents) {
+        throw new Error("No content received from proxy");
+      }
+      
+      return data.contents;
+    } catch (error) {
+      lastError = error;
+      console.warn(`Proxy ${i + 1}/${CORS_PROXIES.length} failed:`, error.message);
+      // Try next proxy
+      continue;
     }
-    const data = await response.json();
-    return data.contents;
-  } catch (error) {
-    console.error("Failed to fetch RSS feed:", error);
-    throw error;
   }
+  
+  // All proxies failed
+  throw new Error(`All proxies failed. Last error: ${lastError?.message || 'Unknown error'}`);
+}
+
+function validateFeedXML(xmlString) {
+  // Check if the content is actually XML
+  if (!xmlString || typeof xmlString !== 'string') {
+    return { valid: false, error: 'Invalid content type' };
+  }
+  
+  // Check for basic XML structure
+  const trimmed = xmlString.trim();
+  if (!trimmed.startsWith('<?xml') && !trimmed.startsWith('<rss') && !trimmed.startsWith('<feed')) {
+    return { valid: false, error: 'Not a valid RSS/Atom feed' };
+  }
+  
+  // Try to parse and check for parser errors
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+  
+  const parserError = xmlDoc.querySelector('parsererror');
+  if (parserError) {
+    return { valid: false, error: 'XML parsing error: ' + parserError.textContent };
+  }
+  
+  // Check for RSS or Atom root elements
+  const rssElement = xmlDoc.querySelector('rss');
+  const feedElement = xmlDoc.querySelector('feed');
+  
+  if (!rssElement && !feedElement) {
+    return { valid: false, error: 'Missing RSS or Atom root element' };
+  }
+  
+  // Check for items or entries
+  const items = xmlDoc.querySelectorAll('item');
+  const entries = xmlDoc.querySelectorAll('entry');
+  
+  if (items.length === 0 && entries.length === 0) {
+    return { valid: false, error: 'Feed contains no items' };
+  }
+  
+  return { valid: true };
 }
 
 function parseRSSXML(xmlString) {
@@ -88,13 +155,24 @@ function parseRSSXML(xmlString) {
   const xmlDoc = parser.parseFromString(xmlString, "text/xml");
   
   const items = [];
-  const rssItems = xmlDoc.querySelectorAll("item");
   
-  rssItems.forEach((item) => {
+  // Support both RSS (item) and Atom (entry) formats
+  const rssItems = xmlDoc.querySelectorAll("item");
+  const atomEntries = xmlDoc.querySelectorAll("entry");
+  
+  const allItems = rssItems.length > 0 ? rssItems : atomEntries;
+  
+  allItems.forEach((item) => {
+    // Atom uses different element names
     const title = item.querySelector("title")?.textContent || "";
-    const description = item.querySelector("description")?.textContent || "";
-    const link = item.querySelector("link")?.textContent || "";
-    const pubDate = item.querySelector("pubDate")?.textContent || "";
+    let description = item.querySelector("description")?.textContent ||
+                     item.querySelector("content")?.textContent ||
+                     item.querySelector("summary")?.textContent || "";
+    let link = item.querySelector("link")?.textContent ||
+               item.querySelector("link")?.getAttribute("href") || "";
+    const pubDate = item.querySelector("pubDate")?.textContent ||
+                    item.querySelector("published")?.textContent ||
+                    item.querySelector("updated")?.textContent || "";
     
     if (title) {
       items.push({
@@ -112,7 +190,18 @@ function parseRSSXML(xmlString) {
 async function refreshFeed(feed) {
   try {
     const xmlContent = await fetchRSSFeed(feed.url);
+    
+    // Validate the feed before parsing
+    const validation = validateFeedXML(xmlContent);
+    if (!validation.valid) {
+      throw new Error(`Invalid feed: ${validation.error}`);
+    }
+    
     const parsedItems = parseRSSXML(xmlContent);
+    
+    if (parsedItems.length === 0) {
+      throw new Error("No items found in feed");
+    }
     
     // Update feed's last fetched time
     feed.lastFetched = Date.now();
@@ -153,22 +242,36 @@ async function refreshAllFeeds() {
   
   state.isRefreshing = true;
   updateRefreshButton();
+  showLoadingState();
   
   const results = [];
+  let successCount = 0;
+  let errorCount = 0;
   
   for (const feed of state.feeds) {
     try {
       const count = await refreshFeed(feed);
       results.push({ feed, count, error: null });
+      successCount++;
     } catch (error) {
       results.push({ feed, count: 0, error });
+      errorCount++;
+      showErrorToast(`Failed to load "${feed.name}": ${error.message}`);
     }
   }
   
   state.isRefreshing = false;
   updateRefreshButton();
+  hideLoadingState();
   
   renderRSS();
+  
+  // Show summary toast
+  if (successCount > 0) {
+    showSuccessToast(`Refreshed ${successCount} feed${successCount > 1 ? 's' : ''} successfully${errorCount > 0 ? ` (${errorCount} failed)` : ''}`);
+  } else if (errorCount > 0) {
+    showErrorToast(`Failed to refresh ${errorCount} feed${errorCount > 1 ? 's' : ''}`);
+  }
   
   return results;
 }
@@ -345,6 +448,75 @@ function updateRefreshButton() {
 }
 
 /* =========================
+   Toast Notifications
+   ========================= */
+
+function showToast(message, type = 'info') {
+  // Remove existing toast if any
+  const existingToast = document.querySelector('.rss-toast');
+  if (existingToast) {
+    existingToast.remove();
+  }
+  
+  const toast = document.createElement('div');
+  toast.className = `rss-toast rss-toast-${type}`;
+  toast.textContent = message;
+  
+  document.body.appendChild(toast);
+  
+  // Trigger animation
+  setTimeout(() => toast.classList.add('visible'), 10);
+  
+  // Auto remove after 4 seconds
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+function showSuccessToast(message) {
+  showToast(message, 'success');
+}
+
+function showErrorToast(message) {
+  showToast(message, 'error');
+}
+
+function showInfoToast(message) {
+  showToast(message, 'info');
+}
+
+/* =========================
+   Loading States
+   ========================= */
+
+function showLoadingState() {
+  if (dom.rssGrid) {
+    dom.rssGrid.classList.add('loading');
+    const existingLoader = dom.rssGrid.querySelector('.rss-loader');
+    if (!existingLoader) {
+      const loader = document.createElement('div');
+      loader.className = 'rss-loader';
+      loader.innerHTML = `
+        <div class="rss-spinner"></div>
+        <p>Loading feeds...</p>
+      `;
+      dom.rssGrid.prepend(loader);
+    }
+  }
+}
+
+function hideLoadingState() {
+  if (dom.rssGrid) {
+    dom.rssGrid.classList.remove('loading');
+    const loader = dom.rssGrid.querySelector('.rss-loader');
+    if (loader) {
+      loader.remove();
+    }
+  }
+}
+
+/* =========================
    Actions
    ========================= */
 
@@ -374,15 +546,15 @@ function markAllAsRead() {
   renderRSS();
 }
 
-function addFeed(url, name, category) {
+async function addFeed(url, name, category) {
   if (!url || !name) {
-    alert("Please provide both URL and name for the feed.");
+    showErrorToast("Please provide both URL and name for the feed.");
     return false;
   }
   
   // Check for duplicate URLs
   if (state.feeds.some((f) => f.url === url)) {
-    alert("This feed URL is already added.");
+    showErrorToast("This feed URL is already added.");
     return false;
   }
   
@@ -397,14 +569,19 @@ function addFeed(url, name, category) {
   state.feeds.push(feed);
   saveData();
   
-  // Refresh the new feed
-  refreshFeed(feed).then(() => {
+  // Refresh the new feed with loading state
+  showLoadingState();
+  try {
+    const count = await refreshFeed(feed);
+    showSuccessToast(`Added "${feed.name}" with ${count} items`);
     renderCategoryFilter();
     renderRSS();
-  }).catch((error) => {
+  } catch (error) {
     console.error("Failed to fetch initial feed data:", error);
-    alert("Failed to fetch feed data. The feed has been added but may not work correctly.");
-  });
+    showErrorToast(`Failed to fetch feed data: ${error.message}. The feed has been added but may not work correctly.`);
+  } finally {
+    hideLoadingState();
+  }
   
   return true;
 }
@@ -412,12 +589,17 @@ function addFeed(url, name, category) {
 function deleteFeed(feedId) {
   if (!confirm("Are you sure you want to delete this feed?")) return;
   
+  const feed = state.feeds.find(f => f.id === feedId);
   state.feeds = state.feeds.filter((f) => f.id !== feedId);
   state.items = state.items.filter((i) => i.feedId !== feedId);
   
   saveData();
   renderCategoryFilter();
   renderRSS();
+  
+  if (feed) {
+    showSuccessToast(`Deleted "${feed.name}"`);
+  }
 }
 
 /* =========================
@@ -517,6 +699,75 @@ function initRSSReader() {
   
   if (staleFeeds.length > 0) {
     refreshAllFeeds();
+  }
+  
+  // Add toast container styles if not present
+  if (!document.querySelector('#rss-toast-styles')) {
+    const style = document.createElement('style');
+    style.id = 'rss-toast-styles';
+    style.textContent = `
+      .rss-toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10000;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        max-width: 400px;
+      }
+      
+      .rss-toast.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      .rss-toast-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+      }
+      
+      .rss-toast-error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+      }
+      
+      .rss-toast-info {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+      }
+      
+      .rss-loader {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        gap: 16px;
+      }
+      
+      .rss-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: rss-spin 0.8s linear infinite;
+      }
+      
+      .rss-loader p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 14px;
+      }
+      
+      @keyframes rss-spin {
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
   }
 }
 
