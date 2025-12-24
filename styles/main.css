@@ -284,10 +284,8 @@ body {
   transform: translateY(-50%);
   opacity: 0.5;
   pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 1.1rem;
+  line-height: 1;
 }
 
 /* --- Filter Container (for shortcuts search) --- */
