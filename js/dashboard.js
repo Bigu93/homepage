@@ -253,7 +253,6 @@ function renderLinkCard(name, url, categoryColor, categoryName) {
 
 function renderView() {
   const rssSection = document.getElementById("rss-section");
-  const notesSection = document.getElementById("notes-section");
   
   dom.viewContainer.innerHTML = "";
   const query = state.searchQuery.toLowerCase();
@@ -292,7 +291,6 @@ function renderView() {
     dom.viewContainer.appendChild(grid);
     
     if (rssSection) dom.viewContainer.appendChild(rssSection);
-    if (notesSection) dom.viewContainer.appendChild(notesSection);
     return;
   }
 
@@ -322,7 +320,6 @@ function renderView() {
   });
   
   if (rssSection) dom.viewContainer.appendChild(rssSection);
-  if (notesSection) dom.viewContainer.appendChild(notesSection);
 }
 
 dom.filterInput.addEventListener("input", (e) => {

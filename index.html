@@ -68,7 +68,7 @@
             <div id="weather-widget-container" class="weather-widget-inline">
               <!-- Weather widget will be injected here -->
             </div>
-            
+             
             <!-- Filter Container -->
             <div class="filter-container">
               <div class="filter-icon">🔍</div>
@@ -79,25 +79,26 @@
                 autocomplete="off"
               />
             </div>
+            
+            <!-- Notes Section -->
+            <section id="notes-section" class="notes-section">
+              <div class="notes-header">
+                <h2 class="category-header">
+                  <span class="cat-dot"></span>Notes
+                </h2>
+                <button id="add-note-btn" class="add-note-btn" title="Add new note">
+                  <span class="icon">+</span>
+                </button>
+              </div>
+              <div id="notes-grid" class="notes-grid">
+                <!-- Notes injected here -->
+              </div>
+            </section>
           </div>
         </header>
 
         <!-- Dynamic View -->
         <div id="view-container" class="view-container">
-          <!-- Notes Section -->
-          <section id="notes-section" class="notes-section">
-            <div class="notes-header">
-              <h2 class="category-header">
-                <span class="cat-dot"></span>Notes
-              </h2>
-              <button id="add-note-btn" class="add-note-btn" title="Add new note">
-                <span class="icon">+</span>
-              </button>
-            </div>
-            <div id="notes-grid" class="notes-grid">
-              <!-- Notes injected here -->
-            </div>
-          </section>
           <!-- Content injected here (Grid) -->
         </div>
       </main>
