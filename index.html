@@ -137,97 +137,9 @@
               <!-- Notes injected here -->
             </div>
           </section>
-          <!-- Calendar Section -->
-          <section id="calendar-section" class="calendar-section">
-            <div class="calendar-header">
-              <h2 class="category-header">
-                <span class="cat-dot"></span>Calendar
-              </h2>
-              <button id="add-event-btn" class="add-event-btn" title="Add new event">
-                <span class="icon">+</span>
-              </button>
-            </div>
-            
-            <!-- Today's Events -->
-            <div class="calendar-today-section">
-              <h3 class="calendar-section-title">Today</h3>
-              <div id="calendar-today-events" class="calendar-events-list">
-                <!-- Today's events injected here -->
-              </div>
-            </div>
-            
-            <!-- Upcoming Events -->
-            <div class="calendar-upcoming-section">
-              <h3 class="calendar-section-title">Upcoming (Next 7 Days)</h3>
-              <div id="calendar-upcoming-events" class="calendar-upcoming-list">
-                <!-- Upcoming events injected here -->
-              </div>
-            </div>
-          </section>
           <!-- Content injected here (Grid) -->
         </div>
       </main>
-    </div>
-
-    <!-- Calendar Event Modal -->
-    <div id="calendar-modal" class="calendar-modal">
-      <div class="calendar-modal-content">
-        <div class="calendar-modal-header">
-          <h3 id="calendar-modal-title">New Event</h3>
-          <button id="calendar-modal-close" class="calendar-modal-close">×</button>
-        </div>
-        <div class="calendar-modal-body">
-          <div class="form-group">
-            <label for="event-title-input">Title *</label>
-            <input id="event-title-input" type="text" placeholder="Meeting with team" required />
-          </div>
-          <div class="form-group">
-            <label for="event-description-input">Description</label>
-            <textarea id="event-description-input" class="event-textarea" rows="3" placeholder="Add details..."></textarea>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="event-date-input">Date *</label>
-              <input id="event-date-input" type="date" required />
-            </div>
-            <div class="form-group">
-              <label for="event-time-input">Time</label>
-              <input id="event-time-input" type="time" />
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="event-duration-input">Duration</label>
-              <input id="event-duration-input" type="text" placeholder="1h, 30min, etc." />
-            </div>
-            <div class="form-group">
-              <label for="event-category-input">Category</label>
-              <select id="event-category-input" class="event-category-select">
-                <option value="default">Default</option>
-                <option value="work">Work</option>
-                <option value="personal">Personal</option>
-                <option value="important">Important</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="event-reminder-input">Reminder</label>
-            <select id="event-reminder-input" class="event-reminder-select">
-              <option value="none">No reminder</option>
-              <option value="5min">5 minutes before</option>
-              <option value="15min">15 minutes before</option>
-              <option value="30min">30 minutes before</option>
-              <option value="1hour">1 hour before</option>
-              <option value="1day">1 day before</option>
-            </select>
-          </div>
-          <div class="form-actions">
-            <button id="cancel-event-btn" class="btn-cancel">Cancel</button>
-            <button id="save-event-btn" class="btn-primary">Save Event</button>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Notes Modal -->
@@ -297,62 +209,6 @@
       </div>
     </div>
 
-    <!-- System Status Panel -->
-    <div id="system-status-panel" class="system-status-panel">
-      <div class="system-status-header">
-        <h3>System Status</h3>
-        <button id="system-status-panel-close" class="system-status-panel-close">×</button>
-      </div>
-      <div class="system-status-content">
-        <!-- System Stats -->
-        <div class="system-stats">
-          <div class="stat-row">
-            <span class="stat-label">CPU</span>
-            <div class="stat-bar-container">
-              <div id="cpu-bar" class="stat-bar-fill"></div>
-            </div>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">RAM</span>
-            <div class="stat-bar-container">
-              <div id="ram-bar" class="stat-bar-fill"></div>
-            </div>
-          </div>
-          <div class="stat-row network-row">
-            <span class="stat-label">Network</span>
-            <div class="network-stats">
-              <span class="network-stat">
-                <span class="network-label">↓</span>
-                <span id="network-in">0 MB/s</span>
-              </span>
-              <span class="network-stat">
-                <span class="network-label">↑</span>
-                <span id="network-out">0 MB/s</span>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Services Section -->
-        <div class="services-section">
-          <div class="services-header">
-            <h4>Services</h4>
-            <div class="services-controls">
-              <button id="refresh-services-btn" class="refresh-btn" title="Refresh services">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
-              </button>
-              <button id="add-service-btn" class="add-service-btn" title="Add service">
-                <span class="icon">+</span>
-              </button>
-            </div>
-          </div>
-          <div id="services-list" class="services-list">
-            <!-- Services injected here -->
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Statistics Panel -->
     <div id="statistics-panel" class="statistics-panel">
       <div class="statistics-header">
@@ -361,39 +217,6 @@
       </div>
       <div id="statistics-content" class="statistics-content">
         <!-- Statistics content injected here -->
-      </div>
-    </div>
-
-    <!-- System Status Modal -->
-    <div id="system-status-modal" class="system-status-modal">
-      <div class="system-status-modal-content">
-        <div class="system-status-modal-header">
-          <h3 id="system-status-modal-title">Add Service</h3>
-          <button id="system-status-modal-close" class="system-status-modal-close">×</button>
-        </div>
-        <div class="system-status-modal-body">
-          <form id="add-service-form">
-            <div class="form-group">
-              <label for="service-name-input">Service Name</label>
-              <input id="service-name-input" type="text" placeholder="My Server" required />
-            </div>
-            <div class="form-group">
-              <label for="service-type-select">Service Type</label>
-              <select id="service-type-select">
-                <option value="http">HTTP/HTTPS Endpoint</option>
-                <option value="custom">Custom Status</option>
-              </select>
-            </div>
-            <div class="form-group" id="url-group">
-              <label for="service-url-input">Endpoint URL</label>
-              <input id="service-url-input" type="url" placeholder="https://example.com" />
-            </div>
-            <div class="form-actions">
-              <button type="button" id="cancel-service-btn" class="btn-cancel">Cancel</button>
-              <button type="submit" id="save-service-btn" class="btn-primary">Add Service</button>
-            </div>
-          </form>
-        </div>
       </div>
     </div>
 
@@ -409,7 +232,5 @@
     <script type="module" src="js/notes.js"></script>
     <script type="module" src="js/statistics.js"></script>
     <script type="module" src="js/rss-reader.js"></script>
-    <script type="module" src="js/system-status.js"></script>
-    <script type="module" src="js/calendar.js"></script>
   </body>
 </html>
