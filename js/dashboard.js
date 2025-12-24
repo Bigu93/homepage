@@ -145,9 +145,8 @@ function updateTime() {
     month: "long",
     day: "numeric",
   });
-  dom.dateDisplay.innerHTML = `${dateText} • <span id="clock" class="clock">${timeText}</span>`;
+  dom.dateDisplay.innerHTML = `${dateText} - <span id="clock">${timeText}</span>`;
   
-  // Update clock reference after innerHTML replacement
   dom.clock = document.getElementById("clock");
 
   const hour = now.getHours();
