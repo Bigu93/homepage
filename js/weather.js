@@ -255,22 +255,8 @@ async function loadWeather() {
    ========================= */
 function createWidget() {
   const widget = document.createElement("div");
-  widget.className = "weather-widget";
+  widget.className = "weather-widget-inline";
   widget.innerHTML = `
-    <div class="weather-header">
-      <div class="weather-location">
-        <span class="location-icon">${WEATHER_ICONS.location}</span>
-        <span class="location-name">Loading...</span>
-      </div>
-      <div class="weather-controls">
-        <button class="weather-refresh" title="Refresh">
-          ${WEATHER_ICONS.refresh}
-        </button>
-        <button class="weather-settings" title="Settings">
-          ${WEATHER_ICONS.settings}
-        </button>
-      </div>
-    </div>
     <div class="weather-current">
       <div class="weather-icon-wrapper">
         <div class="weather-icon">${WEATHER_ICONS.clear}</div>
@@ -280,10 +266,6 @@ function createWidget() {
         <div class="weather-condition">--</div>
       </div>
     </div>
-    <div class="weather-forecast">
-      <div class="forecast-list"></div>
-    </div>
-    <div class="weather-error" style="display: none;"></div>
   `;
 
   return widget;
@@ -292,71 +274,23 @@ function createWidget() {
 function renderWeather() {
   if (!state.weatherData) return;
 
-  const { current, daily } = state.weatherData;
+  const { current } = state.weatherData;
 
   // Update current weather
   const tempEl = dom.widget.querySelector(".weather-temp");
   const conditionEl = dom.widget.querySelector(".weather-condition");
   const iconEl = dom.widget.querySelector(".weather-icon");
-  const locationEl = dom.widget.querySelector(".location-name");
 
   tempEl.textContent = formatTemperature(current.temperature_2m);
   conditionEl.textContent = getWeatherCondition(current.weather_code);
   iconEl.innerHTML = getWeatherIcon(current.weather_code);
-
-  if (state.location) {
-    locationEl.textContent = state.location.name;
-  }
-
-  // Update forecast
-  const forecastList = dom.widget.querySelector(".forecast-list");
-  forecastList.innerHTML = "";
-
-  for (let i = 1; i <= 5; i++) {
-    if (!daily.time[i]) break;
-
-    const date = new Date(daily.time[i]);
-    const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
-    const icon = getWeatherIcon(daily.weather_code[i]);
-    const maxTemp = formatTemperature(daily.temperature_2m_max[i]);
-    const minTemp = formatTemperature(daily.temperature_2m_min[i]);
-
-    const dayEl = document.createElement("div");
-    dayEl.className = "forecast-day";
-    dayEl.innerHTML = `
-      <span class="day-name">${dayName}</span>
-      <span class="day-icon">${icon}</span>
-      <span class="day-temp">${maxTemp} / ${minTemp}</span>
-    `;
-    forecastList.appendChild(dayEl);
-  }
-
-  // Hide error if visible
-  const errorEl = dom.widget.querySelector(".weather-error");
-  errorEl.style.display = "none";
 }
 
 function setLoadingState(loading) {
   const tempEl = dom.widget.querySelector(".weather-temp");
-  const refreshBtn = dom.widget.querySelector(".weather-refresh");
-
   if (loading) {
     tempEl.textContent = "...";
-    refreshBtn.classList.add("spinning");
-  } else {
-    refreshBtn.classList.remove("spinning");
   }
-}
-
-function showError(message) {
-  const errorEl = dom.widget.querySelector(".weather-error");
-  errorEl.textContent = message;
-  errorEl.style.display = "block";
-
-  const tempEl = dom.widget.querySelector(".weather-temp");
-  const conditionEl = dom.widget.querySelector(".weather-condition");
-  tempEl.textContent = "--";
-  conditionEl.textContent = "Error";
 }
 
 /* =========================
@@ -469,30 +403,11 @@ function init() {
   // Create and insert widget
   dom.widget = createWidget();
 
-  // Find the header to insert weather widget after
-  const header = document.querySelector(".header");
-  if (header) {
-    header.insertAdjacentElement("afterend", dom.widget);
-  } else {
-    // Fallback: insert at beginning of main content
-    const mainContent = document.querySelector(".main-content");
-    if (mainContent) {
-      mainContent.insertBefore(dom.widget, mainContent.firstChild);
-    }
+  // Find the inline weather widget container in header
+  const container = document.querySelector("#weather-widget-container");
+  if (container) {
+    container.appendChild(dom.widget);
   }
-
-  // Cache DOM elements
-  dom.refreshBtn = dom.widget.querySelector(".weather-refresh");
-  dom.settingsBtn = dom.widget.querySelector(".weather-settings");
-
-  // Event listeners
-  dom.refreshBtn.onclick = () => {
-    loadWeather();
-  };
-
-  dom.settingsBtn.onclick = () => {
-    openSettings();
-  };
 
   // Load weather data
   if (state.weatherData) {

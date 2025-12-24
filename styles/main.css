@@ -105,13 +105,6 @@ body {
   padding: 0 0.5rem;
 }
 
-.logo-text {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-main);
-  letter-spacing: 0.02em;
-}
-
 .sidebar-nav {
   flex: 1;
   display: flex;
@@ -235,11 +228,17 @@ body {
   min-height: 80px;
   padding: 1rem 3rem 1rem;
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 2rem;
   z-index: 10;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .header-right {
@@ -681,11 +680,22 @@ body {
 
   .header {
     padding: 1rem 1.5rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .header-left {
     justify-content: center;
   }
 
   .header-right {
     align-items: center;
+    flex-direction: column;
+  }
+
+  .weather-widget-inline {
+    justify-content: center;
   }
 
   .view-container {
@@ -1503,6 +1513,50 @@ body {
 /* =========================
    Weather Widget Styles
    ========================= */
+
+.weather-widget-inline {
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 0.5rem 0.75rem;
+  animation: slideUpFade 0.5s ease-out forwards;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.weather-widget-inline .weather-current {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.weather-widget-inline .weather-icon-wrapper {
+  width: 36px;
+  height: 36px;
+}
+
+.weather-widget-inline .weather-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.weather-widget-inline .weather-temp {
+  font-size: 1.5rem;
+  margin-bottom: 0;
+}
+
+.weather-widget-inline .weather-condition {
+  font-size: 0.75rem;
+  display: none;
+}
+
+.weather-widget-inline .weather-forecast {
+  display: none;
+}
 
 .weather-widget {
   background: var(--surface-1);
