@@ -58,7 +58,7 @@
         <!-- Greeting Section -->
         <div class="greeting-section">
           <h1 id="greeting">Good Morning,</h1>
-          <p id="date-display">Friday, October 16</p>
+          <p id="date-display">Friday, October 16 • <span id="clock" class="clock">12:00</span></p>
         </div>
 
         <!-- Header -->
@@ -68,23 +68,10 @@
             <div id="weather-widget-container" class="weather-widget-inline">
               <!-- Weather widget will be injected here -->
             </div>
-          </div>
-          <div class="header-right">
-            <div class="timer-wrap">
-              <span id="clock" class="clock">12:00</span>
-            </div>
-
-            <div class="search-container">
-              <input
-                id="search-input"
-                type="text"
-                placeholder="Search the web..."
-                autocomplete="off"
-              />
-              <div class="search-icon">🔍</div>
-            </div>
             
+            <!-- Filter Container -->
             <div class="filter-container">
+              <div class="filter-icon">🔍</div>
               <input
                 id="filter"
                 type="text"
