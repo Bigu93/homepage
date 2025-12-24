@@ -136,15 +136,19 @@ function clearExpiredFaviconCache() {
 
 function updateTime() {
   const now = new Date();
-  dom.clock.textContent = now.toLocaleTimeString([], {
+  const timeText = now.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
   });
-  dom.dateDisplay.textContent = now.toLocaleDateString([], {
+  const dateText = now.toLocaleDateString([], {
     weekday: "long",
     month: "long",
     day: "numeric",
   });
+  dom.dateDisplay.innerHTML = `${dateText} • <span id="clock" class="clock">${timeText}</span>`;
+  
+  // Update clock reference after innerHTML replacement
+  dom.clock = document.getElementById("clock");
 
   const hour = now.getHours();
   let greeting = "Good Evening,";
