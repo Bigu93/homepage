@@ -249,11 +249,19 @@ function renderLinkCard(name, url, categoryColor, categoryName) {
 }
 
 function renderView() {
+  // Preserve RSS and Notes sections before clearing
+  const rssSection = document.getElementById("rss-section");
+  const notesSection = document.getElementById("notes-section");
+  
   dom.viewContainer.innerHTML = "";
   const query = state.searchQuery.toLowerCase();
   const allData = getAllData();
 
   let filteredData = allData;
+
+  // Re-append preserved sections
+  if (rssSection) dom.viewContainer.appendChild(rssSection);
+  if (notesSection) dom.viewContainer.appendChild(notesSection);
 
   if (query) {
     const allLinks = [];
@@ -284,6 +292,10 @@ function renderView() {
       grid.appendChild(renderLinkCard(link.name, link.url, link.color, link.category));
     });
     dom.viewContainer.appendChild(grid);
+    
+    // Re-append preserved sections
+    if (rssSection) dom.viewContainer.appendChild(rssSection);
+    if (notesSection) dom.viewContainer.appendChild(notesSection);
     return;
   }
 
@@ -311,6 +323,10 @@ function renderView() {
     section.append(header, grid);
     dom.viewContainer.appendChild(section);
   });
+  
+  // Re-append RSS and Notes sections at the end
+  if (rssSection) dom.viewContainer.appendChild(rssSection);
+  if (notesSection) dom.viewContainer.appendChild(notesSection);
 }
 
 dom.filterInput.addEventListener("input", (e) => {
