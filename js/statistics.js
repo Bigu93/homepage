@@ -74,7 +74,6 @@ function endSession() {
     const endTime = Date.now();
     const duration = endTime - stats.currentSessionStart;
 
-    // Only save sessions longer than 1 second
     if (duration > 1000) {
       stats.sessions.push({
         startTime: stats.currentSessionStart,
@@ -82,7 +81,6 @@ function endSession() {
         duration: duration,
       });
 
-      // Keep only last MAX_SESSIONS
       if (stats.sessions.length > MAX_SESSIONS) {
         stats.sessions = stats.sessions.slice(-MAX_SESSIONS);
       }
@@ -99,13 +97,11 @@ function endSession() {
 function trackLinkClick(linkId, linkName, category) {
   const stats = getStatistics();
 
-  // Track link clicks by URL
   if (!stats.linkClicks[linkId]) {
     stats.linkClicks[linkId] = { count: 0, name: linkName, category: category };
   }
   stats.linkClicks[linkId].count++;
 
-  // Track category clicks
   if (!stats.categoryClicks[category]) {
     stats.categoryClicks[category] = 0;
   }
@@ -247,7 +243,7 @@ function resetStatistics() {
   if (confirm("Are you sure you want to reset all statistics? This cannot be undone.")) {
     const resetStats = {
       ...defaultStats,
-      currentSessionStart: Date.now(), // Keep current session
+      currentSessionStart: Date.now(),
       totalVisits: 1,
       lastVisit: Date.now(),
     };
@@ -327,7 +323,6 @@ function renderStatistics() {
     </div>
   `;
 
-  // Attach event listener for reset button
   document.getElementById("reset-stats-btn")?.addEventListener("click", resetStatistics);
 }
 
@@ -452,10 +447,8 @@ function toggleStatisticsPanel() {
  * Initialize statistics module
  */
 function initStatistics() {
-  // Initialize session on page load
   initSession();
 
-  // Track link clicks on all link cards
   document.addEventListener("click", (e) => {
     const linkCard = e.target.closest(".link-card");
     if (linkCard && linkCard.href) {
@@ -465,30 +458,25 @@ function initStatistics() {
     }
   });
 
-  // End session on page unload
   window.addEventListener("beforeunload", endSession);
 
-  // Setup toggle button
   const toggleBtn = document.getElementById("stats-toggle-btn");
   if (toggleBtn) {
     toggleBtn.addEventListener("click", toggleStatisticsPanel);
   }
 
-  // Setup close button
   const closeBtn = document.getElementById("stats-panel-close");
   if (closeBtn) {
     closeBtn.addEventListener("click", toggleStatisticsPanel);
   }
 }
 
-// Initialize when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initStatistics);
 } else {
   initStatistics();
 }
 
-// Export functions for external use if needed
 export {
   getStatistics,
   trackLinkClick,

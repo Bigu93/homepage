@@ -127,22 +127,18 @@ function validateConfig(config) {
  * @param {Object} config - The configuration to apply
  */
 function applyConfig(config) {
-  // Apply favorites
   if (config.data.favorites) {
     localStorage.setItem("favorites", JSON.stringify(config.data.favorites));
   }
 
-  // Apply theme
   if (config.data.theme) {
     localStorage.setItem("theme", config.data.theme);
   }
 
-  // Apply favicon cache (optional)
   if (config.data.faviconCache) {
     localStorage.setItem("favicons_cache", JSON.stringify(config.data.faviconCache));
   }
 
-  // Trigger page reload to apply changes
   window.location.reload();
 }
 

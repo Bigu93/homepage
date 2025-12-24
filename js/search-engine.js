@@ -168,7 +168,6 @@ function createDropdownOptions() {
 function handleSearchInput(e) {
   const query = e.target.value;
 
-  // If the user presses Enter, perform the search
   if (e.key === "Enter") {
     e.preventDefault();
     performSearch(query);
@@ -179,13 +178,11 @@ function handleSearchInput(e) {
  * Handle keyboard shortcuts
  */
 function handleKeyboardShortcuts(e) {
-  // Ctrl/Cmd + K to focus search input
   if ((e.ctrlKey || e.metaKey) && e.key === "k") {
     e.preventDefault();
     dom.searchInput?.focus();
   }
 
-  // Escape to close dropdown
   if (e.key === "Escape") {
     closeDropdown();
   }
@@ -199,22 +196,18 @@ function handleKeyboardShortcuts(e) {
  * Initialize the search engine module
  */
 export function initSearchEngine() {
-  // Validate stored engine
   if (!SEARCH_ENGINES[selectedEngine]) {
     selectedEngine = DEFAULT_ENGINE;
     localStorage.setItem(STORAGE_KEY, DEFAULT_ENGINE);
   }
 
-  // Create UI elements if they don't exist
   if (!dom.engineSelector && dom.searchInput) {
     createSearchEngineSelector();
   }
 
-  // Update UI
   updateEngineSelector();
   createDropdownOptions();
 
-  // Event listeners
   if (dom.engineButton) {
     dom.engineButton.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -226,7 +219,6 @@ export function initSearchEngine() {
     dom.searchInput.addEventListener("keydown", handleSearchInput);
   }
 
-  // Close dropdown when clicking outside
   document.addEventListener("click", (e) => {
     if (
       dom.engineSelector &&
@@ -236,7 +228,6 @@ export function initSearchEngine() {
     }
   });
 
-  // Keyboard shortcuts
   document.addEventListener("keydown", handleKeyboardShortcuts);
 }
 
@@ -247,12 +238,10 @@ function createSearchEngineSelector() {
   const searchContainer = dom.searchInput.closest(".search-container");
   if (!searchContainer) return;
 
-  // Create selector container
   const selector = document.createElement("div");
   selector.id = "search-engine-selector";
   selector.className = "search-engine-selector";
 
-  // Create button
   const button = document.createElement("button");
   button.id = "search-engine-button";
   button.className = "search-engine-button";
@@ -263,26 +252,21 @@ function createSearchEngineSelector() {
     <span class="dropdown-arrow">▼</span>
   `;
 
-  // Create dropdown
   const dropdown = document.createElement("div");
   dropdown.id = "search-engine-dropdown";
   dropdown.className = "search-engine-dropdown";
 
   selector.append(button, dropdown);
 
-  // Insert before the search input
   searchContainer.insertBefore(selector, dom.searchInput);
 
-  // Update DOM references
   dom.engineSelector = selector;
   dom.engineButton = button;
   dom.engineDropdown = dropdown;
 
-  // Update search input placeholder
   dom.searchInput.placeholder = "Search the web...";
 }
 
-// Auto-initialize if DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initSearchEngine);
 } else {

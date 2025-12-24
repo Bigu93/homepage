@@ -249,7 +249,6 @@ function renderLinkCard(name, url, categoryColor, categoryName) {
 }
 
 function renderView() {
-  // Preserve RSS and Notes sections before clearing
   const rssSection = document.getElementById("rss-section");
   const notesSection = document.getElementById("notes-section");
   
@@ -259,7 +258,6 @@ function renderView() {
 
   let filteredData = allData;
 
-  // Re-append preserved sections
   if (rssSection) dom.viewContainer.appendChild(rssSection);
   if (notesSection) dom.viewContainer.appendChild(notesSection);
 
@@ -293,7 +291,6 @@ function renderView() {
     });
     dom.viewContainer.appendChild(grid);
     
-    // Re-append preserved sections
     if (rssSection) dom.viewContainer.appendChild(rssSection);
     if (notesSection) dom.viewContainer.appendChild(notesSection);
     return;
@@ -324,7 +321,6 @@ function renderView() {
     dom.viewContainer.appendChild(section);
   });
   
-  // Re-append RSS and Notes sections at the end
   if (rssSection) dom.viewContainer.appendChild(rssSection);
   if (notesSection) dom.viewContainer.appendChild(notesSection);
 }
@@ -343,7 +339,6 @@ dom.themeToggle.onclick = toggleTheme;
    Config Export/Import
    ========================= */
 
-// Export configuration
 dom.exportConfigBtn?.addEventListener("click", () => {
   try {
     exportConfig();
@@ -353,12 +348,10 @@ dom.exportConfigBtn?.addEventListener("click", () => {
   }
 });
 
-// Import configuration - trigger file input
 dom.importConfigBtn?.addEventListener("click", () => {
   dom.importFileInput.click();
 });
 
-// Import configuration - handle file selection
 dom.importFileInput?.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -366,16 +359,13 @@ dom.importFileInput?.addEventListener("change", (e) => {
   if (confirm("Importing configuration will overwrite your current settings. Continue?")) {
     importConfig(file)
       .then(() => {
-        // Page will reload automatically on successful import
       })
       .catch((error) => {
         console.error("Import failed:", error);
         alert("Failed to import configuration: " + error.message);
-        // Reset file input
         e.target.value = "";
       });
   } else {
-    // Reset file input if cancelled
     e.target.value = "";
   }
 });
@@ -387,7 +377,6 @@ applyTheme();
 renderSidebar();
 renderView();
 
-// Listen for shortcuts changes from link manager
 document.addEventListener("shortcutsChanged", () => {
   renderSidebar();
   renderView();

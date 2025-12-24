@@ -92,7 +92,6 @@ async function fetchRSSFeed(url) {
       
       const data = await response.json();
       
-      // Validate that we got content
       if (!data || !data.contents) {
         throw new Error("No content received from proxy");
       }
@@ -101,28 +100,23 @@ async function fetchRSSFeed(url) {
     } catch (error) {
       lastError = error;
       console.warn(`Proxy ${i + 1}/${CORS_PROXIES.length} failed:`, error.message);
-      // Try next proxy
       continue;
     }
   }
   
-  // All proxies failed
   throw new Error(`All proxies failed. Last error: ${lastError?.message || 'Unknown error'}`);
 }
 
 function validateFeedXML(xmlString) {
-  // Check if the content is actually XML
   if (!xmlString || typeof xmlString !== 'string') {
     return { valid: false, error: 'Invalid content type' };
   }
   
-  // Check for basic XML structure
   const trimmed = xmlString.trim();
   if (!trimmed.startsWith('<?xml') && !trimmed.startsWith('<rss') && !trimmed.startsWith('<feed')) {
     return { valid: false, error: 'Not a valid RSS/Atom feed' };
   }
   
-  // Try to parse and check for parser errors
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlString, "text/xml");
   
@@ -131,7 +125,6 @@ function validateFeedXML(xmlString) {
     return { valid: false, error: 'XML parsing error: ' + parserError.textContent };
   }
   
-  // Check for RSS or Atom root elements
   const rssElement = xmlDoc.querySelector('rss');
   const feedElement = xmlDoc.querySelector('feed');
   
@@ -139,7 +132,6 @@ function validateFeedXML(xmlString) {
     return { valid: false, error: 'Missing RSS or Atom root element' };
   }
   
-  // Check for items or entries
   const items = xmlDoc.querySelectorAll('item');
   const entries = xmlDoc.querySelectorAll('entry');
   
@@ -156,14 +148,12 @@ function parseRSSXML(xmlString) {
   
   const items = [];
   
-  // Support both RSS (item) and Atom (entry) formats
   const rssItems = xmlDoc.querySelectorAll("item");
   const atomEntries = xmlDoc.querySelectorAll("entry");
   
   const allItems = rssItems.length > 0 ? rssItems : atomEntries;
   
   allItems.forEach((item) => {
-    // Atom uses different element names
     const title = item.querySelector("title")?.textContent || "";
     let description = item.querySelector("description")?.textContent ||
                      item.querySelector("content")?.textContent ||
@@ -191,7 +181,6 @@ async function refreshFeed(feed) {
   try {
     const xmlContent = await fetchRSSFeed(feed.url);
     
-    // Validate the feed before parsing
     const validation = validateFeedXML(xmlContent);
     if (!validation.valid) {
       throw new Error(`Invalid feed: ${validation.error}`);
@@ -203,10 +192,8 @@ async function refreshFeed(feed) {
       throw new Error("No items found in feed");
     }
     
-    // Update feed's last fetched time
     feed.lastFetched = Date.now();
     
-    // Add new items
     parsedItems.forEach((item) => {
       const existingItem = state.items.find(
         (i) => i.link === item.link && i.feedId === feed.id
@@ -222,7 +209,6 @@ async function refreshFeed(feed) {
       }
     });
     
-    // Keep only last 100 items per feed
     const feedItems = state.items.filter((i) => i.feedId === feed.id);
     if (feedItems.length > 100) {
       const toRemove = feedItems.slice(100);
@@ -266,7 +252,6 @@ async function refreshAllFeeds() {
   
   renderRSS();
   
-  // Show summary toast
   if (successCount > 0) {
     showSuccessToast(`Refreshed ${successCount} feed${successCount > 1 ? 's' : ''} successfully${errorCount > 0 ? ` (${errorCount} failed)` : ''}`);
   } else if (errorCount > 0) {
@@ -323,7 +308,6 @@ function formatPubDate(timestamp) {
     return `${days}d ago`;
   }
   
-  // Otherwise show date
   return date.toLocaleDateString();
 }
 
@@ -375,7 +359,6 @@ function renderRSSItem(item) {
   
   card.append(header, title, description, actions);
   
-  // Mark as read when clicked
   card.onclick = (e) => {
     if (e.target.closest(".rss-action-btn")) return;
     markItemAsRead(item.id);
@@ -391,7 +374,6 @@ function renderRSS() {
   
   let filteredItems = state.items;
   
-  // Filter by category
   if (state.activeCategory !== "all") {
     const categoryFeedIds = state.feeds
       .filter((f) => f.category === state.activeCategory)
@@ -399,10 +381,8 @@ function renderRSS() {
     filteredItems = filteredItems.filter((i) => categoryFeedIds.includes(i.feedId));
   }
   
-  // Sort by date (newest first)
   filteredItems.sort((a, b) => b.pubDate - a.pubDate);
   
-  // Show only last 50 items
   filteredItems = filteredItems.slice(0, 50);
   
   if (filteredItems.length === 0) {
@@ -452,7 +432,6 @@ function updateRefreshButton() {
    ========================= */
 
 function showToast(message, type = 'info') {
-  // Remove existing toast if any
   const existingToast = document.querySelector('.rss-toast');
   if (existingToast) {
     existingToast.remove();
@@ -464,10 +443,8 @@ function showToast(message, type = 'info') {
   
   document.body.appendChild(toast);
   
-  // Trigger animation
   setTimeout(() => toast.classList.add('visible'), 10);
   
-  // Auto remove after 4 seconds
   setTimeout(() => {
     toast.classList.remove('visible');
     setTimeout(() => toast.remove(), 300);
@@ -552,7 +529,6 @@ async function addFeed(url, name, category) {
     return false;
   }
   
-  // Check for duplicate URLs
   if (state.feeds.some((f) => f.url === url)) {
     showErrorToast("This feed URL is already added.");
     return false;
@@ -569,7 +545,6 @@ async function addFeed(url, name, category) {
   state.feeds.push(feed);
   saveData();
   
-  // Refresh the new feed with loading state
   showLoadingState();
   try {
     const count = await refreshFeed(feed);
@@ -638,7 +613,6 @@ function handleSaveFeed() {
    ========================= */
 
 function initRSSReader() {
-  // Find DOM elements
   dom.rssSection = document.getElementById("rss-section");
   dom.rssHeader = dom.rssSection?.querySelector(".rss-header");
   dom.addFeedBtn = document.getElementById("add-feed-btn");
@@ -660,10 +634,8 @@ function initRSSReader() {
     return;
   }
   
-  // Load data
   loadData();
   
-  // Set up event listeners
   dom.addFeedBtn?.addEventListener("click", showAddFeedModal);
   dom.refreshBtn?.addEventListener("click", refreshAllFeeds);
   dom.categoryFilter?.addEventListener("change", (e) => {
@@ -682,16 +654,13 @@ function initRSSReader() {
     if (e.key === "Enter") handleSaveFeed();
   });
   
-  // Close modal on backdrop click
   dom.addFeedModal?.addEventListener("click", (e) => {
     if (e.target === dom.addFeedModal) hideAddFeedModal();
   });
   
-  // Initial render
   renderCategoryFilter();
   renderRSS();
   
-  // Auto-refresh feeds on load if they're stale
   const now = Date.now();
   const staleFeeds = state.feeds.filter(
     (f) => !f.lastFetched || now - f.lastFetched > CACHE_DURATION
@@ -701,7 +670,6 @@ function initRSSReader() {
     refreshAllFeeds();
   }
   
-  // Add toast container styles if not present
   if (!document.querySelector('#rss-toast-styles')) {
     const style = document.createElement('style');
     style.id = 'rss-toast-styles';
@@ -771,7 +739,6 @@ function initRSSReader() {
   }
 }
 
-// Initialize when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initRSSReader);
 } else {

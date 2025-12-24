@@ -296,12 +296,10 @@ function initNotes() {
   bindEvents();
 }
 
-// Initialize when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initNotes);
 } else {
   initNotes();
 }
 
-// Export for external access if needed
 export { createNote, updateNote, deleteNote, togglePin, getSortedNotes, loadNotes, saveNotes };

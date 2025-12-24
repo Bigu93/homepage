@@ -49,7 +49,6 @@ function saveCustomData() {
  * @returns {Array} - Combined data array
  */
 function getAllData() {
-  // Import default data dynamically
   return window.defaultShortcuts ? [...window.defaultShortcuts, ...customData] : customData;
 }
 
@@ -129,13 +128,10 @@ function addLink(categoryName, linkName, linkUrl) {
   
   if (!cat || !linkName || !linkUrl) return false;
   
-  // If it's a custom category, add directly
   if (customCat) {
     customCat.items[linkName] = linkUrl;
     saveCustomData();
   } else {
-    // For default categories, we need to create a custom override
-    // Find or create a custom category with the same name
     let overrideCat = findCustomCategory(categoryName);
     if (!overrideCat) {
       overrideCat = {
@@ -165,7 +161,6 @@ function editLink(categoryName, oldLinkName, newLinkName, newLinkUrl) {
   
   if (!cat) return false;
   
-  // If it's a custom category, edit directly
   if (customCat) {
     if (oldLinkName !== newLinkName) {
       delete customCat.items[oldLinkName];
@@ -173,7 +168,6 @@ function editLink(categoryName, oldLinkName, newLinkName, newLinkUrl) {
     customCat.items[newLinkName] = newLinkUrl;
     saveCustomData();
   } else {
-    // For default categories, create a custom override
     let overrideCat = findCustomCategory(categoryName);
     if (!overrideCat) {
       overrideCat = {
@@ -204,12 +198,10 @@ function deleteLink(categoryName, linkName) {
   
   if (!cat || !cat.items[linkName]) return false;
   
-  // If it's a custom category, delete directly
   if (customCat) {
     delete customCat.items[linkName];
     saveCustomData();
   } else {
-    // For default categories, create a custom override without the link
     let overrideCat = findCustomCategory(categoryName);
     if (!overrideCat) {
       overrideCat = {
@@ -426,7 +418,6 @@ function openLinkModal(categoryName = "", linkName = "", linkUrl = "") {
   const form = modal.querySelector("#link-form");
   const catSelect = modal.querySelector("#link-category");
   
-  // Populate category dropdown
   catSelect.innerHTML = "";
   const allData = getAllData();
   allData.forEach((cat) => {
@@ -436,7 +427,6 @@ function openLinkModal(categoryName = "", linkName = "", linkUrl = "") {
     catSelect.appendChild(option);
   });
 
-  // Set form values
   modal.querySelector("#link-category-name").value = categoryName;
   modal.querySelector("#link-old-name").value = linkName;
   modal.querySelector("#link-name").value = linkName;
@@ -502,13 +492,11 @@ function setupLinkModalEvents() {
     const newUrl = modal.querySelector("#link-url").value.trim();
 
     if (oldName) {
-      // Edit existing link
       if (editLink(categoryName, oldName, newName, newUrl)) {
         refreshDashboard();
         closeModals();
       }
     } else {
-      // Add new link
       if (addLink(categoryName, newName, newUrl)) {
         refreshDashboard();
         closeModals();
@@ -536,13 +524,11 @@ function setupCategoryModalEvents() {
     const icon = modal.querySelector("#category-icon").value;
 
     if (oldName) {
-      // Edit existing category
       if (renameCategory(oldName, newName)) {
         refreshDashboard();
         closeModals();
       }
     } else {
-      // Add new category
       if (addCategory(newName, color, icon)) {
         refreshDashboard();
         closeModals();
@@ -564,7 +550,6 @@ function setupContextMenu() {
 
   let currentTarget = null;
 
-  // Handle context menu on link cards
   document.addEventListener("contextmenu", (e) => {
     const linkCard = e.target.closest(".link-card");
     if (linkCard) {
@@ -574,7 +559,6 @@ function setupContextMenu() {
       const categoryName = linkCard.dataset.category;
       const linkName = linkCard.dataset.name;
       
-      // Position menu to avoid going off screen
       let left = e.clientX;
       let top = e.clientY;
       const menuRect = menu.getBoundingClientRect();
@@ -590,13 +574,11 @@ function setupContextMenu() {
       menu.style.top = `${top}px`;
       menu.classList.add("visible");
       
-      // Store link data for actions
       menu.dataset.category = categoryName;
       menu.dataset.linkName = linkName;
     }
   });
 
-  // Handle context menu actions
   menu.querySelectorAll(".context-menu-item").forEach((item) => {
     item.onclick = () => {
       const action = item.dataset.action;
@@ -625,7 +607,6 @@ function setupContextMenu() {
     };
   });
 
-  // Close context menu on click elsewhere
   document.addEventListener("click", () => {
     menu.classList.remove("visible");
   });
@@ -641,7 +622,6 @@ function addLinkButtons() {
     const cat = findCategory(categoryName);
     
     if (cat) {
-      // Remove existing button if any
       const existingBtn = header.querySelector(".add-link-btn");
       if (existingBtn) existingBtn.remove();
       
@@ -662,7 +642,6 @@ function addCategoryManagementButton() {
   const sidebarNav = document.querySelector(".sidebar-nav");
   if (!sidebarNav) return;
 
-  // Check if button already exists
   if (sidebarNav.querySelector("#add-category-btn")) return;
 
   const divider = document.createElement("div");
@@ -731,7 +710,6 @@ function openCategoryManagementPanel() {
     openCategoryModal();
   };
 
-  // Edit category
   modal.querySelectorAll(".edit-cat").forEach((btn) => {
     btn.onclick = () => {
       const categoryName = btn.closest(".category-manage-item").dataset.category;
@@ -740,7 +718,6 @@ function openCategoryManagementPanel() {
     };
   });
 
-  // Delete category
   modal.querySelectorAll(".delete-cat").forEach((btn) => {
     btn.onclick = () => {
       const categoryName = btn.closest(".category-manage-item").dataset.category;
@@ -767,7 +744,6 @@ function openCategoryManagementPanel() {
  * Refresh dashboard after changes
  */
 function refreshDashboard() {
-  // Trigger dashboard re-render by dispatching custom event
   document.dispatchEvent(new CustomEvent("shortcutsChanged"));
 }
 
@@ -779,7 +755,6 @@ function refreshDashboard() {
  * Initialize link manager
  */
 export function initLinkManager() {
-  // Wait for dashboard to render first
   setTimeout(() => {
     addLinkButtons();
     addCategoryManagementButton();
@@ -787,7 +762,6 @@ export function initLinkManager() {
   }, 100);
 }
 
-// Export functions for external use
 export {
   customData,
   loadCustomData,
@@ -805,7 +779,6 @@ export {
   refreshDashboard,
 };
 
-// Auto-initialize when module loads
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initLinkManager);
 } else {

@@ -230,5 +230,4 @@ const defaultShortcuts = [
 
 export default defaultShortcuts;
 
-// Also export as window property for link-manager access
 window.defaultShortcuts = defaultShortcuts;

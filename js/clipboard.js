@@ -221,7 +221,6 @@ function renderSnippets() {
 function getFilteredSnippets() {
   let filtered = [...clipboardState.snippets];
   
-  // Filter by search query
   if (clipboardState.searchQuery) {
     const query = clipboardState.searchQuery.toLowerCase();
     filtered = filtered.filter((s) =>
@@ -230,7 +229,6 @@ function getFilteredSnippets() {
     );
   }
   
-  // Filter by category
   if (clipboardState.activeCategory !== "all") {
     filtered = filtered.filter((s) => s.category === clipboardState.activeCategory);
   }
@@ -250,7 +248,6 @@ function editSnippet(snippet) {
   dom.categorySelect.value = snippet.category;
   dom.input.focus();
   
-  // Remove the old snippet - it will be re-added when user submits
   deleteSnippet(snippet.id);
 }
 
@@ -294,7 +291,6 @@ function updatePanelVisibility() {
    ========================= */
 
 function initClipboard() {
-  // Create panel element
   dom.panel = document.createElement("div");
   dom.panel.className = "clipboard-panel";
   if (clipboardState.isPanelVisible) {
@@ -323,13 +319,11 @@ function initClipboard() {
     <div class="clipboard-empty">No snippets yet. Add one above!</div>
   `;
   
-  // Append to main content
   const mainContent = document.querySelector(".main-content");
   if (mainContent) {
     mainContent.appendChild(dom.panel);
   }
   
-  // Cache DOM elements
   dom.input = dom.panel.querySelector(".clipboard-input");
   dom.categorySelect = dom.panel.querySelector(".clipboard-category");
   dom.searchInput = dom.panel.querySelector(".clipboard-search");
@@ -338,7 +332,6 @@ function initClipboard() {
   dom.addBtn = dom.panel.querySelector(".clipboard-add-btn");
   const closeBtn = dom.panel.querySelector(".clipboard-close");
   
-  // Event listeners
   dom.addBtn.onclick = () => {
     const text = dom.input.value.trim();
     const category = dom.categorySelect.value;
@@ -364,7 +357,6 @@ function initClipboard() {
   
   closeBtn.onclick = togglePanel;
   
-  // Create toggle button in sidebar
   dom.toggleBtn = document.createElement("button");
   dom.toggleBtn.className = `nav-item ${clipboardState.isPanelVisible ? "active" : ""}`;
   dom.toggleBtn.innerHTML = `
@@ -381,17 +373,14 @@ function initClipboard() {
     sidebarFooter.appendChild(dom.toggleBtn);
   }
   
-  // Load data and render
   loadSnippets();
   renderSnippets();
 }
 
-// Initialize when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initClipboard);
 } else {
   initClipboard();
 }
 
-// Export for potential external use
 export { clipboardState, addSnippet, deleteSnippet, copyToClipboard };
