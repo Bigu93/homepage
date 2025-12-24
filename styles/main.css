@@ -286,6 +286,14 @@ body {
   line-height: 1;
 }
 
+/* Search and Notes Column */
+.search-notes-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+}
+
 /* Notes Section in Header */
 .header .notes-section {
   width: 100%;
