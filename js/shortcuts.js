@@ -27,9 +27,10 @@ const defaultShortcuts = [
     category: "Courses",
     color: "cyan",
     items: {
-      xss_rat: "https://thexssrat.podia.com/",
+      xss_rat: "https://thexssrat.podia.com/products/home",
       docker: "https://labs.iximiuz.com/dashboard",
       docs: "https://devdocs.io/",
+      labex: "https://labex.io/"
     },
     icon: "graduation-cap",
   },
