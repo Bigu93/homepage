@@ -7,11 +7,15 @@ import { getFavicon } from "../favicons.js";
 let dataRef = [];
 let stateRef = null; // { activeCategory, searchQuery, favorites: Set }
 let onFavoriteToggle = null;
+let onEditCb = null;
+let onAddToCatCb = null;
 
-export function initGrid({ data, state, onToggleFavorite }) {
+export function initGrid({ data, state, onToggleFavorite, onEditLink, onAddLinkToCategory }) {
   dataRef = data;
   stateRef = state;
   onFavoriteToggle = onToggleFavorite;
+  onEditCb = onEditLink;
+  onAddToCatCb = onAddLinkToCategory;
   render();
 }
 
@@ -44,19 +48,32 @@ function render() {
   filtered.forEach((cat) => {
     const section = document.createElement("section");
     section.className = "category-section";
+    section.dataset.categoryId = cat.id;
 
     const header = document.createElement("h2");
     header.className = `category-header ${cat.color}`;
-    header.innerHTML = `<span class="cat-dot"></span>${cat.category}`;
+    header.innerHTML = `<span class="cat-dot"></span><span class="cat-name">${cat.category}</span>`;
+    const addToCatBtn = document.createElement("button");
+    addToCatBtn.className = "cat-add-btn";
+    addToCatBtn.innerHTML = ICONS.plus;
+    addToCatBtn.title = "Add link to this category";
+    addToCatBtn.onclick = () => onAddToCatCb && onAddToCatCb(cat.id);
+    header.appendChild(addToCatBtn);
 
     const grid = document.createElement("div");
     grid.className = "grid-view";
 
-    cat.items.forEach((item) => {
-      grid.appendChild(renderLinkCard(item));
-    });
+    if (cat.items.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty-cat";
+      empty.innerHTML = `No links yet. <button class="btn btn-ghost" type="button">+ Add your first link</button>`;
+      empty.querySelector("button").onclick = () => onAddToCatCb && onAddToCatCb(cat.id);
+      section.append(header, empty);
+    } else {
+      cat.items.forEach((item) => grid.appendChild(renderLinkCard(item)));
+      section.append(header, grid);
+    }
 
-    section.append(header, grid);
     root.appendChild(section);
   });
 }
@@ -113,6 +130,16 @@ function renderLinkCard(item) {
   title.textContent = item.name;
   title.title = item.name;
 
+  const editBtn = document.createElement("button");
+  editBtn.className = "edit-btn";
+  editBtn.title = "Edit";
+  editBtn.innerHTML = ICONS.pencil;
+  editBtn.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onEditCb) onEditCb(item.id);
+  };
+
   const favBtn = document.createElement("button");
   favBtn.className = `fav-btn ${stateRef.favorites.has(item.id) ? "active" : ""}`;
   favBtn.innerHTML = ICONS.star;
@@ -122,6 +149,6 @@ function renderLinkCard(item) {
     onFavoriteToggle && onFavoriteToggle(item.id);
   };
 
-  card.append(faviconWrap, title, favBtn);
+  card.append(faviconWrap, title, editBtn, favBtn);
   return card;
 }

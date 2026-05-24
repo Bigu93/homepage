@@ -10,6 +10,8 @@ import { initTheme } from "./theme.js";
 import { initSidebar, setActive as setSidebarActive, setData as setSidebarData } from "./render/sidebar.js";
 import { initGrid, setData as setGridData, setState as setGridState } from "./render/grid.js";
 import { initSettings } from "./crud/settings.js";
+import { initLinkEditor, openLinkEditor } from "./crud/link-editor.js";
+import { ICONS } from "./icons.js";
 
 let overlay = loadOverlay();
 overlay = migrateLegacyFavorites(overlay, seed);
@@ -49,12 +51,19 @@ initGrid({
   data: categories,
   state,
   onToggleFavorite: toggleFavorite,
+  onEditLink: (linkId) => openLinkEditor({ linkId }),
+  onAddLinkToCategory: (catId) => openLinkEditor({ defaultCategoryId: catId }),
 });
 initSettings({
   overlay,
   onChange: () => {
     refreshData();
   },
+});
+initLinkEditor({
+  overlay,
+  getCategories: () => categories,
+  onChange: refreshData,
 });
 
 document.querySelector('[data-cat="all"]').onclick = () => selectCategory("all");
@@ -86,3 +95,10 @@ export function getOverlay() {
 export function persistOverlay() {
   saveOverlay(overlay);
 }
+
+const fab = document.createElement("button");
+fab.className = "fab";
+fab.innerHTML = "+";
+fab.title = "Add link";
+fab.onclick = () => openLinkEditor({});
+document.body.appendChild(fab);
