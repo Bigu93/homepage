@@ -166,20 +166,35 @@ function customRow(eng, idx) {
   row.style.gridTemplateColumns = "80px 1fr 1fr auto";
   row.style.gap = "0.375rem";
   row.style.marginBottom = "0.375rem";
-  row.innerHTML = `
-    <input type="text" placeholder="prefix" value="${eng.key || ""}">
-    <input type="text" placeholder="Label" value="${eng.label || ""}">
-    <input type="url" placeholder="https://…/?q=%s" value="${eng.urlTemplate || ""}">
-    <button class="btn btn-ghost" title="Remove">×</button>
-  `;
-  const [keyI, labelI, urlI, delBtn] = row.children;
+
+  const keyI = document.createElement("input");
+  keyI.type = "text";
+  keyI.placeholder = "prefix";
+  keyI.value = eng.key || "";
+
+  const labelI = document.createElement("input");
+  labelI.type = "text";
+  labelI.placeholder = "Label";
+  labelI.value = eng.label || "";
+
+  const urlI = document.createElement("input");
+  urlI.type = "url";
+  urlI.placeholder = "https://…/?q=%s";
+  urlI.value = eng.urlTemplate || "";
+
+  const delBtn = document.createElement("button");
+  delBtn.className = "btn btn-ghost";
+  delBtn.title = "Remove";
+  delBtn.textContent = "×";
+
+  row.append(keyI, labelI, urlI, delBtn);
+
   const persist = () => {
-    const eng2 = {
+    overlayRef.settings.customEngines[idx] = {
       key: keyI.value.trim(),
       label: labelI.value.trim(),
       urlTemplate: urlI.value.trim(),
     };
-    overlayRef.settings.customEngines[idx] = eng2;
     persistAndNotify();
   };
   keyI.onchange = persist;
@@ -301,6 +316,8 @@ async function importData(file) {
     danger: true,
   });
   if (!ok) return;
+  // Clear all existing keys then assign from parsed — full replace, not merge.
+  for (const k of Object.keys(overlayRef)) delete overlayRef[k];
   Object.assign(overlayRef, parsed);
   persistAndNotify();
   toast("Imported. Reloading…", "success");
