@@ -91,13 +91,27 @@ function renderLinkCard(item) {
   card.rel = "noopener noreferrer";
   card.dataset.linkId = item.id;
 
+  const faviconWrap = document.createElement("div");
+  faviconWrap.className = "link-favicon";
   const icon = document.createElement("img");
   icon.src = getFavicon(item.url);
   icon.loading = "lazy";
+  icon.alt = "";
+  icon.onerror = () => {
+    faviconWrap.innerHTML = "";
+    const letter = document.createElement("span");
+    letter.textContent = (item.name[0] || "?").toUpperCase();
+    letter.style.color = "var(--text-main)";
+    letter.style.fontWeight = "600";
+    letter.style.fontSize = "12px";
+    faviconWrap.appendChild(letter);
+  };
+  faviconWrap.appendChild(icon);
 
   const title = document.createElement("span");
   title.className = "link-title";
   title.textContent = item.name;
+  title.title = item.name;
 
   const favBtn = document.createElement("button");
   favBtn.className = `fav-btn ${stateRef.favorites.has(item.id) ? "active" : ""}`;
@@ -108,6 +122,6 @@ function renderLinkCard(item) {
     onFavoriteToggle && onFavoriteToggle(item.id);
   };
 
-  card.append(icon, title, favBtn);
+  card.append(faviconWrap, title, favBtn);
   return card;
 }
