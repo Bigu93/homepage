@@ -2,6 +2,7 @@ import data from "./shortcuts.js";
 import { ICONS } from "./icons.js";
 import { getFavicon, clearExpiredFavicons } from "./favicons.js";
 import { startClock } from "./clock.js";
+import { initTheme } from "./theme.js";
 
 /* =========================
    State & DOM
@@ -10,7 +11,6 @@ const state = {
   activeCategory: "all",
   searchQuery: "",
   favorites: new Set(JSON.parse(localStorage.getItem("favorites") || "[]")),
-  theme: localStorage.getItem("theme") || "dark",
 };
 
 const dom = {
@@ -18,39 +18,11 @@ const dom = {
   viewContainer: document.getElementById("view-container"),
   filterInput: document.getElementById("filter"),
   sidebarNav: document.querySelector(".sidebar-nav"),
-  themeToggle: document.getElementById("theme-toggle"),
 };
 
 /* =========================
    Logic
  ========================= */
-
-function toggleTheme() {
-  const isDark = state.theme === "dark";
-  state.theme = isDark ? "light" : "dark";
-
-  applyTheme();
-  localStorage.setItem("theme", state.theme);
-}
-
-function applyTheme() {
-  const isDark = state.theme === "dark";
-  document.documentElement.setAttribute("data-theme", state.theme);
-
-  const icon = dom.themeToggle.querySelector(".icon");
-  icon.innerHTML = isDark ? ICONS.moon : ICONS.sun;
-
-  icon.animate(
-    [
-      { transform: "rotate(0deg) scale(0.5)" },
-      { transform: "rotate(360deg) scale(1)" },
-    ],
-    {
-      duration: 500,
-      easing: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-    },
-  );
-}
 
 function renderSidebar() {
   dom.sidebarCats.innerHTML = "";
@@ -186,11 +158,9 @@ dom.filterInput.addEventListener("input", (e) => {
 document.querySelector('[data-cat="all"]').onclick = () =>
   setActiveCategory("all");
 
-dom.themeToggle.onclick = toggleTheme;
-
 clearExpiredFavicons();
 startClock("Marcin");
-applyTheme();
+initTheme();
 renderSidebar();
 renderView();
 
