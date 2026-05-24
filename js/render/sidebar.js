@@ -24,6 +24,12 @@ export function setActive(category) {
   });
 }
 
+export function setData(data, activeCategory) {
+  dataRef = data;
+  if (activeCategory != null) activeCategoryRef = activeCategory;
+  render();
+}
+
 function render() {
   const root = document.getElementById("sidebar-categories");
   if (!root) return;

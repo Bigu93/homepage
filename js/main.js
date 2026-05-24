@@ -7,8 +7,9 @@ import { merge } from "./data.js";
 import { clearExpiredFavicons } from "./favicons.js";
 import { startClock } from "./clock.js";
 import { initTheme } from "./theme.js";
-import { initSidebar, setActive as setSidebarActive } from "./render/sidebar.js";
+import { initSidebar, setActive as setSidebarActive, setData as setSidebarData } from "./render/sidebar.js";
 import { initGrid, setData as setGridData, setState as setGridState } from "./render/grid.js";
+import { initSettings } from "./crud/settings.js";
 
 let overlay = loadOverlay();
 overlay = migrateLegacyFavorites(overlay, seed);
@@ -49,6 +50,12 @@ initGrid({
   state,
   onToggleFavorite: toggleFavorite,
 });
+initSettings({
+  overlay,
+  onChange: () => {
+    refreshData();
+  },
+});
 
 document.querySelector('[data-cat="all"]').onclick = () => selectCategory("all");
 
@@ -69,6 +76,7 @@ document.addEventListener("keydown", (e) => {
 export function refreshData() {
   categories = merge(seed, overlay);
   setGridData(categories);
+  setSidebarData(categories, state.activeCategory);
 }
 
 export function getOverlay() {
