@@ -52,8 +52,8 @@ function render() {
     const grid = document.createElement("div");
     grid.className = "grid-view";
 
-    Object.entries(cat.items).forEach(([name, url]) => {
-      grid.appendChild(renderLinkCard(name, url));
+    cat.items.forEach((item) => {
+      grid.appendChild(renderLinkCard(item.name, item.url));
     });
 
     section.append(header, grid);
@@ -64,9 +64,12 @@ function render() {
 function renderSearchResults(root, query) {
   const matches = [];
   dataRef.forEach((cat) => {
-    Object.entries(cat.items).forEach(([name, url]) => {
-      if (name.toLowerCase().includes(query) || url.toLowerCase().includes(query)) {
-        matches.push({ name, url });
+    cat.items.forEach((item) => {
+      if (
+        item.name.toLowerCase().includes(query) ||
+        item.url.toLowerCase().includes(query)
+      ) {
+        matches.push({ name: item.name, url: item.url });
       }
     });
   });
