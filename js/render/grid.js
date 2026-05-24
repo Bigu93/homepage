@@ -53,7 +53,7 @@ function render() {
     grid.className = "grid-view";
 
     cat.items.forEach((item) => {
-      grid.appendChild(renderLinkCard(item.name, item.url));
+      grid.appendChild(renderLinkCard(item));
     });
 
     section.append(header, grid);
@@ -69,7 +69,7 @@ function renderSearchResults(root, query) {
         item.name.toLowerCase().includes(query) ||
         item.url.toLowerCase().includes(query)
       ) {
-        matches.push({ name: item.name, url: item.url });
+        matches.push(item);
       }
     });
   });
@@ -79,32 +79,33 @@ function renderSearchResults(root, query) {
   }
   const grid = document.createElement("div");
   grid.className = "grid-view";
-  matches.forEach((m) => grid.appendChild(renderLinkCard(m.name, m.url)));
+  matches.forEach((m) => grid.appendChild(renderLinkCard(m)));
   root.appendChild(grid);
 }
 
-function renderLinkCard(name, url) {
+function renderLinkCard(item) {
   const card = document.createElement("a");
-  card.href = url;
+  card.href = item.url;
   card.className = "link-card";
   card.target = "_blank";
   card.rel = "noopener noreferrer";
+  card.dataset.linkId = item.id;
 
   const icon = document.createElement("img");
-  icon.src = getFavicon(url);
+  icon.src = getFavicon(item.url);
   icon.loading = "lazy";
 
   const title = document.createElement("span");
   title.className = "link-title";
-  title.textContent = name;
+  title.textContent = item.name;
 
   const favBtn = document.createElement("button");
-  favBtn.className = `fav-btn ${stateRef.favorites.has(url) ? "active" : ""}`;
+  favBtn.className = `fav-btn ${stateRef.favorites.has(item.id) ? "active" : ""}`;
   favBtn.innerHTML = ICONS.star;
   favBtn.onclick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    onFavoriteToggle && onFavoriteToggle(url);
+    onFavoriteToggle && onFavoriteToggle(item.id);
   };
 
   card.append(icon, title, favBtn);
