@@ -1,6 +1,7 @@
 import data from "./shortcuts.js";
 import { ICONS } from "./icons.js";
 import { getFavicon, clearExpiredFavicons } from "./favicons.js";
+import { startClock } from "./clock.js";
 
 /* =========================
    State & DOM
@@ -16,9 +17,6 @@ const dom = {
   sidebarCats: document.getElementById("sidebar-categories"),
   viewContainer: document.getElementById("view-container"),
   filterInput: document.getElementById("filter"),
-  clock: document.getElementById("clock"),
-  dateDisplay: document.getElementById("date-display"),
-  greeting: document.getElementById("greeting"),
   sidebarNav: document.querySelector(".sidebar-nav"),
   themeToggle: document.getElementById("theme-toggle"),
 };
@@ -26,26 +24,6 @@ const dom = {
 /* =========================
    Logic
  ========================= */
-
-function updateTime() {
-  const now = new Date();
-  dom.clock.textContent = now.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  dom.dateDisplay.textContent = now.toLocaleDateString([], {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
-
-  const hour = now.getHours();
-  let greeting = "Good Evening,";
-  if (hour < 12) greeting = "Good Morning,";
-  else if (hour < 18) greeting = "Good Afternoon,";
-
-  dom.greeting.textContent = `${greeting} Marcin`;
-}
 
 function toggleTheme() {
   const isDark = state.theme === "dark";
@@ -211,8 +189,7 @@ document.querySelector('[data-cat="all"]').onclick = () =>
 dom.themeToggle.onclick = toggleTheme;
 
 clearExpiredFavicons();
-setInterval(updateTime, 1000);
-updateTime();
+startClock("Marcin");
 applyTheme();
 renderSidebar();
 renderView();
