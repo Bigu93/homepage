@@ -2,6 +2,7 @@
 // Renders the sidebar category list.
 
 import { ICONS } from "../icons.js";
+import { recordClick } from "../stats.js";
 
 let dataRef = [];
 let activeCategoryRef = "all";
@@ -82,6 +83,7 @@ function render() {
       label.className = "label";
       label.textContent = p.link.name;
       a.append(dot, label);
+      a.addEventListener("click", () => recordClick(p.link.id));
       pinnedWrap.appendChild(a);
     });
     root.appendChild(pinnedWrap);
