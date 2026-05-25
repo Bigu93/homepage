@@ -15,6 +15,7 @@ import { initCategoryEditor, openCategoryEditor } from "./crud/category-editor.j
 import { initDnD, attach as attachDnD } from "./crud/dnd.js";
 import { initSearch, render as renderSearch } from "./search.js";
 import { initWeather, render as renderWeather } from "./weather.js";
+import { initHelp } from "./help.js";
 import { ICONS } from "./icons.js";
 
 let overlay = loadOverlay();
@@ -94,6 +95,8 @@ initSearch({
 });
 
 initWeather({ overlay });
+
+initHelp({ overlay });
 
 // When search clears, re-render the grid normally.
 document.addEventListener("search:cleared", () => {

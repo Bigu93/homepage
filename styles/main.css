@@ -1165,3 +1165,30 @@ body {
 .nav-pinned-item .cat-dot {
   flex-shrink: 0;
 }
+
+.help-body { color: var(--text-main); font-size: 0.875rem; line-height: 1.55; }
+.help-section { margin-bottom: 1.25rem; }
+.help-section h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.help-section ul { padding-left: 1.25rem; margin: 0; }
+.help-section li { margin: 0.25rem 0; color: var(--text-muted); }
+.help-section li strong { color: var(--text-main); }
+.help-section code, .help-section kbd {
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--text-main);
+}
+.help-section a { color: var(--accent-primary); }
+.kbd-table { width: 100%; border-collapse: collapse; }
+.kbd-table td { padding: 0.25rem 0.5rem 0.25rem 0; color: var(--text-muted); }
+.kbd-table td:first-child { width: 130px; }
