@@ -67,13 +67,18 @@
             </div>
 
             <div class="search-container">
+              <button id="engine-chip" class="engine-chip" type="button" title="Switch search engine">
+                <span class="engine-label">DDG</span>
+                <span class="engine-caret">▾</span>
+              </button>
               <input
                 id="filter"
                 type="text"
-                placeholder="Search shortcuts..."
+                placeholder="Search shortcuts or the web…"
                 autocomplete="off"
+                spellcheck="false"
               />
-              <div class="search-icon">🔍</div>
+              <div id="engine-menu" class="engine-menu" hidden></div>
             </div>
           </div>
         </header>
