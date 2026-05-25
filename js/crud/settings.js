@@ -4,6 +4,7 @@
 import { openModal, closeModal, confirmDialog, toast } from "./modal.js";
 import { BUILTIN_ENGINES } from "../engines.js";
 import { reset as resetStorage, save as saveOverlay } from "../storage.js";
+import { clearStats } from "../stats.js";
 
 let overlayRef = null;
 let onChangeCb = null;
@@ -76,6 +77,7 @@ export function openSettings(scrollTo) {
         <button class="btn" id="set-import">Import JSON</button>
         <input type="file" id="set-import-file" accept="application/json" style="display:none">
         <button class="btn btn-danger" id="set-reset">Reset to defaults</button>
+        <button class="btn" id="set-clear-stats">Clear usage stats</button>
         <button class="btn btn-danger" id="set-full-reset">Full reset (incl. settings)</button>
       </div>
     </section>
@@ -132,6 +134,7 @@ export function openSettings(scrollTo) {
     importData(e.target.files[0]);
   body.querySelector("#set-reset").onclick = resetData;
   body.querySelector("#set-full-reset").onclick = fullReset;
+  body.querySelector("#set-clear-stats").onclick = clearStatsHandler;
 
   const footer = document.createElement("div");
   footer.style.display = "flex";
@@ -362,6 +365,20 @@ async function resetData() {
   persistAndNotify();
   toast("Reset. Reloading…", "success");
   setTimeout(() => location.reload(), 600);
+}
+
+async function clearStatsHandler() {
+  const ok = await confirmDialog({
+    title: "Clear usage stats",
+    message:
+      "Resets every link's click count to zero. The Frequent sidebar group will disappear until you build up new counts. Continue?",
+    confirmLabel: "Clear",
+    danger: true,
+  });
+  if (!ok) return;
+  clearStats();
+  if (onChangeCb) onChangeCb();
+  toast("Usage stats cleared.", "success");
 }
 
 async function fullReset() {
