@@ -9,13 +9,15 @@ let stateRef = null; // { activeCategory, searchQuery, favorites: Set }
 let onFavoriteToggle = null;
 let onEditCb = null;
 let onAddToCatCb = null;
+let onEditCategoryCb = null;
 
-export function initGrid({ data, state, onToggleFavorite, onEditLink, onAddLinkToCategory }) {
+export function initGrid({ data, state, onToggleFavorite, onEditLink, onAddLinkToCategory, onEditCategory }) {
   dataRef = data;
   stateRef = state;
   onFavoriteToggle = onToggleFavorite;
   onEditCb = onEditLink;
   onAddToCatCb = onAddLinkToCategory;
+  onEditCategoryCb = onEditCategory;
   render();
 }
 
@@ -61,6 +63,13 @@ function render() {
     addToCatBtn.title = "Add link to this category";
     addToCatBtn.onclick = () => onAddToCatCb && onAddToCatCb(cat.id);
     header.appendChild(addToCatBtn);
+
+    const editCatBtn = document.createElement("button");
+    editCatBtn.className = "cat-add-btn cat-edit-btn";
+    editCatBtn.innerHTML = ICONS.pencil;
+    editCatBtn.title = "Edit category";
+    editCatBtn.onclick = () => onEditCategoryCb && onEditCategoryCb(cat.id);
+    header.appendChild(editCatBtn);
 
     const grid = document.createElement("div");
     grid.className = "grid-view";

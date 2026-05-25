@@ -1132,3 +1132,36 @@ body {
   }
   .weather-chip { align-self: flex-end; }
 }
+
+.nav-section-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 0.5rem 0.75rem 0.25rem;
+}
+.nav-pinned {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 0.25rem;
+}
+.nav-pinned-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  text-decoration: none;
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  transition: var(--transition);
+}
+.nav-pinned-item:hover {
+  background: var(--surface-2);
+  color: var(--text-main);
+}
+.nav-pinned-item .cat-dot {
+  flex-shrink: 0;
+}

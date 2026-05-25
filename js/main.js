@@ -7,7 +7,7 @@ import { merge } from "./data.js";
 import { clearExpiredFavicons } from "./favicons.js";
 import { startClock } from "./clock.js";
 import { initTheme } from "./theme.js";
-import { initSidebar, setActive as setSidebarActive, setData as setSidebarData } from "./render/sidebar.js";
+import { initSidebar, setActive as setSidebarActive, setData as setSidebarData, setFavorites as setSidebarFavorites } from "./render/sidebar.js";
 import { initGrid, setData as setGridData, setState as setGridState } from "./render/grid.js";
 import { initSettings } from "./crud/settings.js";
 import { initLinkEditor, openLinkEditor } from "./crud/link-editor.js";
@@ -41,6 +41,7 @@ function toggleFavorite(linkId) {
   overlay.favorites = [...state.favorites];
   saveOverlay(overlay);
   setGridState({});
+  setSidebarFavorites(state.favorites);
 }
 
 clearExpiredFavicons();
@@ -52,6 +53,7 @@ initSidebar({
   onCategorySelect: selectCategory,
   onEditCategory: (catId) => openCategoryEditor({ categoryId: catId }),
   onAddCategory: () => openCategoryEditor({}),
+  favorites: state.favorites,
 });
 initGrid({
   data: categories,
@@ -59,6 +61,7 @@ initGrid({
   onToggleFavorite: toggleFavorite,
   onEditLink: (linkId) => openLinkEditor({ linkId }),
   onAddLinkToCategory: (catId) => openLinkEditor({ defaultCategoryId: catId }),
+  onEditCategory: (catId) => openCategoryEditor({ categoryId: catId }),
 });
 initSettings({
   overlay,
@@ -106,8 +109,15 @@ document.addEventListener("search:active", () => {
 // Expose for later phases (settings panel will call these)
 export function refreshData() {
   categories = merge(seed, overlay);
+  // drop orphaned favorites (links that no longer exist)
+  const allIds = new Set();
+  categories.forEach((c) => c.items.forEach((l) => allIds.add(l.id)));
+  state.favorites = new Set([...state.favorites].filter((id) => allIds.has(id)));
+  overlay.favorites = [...state.favorites];
+
   setGridData(categories);
   setSidebarData(categories, state.activeCategory);
+  setSidebarFavorites(state.favorites);
   attachDnD();
   renderWeather();
   // If a search is active, re-render the search overlay so changes appear immediately.
