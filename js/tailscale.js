@@ -1,24 +1,34 @@
 // js/tailscale.js
-// Tailscale up/down indicator via MagicDNS fetch probe.
+// Tailscale up/down indicator.
+// On HTTP/file: probes MagicDNS http://100.100.100.100/ directly.
+// On HTTPS: MagicDNS is blocked by mixed-content policy; uses a user-supplied
+// custom probe URL (any HTTPS endpoint on the tailnet — NAS, router, HA, etc.)
+// stored in overlay.settings.tailscaleProbeUrl.
 
-const PROBE_URL = "http://100.100.100.100/";
+const MAGIC_DNS_URL = "http://100.100.100.100/";
 const PROBE_TIMEOUT_MS = 1500;
 const INTERVAL_MS = 30000;
 
 let chipEl = null;
 let dotEl = null;
 let inFlight = false;
+let overlayRef = null;
 
-export function initTailscale() {
+export function initTailscale(overlay) {
+  overlayRef = overlay;
   chipEl = document.getElementById("tailscale-chip");
   if (!chipEl) return;
   dotEl = chipEl.querySelector(".status-dot");
-  // Mixed-content guard: HTTPS pages cannot fetch http://100.100.100.100.
-  // Show a clear "blocked" state instead of probing forever.
-  if (location.protocol === "https:") {
-    paint("blocked");
+
+  const useCustom = location.protocol === "https:";
+  const customUrl = overlayRef?.settings?.tailscaleProbeUrl?.trim();
+
+  if (useCustom && !customUrl) {
+    // HTTPS but no probe URL configured.
+    paint("configure");
     return;
   }
+
   paint("unknown");
   chipEl.addEventListener("click", () => {
     if (inFlight) return;
@@ -28,8 +38,12 @@ export function initTailscale() {
   setInterval(runProbe, INTERVAL_MS);
 }
 
+function probeUrl() {
+  const custom = overlayRef?.settings?.tailscaleProbeUrl?.trim();
+  return custom || MAGIC_DNS_URL;
+}
+
 function makeTimeoutSignal(ms) {
-  // AbortSignal.timeout is widely supported in modern browsers; fall back if missing.
   if (typeof AbortSignal !== "undefined" && AbortSignal.timeout) {
     return AbortSignal.timeout(ms);
   }
@@ -39,9 +53,13 @@ function makeTimeoutSignal(ms) {
 }
 
 async function probe() {
+  const url = probeUrl();
+  const isCustom = url !== MAGIC_DNS_URL;
   try {
-    await fetch(PROBE_URL, {
-      mode: "no-cors",
+    await fetch(url, {
+      // Custom HTTPS URL: use cors (or no-cors for NAS endpoints that lack CORS headers).
+      // We don't need the body — any response (even 403/404) means the tailnet is reachable.
+      mode: isCustom ? "no-cors" : "no-cors",
       signal: makeTimeoutSignal(PROBE_TIMEOUT_MS),
     });
     return "on";
@@ -66,15 +84,16 @@ function paint(state) {
   let title;
   if (state === "on" || state === "off") {
     const now = new Date().toLocaleTimeString();
+    const url = probeUrl();
     title =
       state === "on"
-        ? `Tailscale up — checked ${now}`
-        : `Tailscale down — checked ${now}`;
+        ? `Tailscale up — checked ${now} (${url})`
+        : `Tailscale down — checked ${now} (${url})`;
   } else if (state === "checking") {
     title = "Checking Tailscale…";
-  } else if (state === "blocked") {
+  } else if (state === "configure") {
     title =
-      "Tailscale probe blocked — the page is served over HTTPS, but the MagicDNS endpoint is HTTP. Open the page over HTTP or file:// to enable.";
+      "Tailscale: set a probe URL in Settings → Tailscale. Enter any HTTPS URL on your tailnet (NAS, Proxmox, Home Assistant, etc.).";
   } else {
     title = "Tailscale — not checked yet";
   }

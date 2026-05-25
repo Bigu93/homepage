@@ -19,6 +19,7 @@ const EMPTY_OVERLAY = {
     weather: null,
     username: "Marcin",
     helpDismissed: false,
+    tailscaleProbeUrl: "",
   },
 };
 

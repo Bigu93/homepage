@@ -69,6 +69,15 @@ export function openSettings(scrollTo) {
       <span id="set-weather-status" style="margin-left:0.75rem;font-size:0.8125rem"></span>
     </section>
 
+    <section class="settings-section" data-section="tailscale">
+      <h3>Tailscale</h3>
+      <p class="settings-hint">On HTTPS pages, the browser blocks HTTP probes. Enter any HTTPS URL reachable only when connected to your tailnet (NAS, Proxmox, Home Assistant, router, etc.).</p>
+      <div class="field">
+        <label>Probe URL</label>
+        <input id="set-tailscale-url" type="url" placeholder="https://192.168.x.x or https://machine.tailnet.ts.net">
+      </div>
+    </section>
+
     <section class="settings-section" data-section="data">
       <h3>Data</h3>
       <p class="settings-hint">All your data lives in this browser's localStorage. Back up regularly.</p>
@@ -96,6 +105,9 @@ export function openSettings(scrollTo) {
   body.querySelector("#set-weather-key").value = w.apiKey || "";
   body.querySelector("#set-weather-loc").value = w.label || "";
   body.querySelector("#set-weather-units").value = w.units || "metric";
+
+  body.querySelector("#set-tailscale-url").value =
+    overlayRef.settings.tailscaleProbeUrl || "";
 
   // Wire handlers
   body.querySelector("#set-username").oninput = (e) => {
@@ -126,6 +138,11 @@ export function openSettings(scrollTo) {
   body.querySelector("#set-weather-loc").onblur = (e) =>
     geocode(e.target.value, body);
   body.querySelector("#set-weather-test").onclick = () => testWeather(body);
+
+  body.querySelector("#set-tailscale-url").onchange = (e) => {
+    overlayRef.settings.tailscaleProbeUrl = e.target.value.trim();
+    persistAndNotify();
+  };
 
   body.querySelector("#set-export").onclick = exportData;
   body.querySelector("#set-import").onclick = () =>

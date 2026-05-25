@@ -115,7 +115,7 @@ initSearch({
 });
 
 initWeather({ overlay });
-initTailscale();
+initTailscale(overlay);
 
 initHelp({ overlay });
 
@@ -146,6 +146,7 @@ export function refreshData() {
   setSidebarFavorites(state.favorites);
   attachDnD();
   renderWeather();
+  initTailscale(overlay); // re-init so probe URL change takes effect immediately
   // If a search is active, re-render the search overlay so changes appear immediately.
   if (document.getElementById("filter").value.trim()) renderSearch();
 }
