@@ -61,11 +61,11 @@ function updateChipLabel() {
   const q = (input?.value || "").trim();
   const detected = detectPrefix(q, overlayRef);
   if (detected) {
-    chipLabel.textContent = detected.prefix.label;
+    chipLabel.textContent = detected.prefix.short || detected.prefix.label;
     chip.classList.add("override");
   } else {
     const eng = resolveEngine(getDefaultEngineFn(), overlayRef);
-    chipLabel.textContent = eng.label;
+    chipLabel.textContent = eng.short || eng.label;
     chip.classList.remove("override");
   }
 }

@@ -5,19 +5,27 @@ export const BUILTIN_ENGINES = [
   {
     key: "ddg",
     label: "DuckDuckGo",
+    short: "DDG",
     urlTemplate: "https://duckduckgo.com/?q=%s",
   },
   {
     key: "google",
     label: "Google",
+    short: "G",
     urlTemplate: "https://www.google.com/search?q=%s",
   },
   {
     key: "bing",
     label: "Bing",
+    short: "Bing",
     urlTemplate: "https://www.bing.com/search?q=%s",
   },
-  { key: "kagi", label: "Kagi", urlTemplate: "https://kagi.com/search?q=%s" },
+  {
+    key: "kagi",
+    label: "Kagi",
+    short: "Kagi",
+    urlTemplate: "https://kagi.com/search?q=%s",
+  },
 ];
 
 // Default prefix-shortcuts (user can override via customs).

@@ -1029,7 +1029,7 @@ body {
   background: var(--surface-1);
   border: 1px solid var(--border-subtle);
   border-radius: 99px;
-  padding: 12px 20px 12px 92px;
+  padding: 12px 20px 12px 78px;
   color: var(--text-main);
   font-size: 0.9375rem;
   font-family: inherit;
