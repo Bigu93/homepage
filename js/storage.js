@@ -2,7 +2,7 @@
 // Reads + writes the overlay (user diff over seed). Schema-versioned + migrations.
 
 const KEY = "startpage_overlay_v1";
-const CURRENT_SCHEMA = 1;
+const CURRENT_SCHEMA = 2;
 
 const EMPTY_OVERLAY = {
   schemaVersion: CURRENT_SCHEMA,
@@ -11,6 +11,7 @@ const EMPTY_OVERLAY = {
   deleted: { categories: [], links: [] },
   order: { categories: [], links: {} },
   favorites: [],
+  clickCounts: {},
   settings: {
     theme: undefined, // theme.js owns its own key for backwards compat
     defaultEngine: "ddg",
@@ -66,6 +67,11 @@ function migrate(overlay) {
   // From legacy `favorites` URL set, map to link ids — needs seed lookup, done in main.js
   // Here we just normalize structure.
   if (!overlay.schemaVersion) overlay.schemaVersion = 1;
+  // v1 → v2: introduce clickCounts
+  if (overlay.schemaVersion < 2) {
+    overlay.clickCounts = overlay.clickCounts || {};
+    overlay.schemaVersion = 2;
+  }
   if (overlay.schemaVersion > CURRENT_SCHEMA) {
     const ok = confirm(
       "Your saved settings were created by a newer version of this app. Reset to defaults? (Cancel to keep them, the app may misbehave.)",
