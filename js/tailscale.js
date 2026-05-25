@@ -13,6 +13,12 @@ export function initTailscale() {
   chipEl = document.getElementById("tailscale-chip");
   if (!chipEl) return;
   dotEl = chipEl.querySelector(".status-dot");
+  // Mixed-content guard: HTTPS pages cannot fetch http://100.100.100.100.
+  // Show a clear "blocked" state instead of probing forever.
+  if (location.protocol === "https:") {
+    paint("blocked");
+    return;
+  }
   paint("unknown");
   chipEl.addEventListener("click", () => {
     if (inFlight) return;
@@ -66,6 +72,9 @@ function paint(state) {
         : `Tailscale down — checked ${now}`;
   } else if (state === "checking") {
     title = "Checking Tailscale…";
+  } else if (state === "blocked") {
+    title =
+      "Tailscale probe blocked — the page is served over HTTPS, but the MagicDNS endpoint is HTTP. Open the page over HTTP or file:// to enable.";
   } else {
     title = "Tailscale — not checked yet";
   }
