@@ -1366,8 +1366,13 @@ body {
 }
 
 @keyframes status-dot-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Frequent sidebar group — visually identical to .nav-pinned */

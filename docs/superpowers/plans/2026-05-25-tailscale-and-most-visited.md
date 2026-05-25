@@ -15,10 +15,12 @@
 ## File Map
 
 ### New
+
 - `js/tailscale.js` — MagicDNS probe + chip paint, interval loop, click handler.
 - `js/stats.js` — click count recording, top-N query, clear.
 
 ### Modified
+
 - `js/storage.js` — schema v2 + migration.
 - `js/main.js` — wire `initStats` + `initTailscale`.
 - `js/render/grid.js` — record click on card.
@@ -32,6 +34,7 @@
 ## Task 1: Overlay schema bump v1 → v2 (clickCounts)
 
 **Files:**
+
 - Modify: `js/storage.js`
 
 - [ ] **Step 1: Bump CURRENT_SCHEMA and add clickCounts to EMPTY_OVERLAY**
@@ -66,11 +69,11 @@ const EMPTY_OVERLAY = {
 Inside `migrate(overlay)` in `js/storage.js`, immediately after `if (!overlay.schemaVersion) overlay.schemaVersion = 1;`, insert:
 
 ```js
-  // v1 → v2: introduce clickCounts
-  if (overlay.schemaVersion < 2) {
-    overlay.clickCounts = overlay.clickCounts || {};
-    overlay.schemaVersion = 2;
-  }
+// v1 → v2: introduce clickCounts
+if (overlay.schemaVersion < 2) {
+  overlay.clickCounts = overlay.clickCounts || {};
+  overlay.schemaVersion = 2;
+}
 ```
 
 The existing defensive merge loop already copies `clickCounts` because it's a top-level key in `EMPTY_OVERLAY`. No other changes in this file.
@@ -80,7 +83,7 @@ The existing defensive merge loop already copies `clickCounts` because it's a to
 1. Open `index.html` in browser with existing overlay (schemaVersion: 1).
 2. Open DevTools console, run `JSON.parse(localStorage.getItem("startpage_overlay_v1"))`.
 3. Verify object has `schemaVersion: 2` and `clickCounts: {}`.
-4. Verify no other fields lost (favorites, settings.* etc).
+4. Verify no other fields lost (favorites, settings.\* etc).
 
 - [ ] **Step 4: Commit**
 
@@ -94,6 +97,7 @@ git commit -m "Bump overlay schema to v2 with clickCounts"
 ## Task 2: Create `js/stats.js` module
 
 **Files:**
+
 - Create: `js/stats.js`
 
 - [ ] **Step 1: Write the module**
@@ -171,6 +175,7 @@ git commit -m "Add js/stats.js for click-count tracking"
 ## Task 3: Wire `initStats` in `js/main.js`
 
 **Files:**
+
 - Modify: `js/main.js`
 
 - [ ] **Step 1: Import initStats and call after overlay load**
@@ -206,6 +211,7 @@ git commit -m "Wire initStats on app boot"
 ## Task 4: Record click on link cards (grid)
 
 **Files:**
+
 - Modify: `js/render/grid.js`
 
 - [ ] **Step 1: Import recordClick**
@@ -221,12 +227,12 @@ import { recordClick } from "../stats.js";
 In `renderLinkCard(item)`, before the final `return card;`, add a click listener. The card is an `<a>` so it navigates; we attach a non-blocking listener:
 
 ```js
-  card.addEventListener("click", (e) => {
-    // Ignore clicks on inner buttons (edit, favorite) — they stopPropagation already,
-    // but be defensive in case of future inner controls.
-    if (e.target.closest("button")) return;
-    recordClick(item.id);
-  });
+card.addEventListener("click", (e) => {
+  // Ignore clicks on inner buttons (edit, favorite) — they stopPropagation already,
+  // but be defensive in case of future inner controls.
+  if (e.target.closest("button")) return;
+  recordClick(item.id);
+});
 ```
 
 Place this right after the `card.append(faviconWrap, title, editBtn, favBtn);` line.
@@ -248,6 +254,7 @@ git commit -m "Record click counts on link cards"
 ## Task 5: Record click on pinned items (sidebar)
 
 **Files:**
+
 - Modify: `js/render/sidebar.js`
 
 - [ ] **Step 1: Import recordClick**
@@ -263,7 +270,7 @@ import { recordClick } from "../stats.js";
 In the Pinned group rendering loop (currently around line 73-86), after the line `a.append(dot, label);` and before `pinnedWrap.appendChild(a);`, add:
 
 ```js
-      a.addEventListener("click", () => recordClick(p.link.id));
+a.addEventListener("click", () => recordClick(p.link.id));
 ```
 
 - [ ] **Step 3: Commit**
@@ -278,6 +285,7 @@ git commit -m "Record click counts on pinned sidebar links"
 ## Task 6: Render "Frequent" group in sidebar above Pinned
 
 **Files:**
+
 - Modify: `js/render/sidebar.js`
 
 - [ ] **Step 1: Import topLinks**
@@ -293,37 +301,37 @@ import { recordClick, topLinks } from "../stats.js";
 In `render()` in `js/render/sidebar.js`, immediately after the line `root.innerHTML = "";` and before the `// --- Pinned group ---` comment, insert:
 
 ```js
-  // --- Frequent group (most clicked) ---
-  const frequentLinks = topLinks(dataRef, 6);
-  if (frequentLinks.length) {
-    const fHeading = document.createElement("div");
-    fHeading.className = "nav-section-label";
-    fHeading.textContent = "Frequent";
-    root.appendChild(fHeading);
+// --- Frequent group (most clicked) ---
+const frequentLinks = topLinks(dataRef, 6);
+if (frequentLinks.length) {
+  const fHeading = document.createElement("div");
+  fHeading.className = "nav-section-label";
+  fHeading.textContent = "Frequent";
+  root.appendChild(fHeading);
 
-    const fWrap = document.createElement("div");
-    fWrap.className = "nav-pinned nav-frequent";
-    frequentLinks.forEach((p) => {
-      const a = document.createElement("a");
-      a.className = "nav-pinned-item";
-      a.href = p.link.url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      const dot = document.createElement("span");
-      dot.className = `cat-dot ${p.color}`;
-      const label = document.createElement("span");
-      label.className = "label";
-      label.textContent = p.link.name;
-      a.append(dot, label);
-      a.addEventListener("click", () => recordClick(p.link.id));
-      fWrap.appendChild(a);
-    });
-    root.appendChild(fWrap);
+  const fWrap = document.createElement("div");
+  fWrap.className = "nav-pinned nav-frequent";
+  frequentLinks.forEach((p) => {
+    const a = document.createElement("a");
+    a.className = "nav-pinned-item";
+    a.href = p.link.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    const dot = document.createElement("span");
+    dot.className = `cat-dot ${p.color}`;
+    const label = document.createElement("span");
+    label.className = "label";
+    label.textContent = p.link.name;
+    a.append(dot, label);
+    a.addEventListener("click", () => recordClick(p.link.id));
+    fWrap.appendChild(a);
+  });
+  root.appendChild(fWrap);
 
-    const fDivider = document.createElement("div");
-    fDivider.className = "nav-divider";
-    root.appendChild(fDivider);
-  }
+  const fDivider = document.createElement("div");
+  fDivider.className = "nav-divider";
+  root.appendChild(fDivider);
+}
 ```
 
 - [ ] **Step 3: Manual smoke**
@@ -345,6 +353,7 @@ git commit -m "Render Frequent group above Pinned in sidebar"
 ## Task 7: "Clear usage stats" button in Settings
 
 **Files:**
+
 - Modify: `js/crud/settings.js`
 
 - [ ] **Step 1: Import clearStats**
@@ -368,7 +377,7 @@ In `openSettings()` inside the `body.innerHTML` template literal, locate the Dat
 Insert a new button before `</div>`:
 
 ```html
-        <button class="btn" id="set-clear-stats">Clear usage stats</button>
+<button class="btn" id="set-clear-stats">Clear usage stats</button>
 ```
 
 - [ ] **Step 3: Wire the handler**
@@ -376,7 +385,7 @@ Insert a new button before `</div>`:
 After the line `body.querySelector("#set-full-reset").onclick = fullReset;`, add:
 
 ```js
-  body.querySelector("#set-clear-stats").onclick = clearStatsHandler;
+body.querySelector("#set-clear-stats").onclick = clearStatsHandler;
 ```
 
 - [ ] **Step 4: Add the handler function**
@@ -417,6 +426,7 @@ git commit -m "Add Clear usage stats action in Settings"
 ## Task 8: Create `js/tailscale.js` module
 
 **Files:**
+
 - Create: `js/tailscale.js`
 
 - [ ] **Step 1: Write the module**
@@ -506,6 +516,7 @@ git commit -m "Add js/tailscale.js with MagicDNS probe"
 ## Task 9: Add Tailscale chip element to `index.html`
 
 **Files:**
+
 - Modify: `index.html`
 
 - [ ] **Step 1: Insert chip before #weather-chip**
@@ -513,16 +524,16 @@ git commit -m "Add js/tailscale.js with MagicDNS probe"
 In `index.html`, locate the `<div class="header-right">` block. Immediately before the existing `<button id="weather-chip" …>`, insert:
 
 ```html
-            <button
-              id="tailscale-chip"
-              class="tailscale-chip"
-              type="button"
-              data-state="unknown"
-              title="Tailscale — not checked yet"
-            >
-              <span class="status-dot status-dot-unknown"></span>
-              <span class="tailscale-label">Tailscale</span>
-            </button>
+<button
+  id="tailscale-chip"
+  class="tailscale-chip"
+  type="button"
+  data-state="unknown"
+  title="Tailscale — not checked yet"
+>
+  <span class="status-dot status-dot-unknown"></span>
+  <span class="tailscale-label">Tailscale</span>
+</button>
 ```
 
 - [ ] **Step 2: Commit**
@@ -537,6 +548,7 @@ git commit -m "Add Tailscale chip element to header"
 ## Task 10: Wire `initTailscale` in `js/main.js`
 
 **Files:**
+
 - Modify: `js/main.js`
 
 - [ ] **Step 1: Import and call**
@@ -571,6 +583,7 @@ git commit -m "Wire initTailscale on app boot"
 ## Task 11: CSS for `.tailscale-chip`, `.status-dot`, `.nav-frequent`
 
 **Files:**
+
 - Modify: `styles/main.css`
 
 - [ ] **Step 1: Append new rules at the bottom of the file**
@@ -626,8 +639,13 @@ Add these rules at the end of `styles/main.css`:
 }
 
 @keyframes status-dot-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Frequent sidebar group — visually identical to .nav-pinned */

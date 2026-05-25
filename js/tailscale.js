@@ -60,9 +60,10 @@ function paint(state) {
   let title;
   if (state === "on" || state === "off") {
     const now = new Date().toLocaleTimeString();
-    title = state === "on"
-      ? `Tailscale up — checked ${now}`
-      : `Tailscale down — checked ${now}`;
+    title =
+      state === "on"
+        ? `Tailscale up — checked ${now}`
+        : `Tailscale down — checked ${now}`;
   } else if (state === "checking") {
     title = "Checking Tailscale…";
   } else {

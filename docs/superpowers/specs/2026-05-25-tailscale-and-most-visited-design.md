@@ -44,9 +44,11 @@ Auto-probe every 30s via `setInterval`. Probes deduplicate: if one is in flight,
 ### Module: `js/tailscale.js`
 
 Exports:
+
 - `initTailscale()` — wire chip, kick off first probe, start interval.
 
 Internal:
+
 - `probe()` returns `"on" | "off"`.
 - `paint(state)` updates dot class + title.
 
@@ -84,6 +86,7 @@ Migration on load: if `schemaVersion < 2`, set `clickCounts = {}` and bump versi
 ### Module: `js/stats.js`
 
 Exports:
+
 - `initStats(overlay)` — store reference, set up debounced save.
 - `recordClick(linkId)` — increment count.
 - `topLinks(merged, n = 6)` — return up to `n` link objects from `merged` whose count ≥ 2, sorted by count desc then name asc.
@@ -96,10 +99,12 @@ Exports:
 ## Files
 
 ### New
+
 - `js/tailscale.js`
 - `js/stats.js`
 
 ### Changed
+
 - `index.html` — add `<button id="tailscale-chip" class="tailscale-chip">…</button>` before `#weather-chip`.
 - `js/main.js` — import + call `initTailscale()` and `initStats(overlay)`.
 - `js/storage.js` — bump `SCHEMA_VERSION` to 2; add migration `v1 → v2` initializing `clickCounts: {}`.
