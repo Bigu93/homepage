@@ -1,96 +1,62 @@
 # Startpage
 
-An iTerm-inspired startpage page for faster web browsing. Because everything's better on the command line!
+A personal browser start page. Glassmorphic dashboard with full link CRUD, smart search, weather, and a help guide built in. No server, no build step — open `index.html` and go.
 
 ![Screenshot](/Screenshot.png)
 
-## Installation
+## Install
 
-You have two main options:
+### Local file
 
-1. ### Local File
-   - To run locally, you can simply clone the repository:
-
-     ```bash
-     git clone https://github.com/peterrauscher/startpage.git
-     ```
-
-   - Or download the [ZIP file](https://github.com/peterrauscher/startpage/archive/refs/heads/main.zip) directly from Github, and extract it to a local folder.
-
-   Now just set your new tab/homepage as `/path/to/repo/index.html`
-
-2. ### Github Pages
-
-   To access the site from multiple computers, or just to save the few MB of RAM, you can host the site on Github Pages.
-   - [Fork the repository](https://github.com/peterrauscher/startpage/fork)
-   - Go to the repository page
-   - Go to Settings > Pages > Build and Deployment
-   - Under "Build and deployment" select "Deploy from a branch"
-   - Select branch "main" and folder "/ (root)"
-
-   Now just set your new tab/homepage as the Github Pages domain it gives you!
-
-## Usage
-
-- To search DuckDuckGo, type `search` or `s` followed by your search query!
-  - Example: `search Where to find cool startpages`
-- List your shortcuts with `ls`.
-- To visit a shortcut, just enter the name of the shortcut in, and you'll be redirected.
-  - Example: just typing `git` will bring me to Github!
-  - **NOTE**: If the first few letters are shared with another shortcut, the first one it finds will be used. You'll have to be more specific in this case. Also, if the first few letters belong to command, the command will be executed instead.
-- Run `weather set` to see how to setup the `weather` command.
-- List all available commands with `help`.
-
-## Configuration
-
-Because this is a static site, configuration mostly happens within the files themselves. Some things, like the weather API key and location, are stored in local storage. If you completely clear your browser, you will need to reset these.
-
-### Shortcuts
-
-Shortcuts are the links displayed when you first open the page, or when you run `ls`. These are defined in the `js/shortcuts.js` file.
-
-The file is an array of objects of the schema:
-
-```
-{
-  category: "Name of Category",
-  color: "color of category header",
-  items: {
-    "Example": "https://example.com",
-    "Another Example": "https://anotherexample.com",
-    ...
-  }
-}
+```bash
+git clone https://github.com/Bigu93/homepage.git
 ```
 
-Feel free to add/remove categories and links.
+Set your browser's new-tab / homepage to the path of `index.html` inside the repo.
 
-Available values for `color` are:
+### GitHub Pages
 
-- `green`
-- `cyan`
-- `purple`
-- `red`
-- `yellow`
-- `blue`
-- `light-gray`
-- `gray`
-- `black`
+Fork the repo → Settings → Pages → Deploy from a branch → `main` / root. Use the resulting URL as your new-tab page.
 
-### Username and Hostname
+## Use
 
-Just change the text in `index.html`:
+- **Search** — type to filter your links. Press `Enter` to open the top match in a new tab. `Ctrl+Enter` opens in the current tab. `Shift+Enter` forces a web search.
+- **Prefixes** — `g foo`, `d foo`, `y foo`, `gh foo` search Google / DuckDuckGo / YouTube / GitHub respectively. Add more in Settings.
+- **Engine chip** — click the chip left of the input to switch the default engine.
+- **Add link** — floating `+` bottom-right, or `+` next to a category header.
+- **Edit link** — hover the card, click the pencil.
+- **Favorite link** — hover the card, click the star.
+- **Reorder** — drag cards within or between categories. Drag categories in the sidebar to reorder.
+- **Move link** — drag a card onto a sidebar category.
+- **Add category** — `+ New category` at the bottom of the sidebar.
+- **Settings** — gear icon in sidebar footer. Configure username, default search engine, custom engines, weather (OpenWeatherMap API key + city), and export/import/reset your data.
+- **Weather** — top-right chip. Click to configure. Free OpenWeatherMap key needed.
+- **Theme** — toggle dark / light in the sidebar footer or press `T`.
+- **Help** — press `?` or click the `?` in the sidebar.
 
-```html
-<div class="prompt">
-  ...
-  <span class="green">username</span>
-  ...
-  <span class="cyan">hostname</span>
-  ...
-</div>
-```
+## Keyboard
 
-## Feature Suggestions
+| Key | Action |
+|---|---|
+| `/` | Focus search |
+| `Esc` | Clear / close |
+| `↑` / `↓` | Navigate results |
+| `Enter` | Open top match (new tab) |
+| `Ctrl+Enter` | Open in current tab |
+| `Shift+Enter` | Force web search |
+| `?` | Help |
+| `T` | Toggle theme |
 
-If there are any commands you'd like to see added, or improvements you'd like to suggest, or if you encounter a bug: open an issue! I'll get to it when I get a chance :D
+## Data
+
+Everything lives in your browser's `localStorage`. Use **Export** in Settings to back up. **Reset** restores defaults from `js/shortcuts.js` (keeps your settings). **Full reset** wipes settings too.
+
+`js/shortcuts.js` is the seed — edit it directly if you want a different default link list. New entries you add via the UI live in the overlay (`localStorage` key `startpage_overlay_v1`) on top of the seed.
+
+## Tech
+
+Vanilla JS (ES modules), HTML, CSS. No bundler, no runtime deps, no test framework. Tested in Chromium + Firefox.
+
+## License
+
+See [LICENSE](LICENSE).
