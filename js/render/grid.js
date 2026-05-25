@@ -32,13 +32,9 @@ export function setState(partial) {
 function render() {
   const root = document.getElementById("view-container");
   if (!root) return;
+  // Search overlay is owned by search.js. Only render grid when no query.
+  if (stateRef.searchQuery && stateRef.searchQuery.trim()) return;
   root.innerHTML = "";
-  const query = (stateRef.searchQuery || "").toLowerCase();
-
-  if (query) {
-    renderSearchResults(root, query);
-    return;
-  }
 
   const filtered =
     stateRef.activeCategory === "all"
@@ -58,6 +54,7 @@ function render() {
     catName.className = "cat-name";
     catName.textContent = cat.category;
     header.append(catDot, catName);
+
     const addToCatBtn = document.createElement("button");
     addToCatBtn.className = "cat-add-btn";
     addToCatBtn.innerHTML = ICONS.plus;
@@ -81,32 +78,6 @@ function render() {
 
     root.appendChild(section);
   });
-}
-
-function renderSearchResults(root, query) {
-  const matches = [];
-  dataRef.forEach((cat) => {
-    cat.items.forEach((item) => {
-      if (
-        item.name.toLowerCase().includes(query) ||
-        item.url.toLowerCase().includes(query)
-      ) {
-        matches.push(item);
-      }
-    });
-  });
-  if (matches.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "empty-state";
-    empty.textContent = `No results found for "${stateRef.searchQuery}"`;
-    root.innerHTML = "";
-    root.appendChild(empty);
-    return;
-  }
-  const grid = document.createElement("div");
-  grid.className = "grid-view";
-  matches.forEach((m) => grid.appendChild(renderLinkCard(m)));
-  root.appendChild(grid);
 }
 
 function renderLinkCard(item) {

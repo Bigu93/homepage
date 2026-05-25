@@ -13,6 +13,7 @@ import { initSettings } from "./crud/settings.js";
 import { initLinkEditor, openLinkEditor } from "./crud/link-editor.js";
 import { initCategoryEditor, openCategoryEditor } from "./crud/category-editor.js";
 import { initDnD, attach as attachDnD } from "./crud/dnd.js";
+import { initSearch, render as renderSearch } from "./search.js";
 import { ICONS } from "./icons.js";
 
 let overlay = loadOverlay();
@@ -83,17 +84,20 @@ attachDnD();
 
 document.querySelector('[data-cat="all"]').onclick = () => selectCategory("all");
 
-const filterInput = document.getElementById("filter");
-filterInput.addEventListener("input", (e) => {
-  state.searchQuery = e.target.value;
-  setGridState({ searchQuery: state.searchQuery });
+initSearch({
+  overlay,
+  getCategories: () => categories,
 });
 
-document.addEventListener("keydown", (e) => {
-  if (e.key === "/" && document.activeElement !== filterInput) {
-    e.preventDefault();
-    filterInput.focus();
-  }
+// When search clears, re-render the grid normally.
+document.addEventListener("search:cleared", () => {
+  state.searchQuery = "";
+  setGridState({ searchQuery: "" });
+});
+
+document.addEventListener("search:active", () => {
+  state.searchQuery = document.getElementById("filter").value;
+  // grid will skip rendering because of searchQuery; search.js owns the view.
 });
 
 // Expose for later phases (settings panel will call these)
@@ -102,6 +106,8 @@ export function refreshData() {
   setGridData(categories);
   setSidebarData(categories, state.activeCategory);
   attachDnD();
+  // If a search is active, re-render the search overlay so changes appear immediately.
+  if (document.getElementById("filter").value.trim()) renderSearch();
 }
 
 export function getOverlay() {
