@@ -33,10 +33,12 @@ import { initSearch, render as renderSearch } from "./search.js";
 import { initWeather, render as renderWeather } from "./weather.js";
 import { initHelp } from "./help.js";
 import { ICONS } from "./icons.js";
+import { initStats } from "./stats.js";
 
 let overlay = loadOverlay();
 overlay = migrateLegacyFavorites(overlay, seed);
 saveOverlay(overlay);
+initStats(overlay);
 
 let categories = merge(seed, overlay);
 
