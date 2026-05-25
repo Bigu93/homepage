@@ -1317,3 +1317,60 @@ body {
 .kbd-table td:first-child {
   width: 130px;
 }
+
+/* Tailscale chip — reuses weather-chip rhythm but slimmer */
+.tailscale-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 99px;
+  padding: 8px 14px;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.tailscale-chip:hover {
+  background: var(--surface-2);
+  color: var(--text-main);
+}
+.tailscale-chip[data-state="checking"] {
+  opacity: 0.75;
+}
+
+/* Status dot used by tailscale-chip (and future indicators) */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #64748b; /* slate-500 default */
+  display: inline-block;
+  flex-shrink: 0;
+}
+.status-dot-unknown {
+  background: #64748b;
+}
+.status-dot-checking {
+  background: #94a3b8;
+  animation: status-dot-pulse 1s ease-in-out infinite;
+}
+.status-dot-on {
+  background: #34d399; /* emerald-400 */
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
+}
+.status-dot-off {
+  background: #fb7185; /* rose-400 */
+}
+
+@keyframes status-dot-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* Frequent sidebar group — visually identical to .nav-pinned */
+.nav-frequent {
+  /* Inherits .nav-pinned rules. Hook left for future tweaks. */
+}
