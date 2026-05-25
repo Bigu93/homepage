@@ -2,7 +2,7 @@
 // Renders the sidebar category list.
 
 import { ICONS } from "../icons.js";
-import { recordClick } from "../stats.js";
+import { recordClick, topLinks } from "../stats.js";
 
 let dataRef = [];
 let activeCategoryRef = "all";
@@ -53,6 +53,38 @@ function render() {
   const root = document.getElementById("sidebar-categories");
   if (!root) return;
   root.innerHTML = "";
+
+  // --- Frequent group (most clicked) ---
+  const frequentLinks = topLinks(dataRef, 6);
+  if (frequentLinks.length) {
+    const fHeading = document.createElement("div");
+    fHeading.className = "nav-section-label";
+    fHeading.textContent = "Frequent";
+    root.appendChild(fHeading);
+
+    const fWrap = document.createElement("div");
+    fWrap.className = "nav-pinned nav-frequent";
+    frequentLinks.forEach((p) => {
+      const a = document.createElement("a");
+      a.className = "nav-pinned-item";
+      a.href = p.link.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      const dot = document.createElement("span");
+      dot.className = `cat-dot ${p.color}`;
+      const label = document.createElement("span");
+      label.className = "label";
+      label.textContent = p.link.name;
+      a.append(dot, label);
+      a.addEventListener("click", () => recordClick(p.link.id));
+      fWrap.appendChild(a);
+    });
+    root.appendChild(fWrap);
+
+    const fDivider = document.createElement("div");
+    fDivider.className = "nav-divider";
+    root.appendChild(fDivider);
+  }
 
   // --- Pinned group ---
   const pinnedLinks = [];
