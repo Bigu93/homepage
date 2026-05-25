@@ -3,6 +3,7 @@
 
 import { ICONS } from "../icons.js";
 import { getFavicon } from "../favicons.js";
+import { recordClick } from "../stats.js";
 
 let dataRef = [];
 let stateRef = null; // { activeCategory, searchQuery, favorites: Set }
@@ -147,5 +148,10 @@ function renderLinkCard(item) {
   };
 
   card.append(faviconWrap, title, editBtn, favBtn);
+  card.addEventListener("click", (e) => {
+    // Ignore clicks on inner buttons (edit, favorite)
+    if (e.target.closest("button")) return;
+    recordClick(item.id);
+  });
   return card;
 }
