@@ -31,6 +31,7 @@ import {
 import { initDnD, attach as attachDnD } from "./crud/dnd.js";
 import { initSearch, render as renderSearch } from "./search.js";
 import { initWeather, render as renderWeather } from "./weather.js";
+import { initTailscale } from "./tailscale.js";
 import { initHelp } from "./help.js";
 import { ICONS } from "./icons.js";
 import { initStats } from "./stats.js";
@@ -114,6 +115,7 @@ initSearch({
 });
 
 initWeather({ overlay });
+initTailscale();
 
 initHelp({ overlay });
 
