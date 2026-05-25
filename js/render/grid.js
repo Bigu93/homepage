@@ -52,7 +52,12 @@ function render() {
 
     const header = document.createElement("h2");
     header.className = `category-header ${cat.color}`;
-    header.innerHTML = `<span class="cat-dot"></span><span class="cat-name">${cat.category}</span>`;
+    const catDot = document.createElement("span");
+    catDot.className = "cat-dot";
+    const catName = document.createElement("span");
+    catName.className = "cat-name";
+    catName.textContent = cat.category;
+    header.append(catDot, catName);
     const addToCatBtn = document.createElement("button");
     addToCatBtn.className = "cat-add-btn";
     addToCatBtn.innerHTML = ICONS.plus;
@@ -91,7 +96,11 @@ function renderSearchResults(root, query) {
     });
   });
   if (matches.length === 0) {
-    root.innerHTML = `<div class="empty-state">No results found for "${stateRef.searchQuery}"</div>`;
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = `No results found for "${stateRef.searchQuery}"`;
+    root.innerHTML = "";
+    root.appendChild(empty);
     return;
   }
   const grid = document.createElement("div");

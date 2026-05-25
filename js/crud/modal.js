@@ -100,7 +100,10 @@ export function confirmDialog({ title, message, confirmLabel = "Confirm", danger
     };
 
     footer.append(cancel, ok);
-    openModal({ title, body: `<p>${message}</p>`, footer, width: "420px" });
+    const msgBody = document.createElement("p");
+    msgBody.style.margin = "0";
+    msgBody.textContent = message;
+    openModal({ title, body: msgBody, footer, width: "420px" });
   });
 }
 
