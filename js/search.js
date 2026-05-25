@@ -2,7 +2,12 @@
 // Unified smart search: live shortcut filter + web search fallback + engine prefixes.
 
 import { getFavicon } from "./favicons.js";
-import { getAllEngines, resolveEngine, searchUrl, detectPrefix } from "./engines.js";
+import {
+  getAllEngines,
+  resolveEngine,
+  searchUrl,
+  detectPrefix,
+} from "./engines.js";
 import { save as saveOverlay } from "./storage.js";
 
 let overlayRef = null;
@@ -34,7 +39,11 @@ export function initSearch({ overlay, getCategories }) {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "/" && document.activeElement !== input && !isTypingTarget(document.activeElement)) {
+    if (
+      e.key === "/" &&
+      document.activeElement !== input &&
+      !isTypingTarget(document.activeElement)
+    ) {
       e.preventDefault();
       input.focus();
       input.select();
@@ -144,7 +153,10 @@ function handleEnter(e) {
 function runWebSearch(query) {
   const detected = detectPrefix(query, overlayRef);
   if (detected) {
-    window.open(searchUrl(detected.prefix.urlTemplate, detected.query), "_blank");
+    window.open(
+      searchUrl(detected.prefix.urlTemplate, detected.query),
+      "_blank",
+    );
     return;
   }
   const eng = resolveEngine(getDefaultEngineFn(), overlayRef);
@@ -152,7 +164,8 @@ function runWebSearch(query) {
 }
 
 function score(name, url, q) {
-  const n = name.toLowerCase(), u = url.toLowerCase();
+  const n = name.toLowerCase(),
+    u = url.toLowerCase();
   if (n.startsWith(q)) return 3;
   if (n.includes(q)) return 2;
   if (u.includes(q)) return 1;
@@ -178,7 +191,15 @@ export function render() {
     (getCategoriesFn() || []).forEach((cat) => {
       cat.items.forEach((it) => {
         const s = score(it.name, it.url, lower);
-        if (s > 0) matches.push({ kind: "shortcut", linkId: it.id, name: it.name, url: it.url, category: cat.category, _score: s });
+        if (s > 0)
+          matches.push({
+            kind: "shortcut",
+            linkId: it.id,
+            name: it.name,
+            url: it.url,
+            category: cat.category,
+            _score: s,
+          });
       });
     });
     matches.sort((a, b) => b._score - a._score || a.name.localeCompare(b.name));

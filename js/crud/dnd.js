@@ -50,7 +50,9 @@ export function attach() {
         item.classList.add("drop-target");
       }
     });
-    item.addEventListener("dragleave", () => item.classList.remove("drop-target"));
+    item.addEventListener("dragleave", () =>
+      item.classList.remove("drop-target"),
+    );
     item.addEventListener("drop", (e) => {
       if (window._dragKind !== "link") return;
       e.preventDefault();
@@ -91,13 +93,16 @@ function onLinkDrop(e) {
 
 function onLinkDragEnd(e) {
   e.currentTarget.classList.remove("dragging");
-  document.querySelectorAll(".drop-target").forEach((el) => el.classList.remove("drop-target"));
+  document
+    .querySelectorAll(".drop-target")
+    .forEach((el) => el.classList.remove("drop-target"));
   window._draggedLinkId = null;
   window._dragKind = null;
 }
 
 function onCatDragStart(e) {
-  window._draggedCatLabel = e.currentTarget.querySelector(".label")?.textContent;
+  window._draggedCatLabel =
+    e.currentTarget.querySelector(".label")?.textContent;
   window._dragKind = "cat";
   e.dataTransfer.effectAllowed = "move";
   e.currentTarget.classList.add("dragging");
@@ -129,62 +134,83 @@ function bindTouchDrag(el, kind) {
   let pressTimer = null;
   let dragging = false;
   let ghost = null;
-  let touchStartX = 0, touchStartY = 0;
+  let touchStartX = 0,
+    touchStartY = 0;
   let currentTarget = null;
 
-  el.addEventListener("touchstart", (e) => {
-    const t = e.touches[0];
-    touchStartX = t.clientX;
-    touchStartY = t.clientY;
-    pressTimer = setTimeout(() => {
-      dragging = true;
-      window._dragKind = kind;
-      if (kind === "link") window._draggedLinkId = el.dataset.linkId;
-      if (kind === "cat") window._draggedCatLabel = el.querySelector(".label")?.textContent;
-      ghost = el.cloneNode(true);
-      ghost.style.position = "fixed";
-      ghost.style.pointerEvents = "none";
-      ghost.style.opacity = "0.8";
+  el.addEventListener(
+    "touchstart",
+    (e) => {
+      const t = e.touches[0];
+      touchStartX = t.clientX;
+      touchStartY = t.clientY;
+      pressTimer = setTimeout(() => {
+        dragging = true;
+        window._dragKind = kind;
+        if (kind === "link") window._draggedLinkId = el.dataset.linkId;
+        if (kind === "cat")
+          window._draggedCatLabel = el.querySelector(".label")?.textContent;
+        ghost = el.cloneNode(true);
+        ghost.style.position = "fixed";
+        ghost.style.pointerEvents = "none";
+        ghost.style.opacity = "0.8";
+        ghost.style.left = t.clientX + "px";
+        ghost.style.top = t.clientY + "px";
+        ghost.style.zIndex = "300";
+        document.body.appendChild(ghost);
+        el.classList.add("dragging");
+      }, 350);
+    },
+    { passive: true },
+  );
+
+  el.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!dragging) {
+        const t = e.touches[0];
+        if (
+          Math.abs(t.clientX - touchStartX) > 10 ||
+          Math.abs(t.clientY - touchStartY) > 10
+        ) {
+          clearTimeout(pressTimer);
+        }
+        return;
+      }
+      e.preventDefault();
+      const t = e.touches[0];
       ghost.style.left = t.clientX + "px";
       ghost.style.top = t.clientY + "px";
-      ghost.style.zIndex = "300";
-      document.body.appendChild(ghost);
-      el.classList.add("dragging");
-    }, 350);
-  }, { passive: true });
 
-  el.addEventListener("touchmove", (e) => {
-    if (!dragging) {
-      const t = e.touches[0];
-      if (Math.abs(t.clientX - touchStartX) > 10 || Math.abs(t.clientY - touchStartY) > 10) {
-        clearTimeout(pressTimer);
-      }
-      return;
-    }
-    e.preventDefault();
-    const t = e.touches[0];
-    ghost.style.left = t.clientX + "px";
-    ghost.style.top = t.clientY + "px";
-
-    // find drop target under finger
-    ghost.style.display = "none";
-    const under = document.elementFromPoint(t.clientX, t.clientY);
-    ghost.style.display = "";
-    document.querySelectorAll(".drop-target").forEach((el) => el.classList.remove("drop-target"));
-    if (under) {
-      const targetCard = under.closest(kind === "link" ? ".link-card" : ".nav-item");
-      if (targetCard && targetCard !== el) {
-        targetCard.classList.add("drop-target");
-        currentTarget = targetCard;
-      } else if (kind === "link") {
-        const targetNav = under.closest(".nav-item");
-        if (targetNav && targetNav.dataset.cat !== "all" && targetNav.id !== "new-cat-btn") {
-          targetNav.classList.add("drop-target");
-          currentTarget = targetNav;
+      // find drop target under finger
+      ghost.style.display = "none";
+      const under = document.elementFromPoint(t.clientX, t.clientY);
+      ghost.style.display = "";
+      document
+        .querySelectorAll(".drop-target")
+        .forEach((el) => el.classList.remove("drop-target"));
+      if (under) {
+        const targetCard = under.closest(
+          kind === "link" ? ".link-card" : ".nav-item",
+        );
+        if (targetCard && targetCard !== el) {
+          targetCard.classList.add("drop-target");
+          currentTarget = targetCard;
+        } else if (kind === "link") {
+          const targetNav = under.closest(".nav-item");
+          if (
+            targetNav &&
+            targetNav.dataset.cat !== "all" &&
+            targetNav.id !== "new-cat-btn"
+          ) {
+            targetNav.classList.add("drop-target");
+            currentTarget = targetNav;
+          }
         }
       }
-    }
-  }, { passive: false });
+    },
+    { passive: false },
+  );
 
   el.addEventListener("touchend", () => {
     clearTimeout(pressTimer);
@@ -199,7 +225,11 @@ function bindTouchDrag(el, kind) {
       if (kind === "link") {
         if (currentTarget.classList.contains("link-card")) {
           const targetSection = currentTarget.closest(".category-section");
-          reorderLink(window._draggedLinkId, currentTarget.dataset.linkId, targetSection?.dataset.categoryId);
+          reorderLink(
+            window._draggedLinkId,
+            currentTarget.dataset.linkId,
+            targetSection?.dataset.categoryId,
+          );
         } else {
           const label = currentTarget.querySelector(".label")?.textContent;
           moveLinkToCategoryByLabel(window._draggedLinkId, label);
@@ -221,10 +251,14 @@ function bindTouchDrag(el, kind) {
 function reorderLink(draggedId, beforeId, targetCatId) {
   // We need to recompute the per-category order so we can persist it.
   // First, find the source category of draggedId.
-  const allSections = Array.from(document.querySelectorAll(".category-section"));
+  const allSections = Array.from(
+    document.querySelectorAll(".category-section"),
+  );
   const cardOrders = new Map(); // catId → array of linkIds (current visual order)
   allSections.forEach((sec) => {
-    const ids = Array.from(sec.querySelectorAll(".link-card")).map((c) => c.dataset.linkId);
+    const ids = Array.from(sec.querySelectorAll(".link-card")).map(
+      (c) => c.dataset.linkId,
+    );
     cardOrders.set(sec.dataset.categoryId, ids);
   });
 
@@ -235,7 +269,10 @@ function reorderLink(draggedId, beforeId, targetCatId) {
   if (!sourceCatId) return;
 
   // remove dragged from source
-  cardOrders.set(sourceCatId, cardOrders.get(sourceCatId).filter((id) => id !== draggedId));
+  cardOrders.set(
+    sourceCatId,
+    cardOrders.get(sourceCatId).filter((id) => id !== draggedId),
+  );
 
   // insert before beforeId in target
   const targetList = cardOrders.get(targetCatId) || [];
@@ -253,7 +290,8 @@ function reorderLink(draggedId, beforeId, targetCatId) {
       const i = arr.findIndex((l) => l.id === draggedId);
       if (i !== -1) {
         const [moved] = arr.splice(i, 1);
-        if (!overlayRef.added.links[targetCatId]) overlayRef.added.links[targetCatId] = [];
+        if (!overlayRef.added.links[targetCatId])
+          overlayRef.added.links[targetCatId] = [];
         overlayRef.added.links[targetCatId].push(moved);
         added = true;
         break;
@@ -292,7 +330,9 @@ function moveLinkToCategoryByLabel(draggedId, targetCatLabel) {
 }
 
 function reorderCategoryByLabel(draggedLabel, targetLabel) {
-  const labels = Array.from(document.querySelectorAll(".sidebar-nav .nav-item .label")).map((l) => l.textContent.trim());
+  const labels = Array.from(
+    document.querySelectorAll(".sidebar-nav .nav-item .label"),
+  ).map((l) => l.textContent.trim());
   // Need to map labels back to ids — we read from rendered sections (each .category-section has dataset.categoryId + .cat-name).
   const labelToId = new Map();
   document.querySelectorAll(".category-section").forEach((sec) => {

@@ -82,7 +82,8 @@ export function openSettings(scrollTo) {
   `;
 
   // Pre-fill values
-  body.querySelector("#set-username").value = overlayRef.settings.username || "";
+  body.querySelector("#set-username").value =
+    overlayRef.settings.username || "";
   const defEngSel = body.querySelector("#set-default-engine");
   populateEngineOptions(defEngSel);
   defEngSel.value = overlayRef.settings.defaultEngine || "ddg";
@@ -103,22 +104,32 @@ export function openSettings(scrollTo) {
     overlayRef.settings.defaultEngine = e.target.value;
     persistAndNotify();
   };
-  body.querySelector("#set-add-engine").onclick = () => addCustomRow(body.querySelector("#set-customs"));
+  body.querySelector("#set-add-engine").onclick = () =>
+    addCustomRow(body.querySelector("#set-customs"));
 
   body.querySelector("#set-weather-key").onchange = (e) => {
-    overlayRef.settings.weather = { ...(overlayRef.settings.weather || {}), apiKey: e.target.value.trim() };
+    overlayRef.settings.weather = {
+      ...(overlayRef.settings.weather || {}),
+      apiKey: e.target.value.trim(),
+    };
     persistAndNotify();
   };
   body.querySelector("#set-weather-units").onchange = (e) => {
-    overlayRef.settings.weather = { ...(overlayRef.settings.weather || {}), units: e.target.value };
+    overlayRef.settings.weather = {
+      ...(overlayRef.settings.weather || {}),
+      units: e.target.value,
+    };
     persistAndNotify();
   };
-  body.querySelector("#set-weather-loc").onblur = (e) => geocode(e.target.value, body);
+  body.querySelector("#set-weather-loc").onblur = (e) =>
+    geocode(e.target.value, body);
   body.querySelector("#set-weather-test").onclick = () => testWeather(body);
 
   body.querySelector("#set-export").onclick = exportData;
-  body.querySelector("#set-import").onclick = () => body.querySelector("#set-import-file").click();
-  body.querySelector("#set-import-file").onchange = (e) => importData(e.target.files[0]);
+  body.querySelector("#set-import").onclick = () =>
+    body.querySelector("#set-import-file").click();
+  body.querySelector("#set-import-file").onchange = (e) =>
+    importData(e.target.files[0]);
   body.querySelector("#set-reset").onclick = resetData;
   body.querySelector("#set-full-reset").onclick = fullReset;
 
@@ -209,8 +220,13 @@ function customRow(eng, idx) {
 }
 
 function addCustomRow(root) {
-  if (!overlayRef.settings.customEngines) overlayRef.settings.customEngines = [];
-  overlayRef.settings.customEngines.push({ key: "", label: "", urlTemplate: "" });
+  if (!overlayRef.settings.customEngines)
+    overlayRef.settings.customEngines = [];
+  overlayRef.settings.customEngines.push({
+    key: "",
+    label: "",
+    urlTemplate: "",
+  });
   renderCustoms(root);
 }
 
@@ -282,7 +298,9 @@ async function testWeather(body) {
 }
 
 function exportData() {
-  const blob = new Blob([JSON.stringify(overlayRef, null, 2)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify(overlayRef, null, 2)], {
+    type: "application/json",
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   const date = new Date().toISOString().slice(0, 10);
@@ -311,7 +329,8 @@ async function importData(file) {
   }
   const ok = await confirmDialog({
     title: "Import overlay",
-    message: "This replaces all your current links, edits, favorites, and settings. Continue?",
+    message:
+      "This replaces all your current links, edits, favorites, and settings. Continue?",
     confirmLabel: "Replace",
     danger: true,
   });
@@ -327,7 +346,8 @@ async function importData(file) {
 async function resetData() {
   const ok = await confirmDialog({
     title: "Reset to defaults",
-    message: "Deletes all your added links, edits, deletions, reorderings, and favorites. Settings (theme, weather, engines, username) are kept.",
+    message:
+      "Deletes all your added links, edits, deletions, reorderings, and favorites. Settings (theme, weather, engines, username) are kept.",
     confirmLabel: "Reset",
     danger: true,
   });
@@ -347,7 +367,8 @@ async function resetData() {
 async function fullReset() {
   const ok = await confirmDialog({
     title: "Full reset",
-    message: "Deletes EVERYTHING — links, edits, settings, theme, weather, engines. Cannot be undone.",
+    message:
+      "Deletes EVERYTHING — links, edits, settings, theme, weather, engines. Cannot be undone.",
     confirmLabel: "Wipe everything",
     danger: true,
   });

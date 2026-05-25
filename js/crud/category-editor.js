@@ -5,11 +5,34 @@ import { openModal, closeModal, confirmDialog, toast } from "./modal.js";
 import { save as saveOverlay } from "../storage.js";
 import { ICONS } from "../icons.js";
 
-const COLORS = ["yellow", "cyan", "blue", "red", "green", "purple", "light-gray", "gray", "black"];
+const COLORS = [
+  "yellow",
+  "cyan",
+  "blue",
+  "red",
+  "green",
+  "purple",
+  "light-gray",
+  "gray",
+  "black",
+];
 const ICON_KEYS = [
-  "home", "code", "graduation-cap", "cpu", "terminal", "briefcase",
-  "gamepad-2", "newspaper", "shopping-cart", "joystick", "star",
-  "server", "flag", "shield", "activity", "book",
+  "home",
+  "code",
+  "graduation-cap",
+  "cpu",
+  "terminal",
+  "briefcase",
+  "gamepad-2",
+  "newspaper",
+  "shopping-cart",
+  "joystick",
+  "star",
+  "server",
+  "flag",
+  "shield",
+  "activity",
+  "book",
 ];
 
 let overlayRef = null;
@@ -83,7 +106,11 @@ export function openCategoryEditor({ categoryId = null } = {}) {
     sw.title = c;
     sw.onclick = () => {
       selectedColor = c;
-      colorRoot.querySelectorAll(".swatch").forEach((el) => el.classList.toggle("selected", el.dataset.color === c));
+      colorRoot
+        .querySelectorAll(".swatch")
+        .forEach((el) =>
+          el.classList.toggle("selected", el.dataset.color === c),
+        );
     };
     colorRoot.appendChild(sw);
   });
@@ -97,7 +124,11 @@ export function openCategoryEditor({ categoryId = null } = {}) {
     btn.title = k;
     btn.onclick = () => {
       selectedIcon = k;
-      iconRoot.querySelectorAll(".icon-cell").forEach((el) => el.classList.toggle("selected", el.dataset.icon === k));
+      iconRoot
+        .querySelectorAll(".icon-cell")
+        .forEach((el) =>
+          el.classList.toggle("selected", el.dataset.icon === k),
+        );
     };
     iconRoot.appendChild(btn);
   });
@@ -149,7 +180,11 @@ export function openCategoryEditor({ categoryId = null } = {}) {
       return;
     }
     if (isEdit) {
-      editCategory(existing.id, { category: name, color: selectedColor, icon: selectedIcon });
+      editCategory(existing.id, {
+        category: name,
+        color: selectedColor,
+        icon: selectedIcon,
+      });
     } else {
       addCategory({
         id: makeCatId(name),
@@ -165,7 +200,12 @@ export function openCategoryEditor({ categoryId = null } = {}) {
   rightGroup.append(cancel, save);
 
   footer.append(leftGroup, rightGroup);
-  openModal({ title: isEdit ? "Edit category" : "New category", body, footer, width: "480px" });
+  openModal({
+    title: isEdit ? "Edit category" : "New category",
+    body,
+    footer,
+    width: "480px",
+  });
 }
 
 function addCategory(cat) {
@@ -181,7 +221,10 @@ function editCategory(catId, patch) {
     persist();
     return;
   }
-  overlayRef.edited.categories[catId] = { ...(overlayRef.edited.categories[catId] || {}), ...patch };
+  overlayRef.edited.categories[catId] = {
+    ...(overlayRef.edited.categories[catId] || {}),
+    ...patch,
+  };
   persist();
 }
 
@@ -198,7 +241,9 @@ function deleteCategory(catId) {
     delete overlayRef.edited.categories[catId];
   }
   // also remove from order
-  overlayRef.order.categories = (overlayRef.order.categories || []).filter((id) => id !== catId);
+  overlayRef.order.categories = (overlayRef.order.categories || []).filter(
+    (id) => id !== catId,
+  );
   delete overlayRef.order.links?.[catId];
   persist();
 }

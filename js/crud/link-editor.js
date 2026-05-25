@@ -32,7 +32,10 @@ function makeLinkId(name) {
   return `lnk-user-${slug}-${Date.now().toString(36)}`;
 }
 
-export function openLinkEditor({ linkId = null, defaultCategoryId = null } = {}) {
+export function openLinkEditor({
+  linkId = null,
+  defaultCategoryId = null,
+} = {}) {
   const isEdit = !!linkId;
   let existing = null;
   let existingCatId = null;
@@ -181,7 +184,11 @@ export function openLinkEditor({ linkId = null, defaultCategoryId = null } = {})
     if (bad) return;
 
     if (isEdit) {
-      editLink(existing.id, existingCatId, { name, url, categoryId: catS.value });
+      editLink(existing.id, existingCatId, {
+        name,
+        url,
+        categoryId: catS.value,
+      });
     } else {
       addLink(catS.value, { id: makeLinkId(name), name, url });
     }
@@ -192,7 +199,12 @@ export function openLinkEditor({ linkId = null, defaultCategoryId = null } = {})
 
   footer.append(leftGroup, rightGroup);
 
-  const modal = openModal({ title: isEdit ? "Edit link" : "New link", body, footer, width: "440px" });
+  const modal = openModal({
+    title: isEdit ? "Edit link" : "New link",
+    body,
+    footer,
+    width: "440px",
+  });
 
   modal.dialog.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
@@ -229,7 +241,10 @@ function editLink(linkId, currentCatId, patch) {
     }
   }
   // Otherwise seed link — write to overlay.edited
-  overlayRef.edited.links[linkId] = { ...(overlayRef.edited.links[linkId] || {}), ...patch };
+  overlayRef.edited.links[linkId] = {
+    ...(overlayRef.edited.links[linkId] || {}),
+    ...patch,
+  };
   persist();
 }
 

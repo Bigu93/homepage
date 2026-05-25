@@ -2,16 +2,32 @@
 // App entry point. Loads overlay, merges with seed, wires modules.
 
 import seed from "./shortcuts.js";
-import { load as loadOverlay, save as saveOverlay, migrateLegacyFavorites } from "./storage.js";
+import {
+  load as loadOverlay,
+  save as saveOverlay,
+  migrateLegacyFavorites,
+} from "./storage.js";
 import { merge } from "./data.js";
 import { clearExpiredFavicons } from "./favicons.js";
 import { startClock } from "./clock.js";
 import { initTheme } from "./theme.js";
-import { initSidebar, setActive as setSidebarActive, setData as setSidebarData, setFavorites as setSidebarFavorites } from "./render/sidebar.js";
-import { initGrid, setData as setGridData, setState as setGridState } from "./render/grid.js";
+import {
+  initSidebar,
+  setActive as setSidebarActive,
+  setData as setSidebarData,
+  setFavorites as setSidebarFavorites,
+} from "./render/sidebar.js";
+import {
+  initGrid,
+  setData as setGridData,
+  setState as setGridState,
+} from "./render/grid.js";
 import { initSettings } from "./crud/settings.js";
 import { initLinkEditor, openLinkEditor } from "./crud/link-editor.js";
-import { initCategoryEditor, openCategoryEditor } from "./crud/category-editor.js";
+import {
+  initCategoryEditor,
+  openCategoryEditor,
+} from "./crud/category-editor.js";
 import { initDnD, attach as attachDnD } from "./crud/dnd.js";
 import { initSearch, render as renderSearch } from "./search.js";
 import { initWeather, render as renderWeather } from "./weather.js";
@@ -87,7 +103,8 @@ initDnD({
 });
 attachDnD();
 
-document.querySelector('[data-cat="all"]').onclick = () => selectCategory("all");
+document.querySelector('[data-cat="all"]').onclick = () =>
+  selectCategory("all");
 
 initSearch({
   overlay,
@@ -115,7 +132,9 @@ export function refreshData() {
   // drop orphaned favorites (links that no longer exist)
   const allIds = new Set();
   categories.forEach((c) => c.items.forEach((l) => allIds.add(l.id)));
-  state.favorites = new Set([...state.favorites].filter((id) => allIds.has(id)));
+  state.favorites = new Set(
+    [...state.favorites].filter((id) => allIds.has(id)),
+  );
   overlay.favorites = [...state.favorites];
 
   setGridData(categories);

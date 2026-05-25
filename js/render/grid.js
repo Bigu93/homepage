@@ -11,7 +11,14 @@ let onEditCb = null;
 let onAddToCatCb = null;
 let onEditCategoryCb = null;
 
-export function initGrid({ data, state, onToggleFavorite, onEditLink, onAddLinkToCategory, onEditCategory }) {
+export function initGrid({
+  data,
+  state,
+  onToggleFavorite,
+  onEditLink,
+  onAddLinkToCategory,
+  onEditCategory,
+}) {
   dataRef = data;
   stateRef = state;
   onFavoriteToggle = onToggleFavorite;
@@ -78,7 +85,8 @@ function render() {
       const empty = document.createElement("div");
       empty.className = "empty-cat";
       empty.innerHTML = `No links yet. <button class="btn btn-ghost" type="button">+ Add your first link</button>`;
-      empty.querySelector("button").onclick = () => onAddToCatCb && onAddToCatCb(cat.id);
+      empty.querySelector("button").onclick = () =>
+        onAddToCatCb && onAddToCatCb(cat.id);
       section.append(header, empty);
     } else {
       cat.items.forEach((item) => grid.appendChild(renderLinkCard(item)));

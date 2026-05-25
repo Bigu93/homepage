@@ -36,16 +36,16 @@ Fork the repo → Settings → Pages → Deploy from a branch → `main` / root.
 
 ## Keyboard
 
-| Key | Action |
-|---|---|
-| `/` | Focus search |
-| `Esc` | Clear / close |
-| `↑` / `↓` | Navigate results |
-| `Enter` | Open top match (new tab) |
-| `Ctrl+Enter` | Open in current tab |
-| `Shift+Enter` | Force web search |
-| `?` | Help |
-| `T` | Toggle theme |
+| Key           | Action                   |
+| ------------- | ------------------------ |
+| `/`           | Focus search             |
+| `Esc`         | Clear / close            |
+| `↑` / `↓`     | Navigate results         |
+| `Enter`       | Open top match (new tab) |
+| `Ctrl+Enter`  | Open in current tab      |
+| `Shift+Enter` | Force web search         |
+| `?`           | Help                     |
+| `T`           | Toggle theme             |
 
 ## Data
 

@@ -10,7 +10,14 @@ let onEditCb = null;
 let onAddCb = null;
 let favoritesRef = new Set();
 
-export function initSidebar({ data, activeCategory, onCategorySelect, onEditCategory, onAddCategory, favorites }) {
+export function initSidebar({
+  data,
+  activeCategory,
+  onCategorySelect,
+  onEditCategory,
+  onAddCategory,
+  favorites,
+}) {
   dataRef = data;
   activeCategoryRef = activeCategory;
   onSelect = onCategorySelect;
@@ -50,7 +57,8 @@ function render() {
   const pinnedLinks = [];
   dataRef.forEach((cat) => {
     cat.items.forEach((l) => {
-      if (favoritesRef.has(l.id)) pinnedLinks.push({ link: l, color: cat.color });
+      if (favoritesRef.has(l.id))
+        pinnedLinks.push({ link: l, color: cat.color });
     });
   });
 

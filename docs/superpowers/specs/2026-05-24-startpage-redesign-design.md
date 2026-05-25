@@ -91,7 +91,11 @@ export default [
     color: "yellow",
     icon: "home",
     items: [
-      { id: "lnk-gmail", name: "gmail", url: "https://mail.google.com/mail/u/0/#inbox" },
+      {
+        id: "lnk-gmail",
+        name: "gmail",
+        url: "https://mail.google.com/mail/u/0/#inbox",
+      },
       // …
     ],
   },
@@ -279,16 +283,16 @@ Single input in header does double duty.
 
 ### Keys
 
-| Key | Action |
-|---|---|
-| `/` | Focus input (when not already in an input) |
-| `Enter` | If ≥1 shortcut match, open top match in **new tab**. Else web-search. |
-| `Shift+Enter` | Force web-search regardless of matches. |
-| `Cmd/Ctrl+Enter` | Open top match in **current tab**. |
-| `Esc` | Clear input + blur. |
-| `↑` / `↓` | Move selection through filtered shortcuts + web-search row. |
-| `?` | Open help panel (when not focused in input). |
-| `T` | Toggle theme (when not focused in input). |
+| Key              | Action                                                                |
+| ---------------- | --------------------------------------------------------------------- |
+| `/`              | Focus input (when not already in an input)                            |
+| `Enter`          | If ≥1 shortcut match, open top match in **new tab**. Else web-search. |
+| `Shift+Enter`    | Force web-search regardless of matches.                               |
+| `Cmd/Ctrl+Enter` | Open top match in **current tab**.                                    |
+| `Esc`            | Clear input + blur.                                                   |
+| `↑` / `↓`        | Move selection through filtered shortcuts + web-search row.           |
+| `?`              | Open help panel (when not focused in input).                          |
+| `T`              | Toggle theme (when not focused in input).                             |
 
 Selection highlighted with `--accent-primary` left stripe + bg lift.
 

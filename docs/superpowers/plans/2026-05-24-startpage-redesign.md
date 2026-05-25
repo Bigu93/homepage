@@ -35,6 +35,7 @@ No behavior change. Existing `js/dashboard.js` is split into focused modules, th
 ### Task 1.1: Extract icon registry
 
 **Files:**
+
 - Create: `js/icons.js`
 - Modify: `js/dashboard.js` (remove `ICONS` const, import it instead)
 
@@ -94,6 +95,7 @@ git commit -m "refactor(icons): extract SVG icon registry to js/icons.js"
 ### Task 1.2: Extract favicon cache module
 
 **Files:**
+
 - Create: `js/favicons.js`
 - Modify: `js/dashboard.js` (remove favicon functions + constants, import them)
 
@@ -154,6 +156,7 @@ export function clearExpiredFavicons() {
 - [ ] **Step 2: Replace favicon code in `js/dashboard.js`**
 
 Delete from `js/dashboard.js`:
+
 - `const FAVICON_CACHE_KEY = …`
 - `const FAVICON_CACHE_EXPIRY_DAYS = …`
 - `function getFavicon(...) { … }`
@@ -182,6 +185,7 @@ git commit -m "refactor(favicons): extract favicon cache to js/favicons.js"
 ### Task 1.3: Extract clock + greeting
 
 **Files:**
+
 - Create: `js/clock.js`
 - Modify: `js/dashboard.js`
 
@@ -232,6 +236,7 @@ export function startClock(username) {
 - [ ] **Step 2: Replace clock code in `js/dashboard.js`**
 
 Delete from `js/dashboard.js`:
+
 - `function updateTime() { … }`
 - The call sites `setInterval(updateTime, 1000); updateTime();`
 
@@ -263,6 +268,7 @@ git commit -m "refactor(clock): extract clock + greeting to js/clock.js"
 ### Task 1.4: Extract theme module
 
 **Files:**
+
 - Create: `js/theme.js`
 - Modify: `js/dashboard.js`
 
@@ -314,6 +320,7 @@ export function initTheme() {
 - [ ] **Step 2: Replace theme code in `js/dashboard.js`**
 
 Delete from `js/dashboard.js`:
+
 - `state.theme = …` from the state object initializer
 - `function toggleTheme() { … }`
 - `function applyTheme() { … }`
@@ -347,6 +354,7 @@ git commit -m "refactor(theme): extract dark/light theme to js/theme.js"
 ### Task 1.5: Extract render functions
 
 **Files:**
+
 - Create: `js/render/sidebar.js`, `js/render/grid.js`
 - Modify: `js/dashboard.js`
 
@@ -472,7 +480,10 @@ function renderSearchResults(root, query) {
   const matches = [];
   dataRef.forEach((cat) => {
     Object.entries(cat.items).forEach(([name, url]) => {
-      if (name.toLowerCase().includes(query) || url.toLowerCase().includes(query)) {
+      if (
+        name.toLowerCase().includes(query) ||
+        url.toLowerCase().includes(query)
+      ) {
         matches.push({ name, url });
       }
     });
@@ -521,6 +532,7 @@ function renderLinkCard(name, url) {
 In `js/dashboard.js`, replace the existing `renderSidebar`, `setActiveCategory`, `renderLinkCard`, `renderView` functions with imports and thin delegations.
 
 Delete from `js/dashboard.js`:
+
 - `function renderSidebar() { … }`
 - `function setActiveCategory(cat) { … }`
 - `function renderLinkCard(name, url, categoryColor) { … }`
@@ -531,7 +543,10 @@ Delete from `js/dashboard.js`:
 Add imports at top:
 
 ```js
-import { initSidebar, setActive as setSidebarActive } from "./render/sidebar.js";
+import {
+  initSidebar,
+  setActive as setSidebarActive,
+} from "./render/sidebar.js";
 import { initGrid, setState as setGridState } from "./render/grid.js";
 ```
 
@@ -551,10 +566,15 @@ function toggleFavorite(url) {
   setGridState({}); // re-render with updated favorites
 }
 
-initSidebar({ data, activeCategory: state.activeCategory, onCategorySelect: selectCategory });
+initSidebar({
+  data,
+  activeCategory: state.activeCategory,
+  onCategorySelect: selectCategory,
+});
 initGrid({ data, state, onToggleFavorite: toggleFavorite });
 
-document.querySelector('[data-cat="all"]').onclick = () => selectCategory("all");
+document.querySelector('[data-cat="all"]').onclick = () =>
+  selectCategory("all");
 
 const filterInput = document.getElementById("filter");
 filterInput.addEventListener("input", (e) => {
@@ -584,6 +604,7 @@ git commit -m "refactor(render): split sidebar + grid rendering into modules"
 ### Task 1.6: Replace dashboard.js with main.js entry
 
 **Files:**
+
 - Create: `js/main.js`
 - Modify: `index.html` (script src), delete `js/dashboard.js`
 
@@ -597,7 +618,10 @@ import data from "./shortcuts.js";
 import { clearExpiredFavicons } from "./favicons.js";
 import { startClock } from "./clock.js";
 import { initTheme } from "./theme.js";
-import { initSidebar, setActive as setSidebarActive } from "./render/sidebar.js";
+import {
+  initSidebar,
+  setActive as setSidebarActive,
+} from "./render/sidebar.js";
 import { initGrid, setState as setGridState } from "./render/grid.js";
 
 const state = {
@@ -622,10 +646,15 @@ function toggleFavorite(url) {
 clearExpiredFavicons();
 initTheme();
 startClock("Marcin");
-initSidebar({ data, activeCategory: state.activeCategory, onCategorySelect: selectCategory });
+initSidebar({
+  data,
+  activeCategory: state.activeCategory,
+  onCategorySelect: selectCategory,
+});
 initGrid({ data, state, onToggleFavorite: toggleFavorite });
 
-document.querySelector('[data-cat="all"]').onclick = () => selectCategory("all");
+document.querySelector('[data-cat="all"]').onclick = () =>
+  selectCategory("all");
 
 const filterInput = document.getElementById("filter");
 filterInput.addEventListener("input", (e) => {
@@ -681,6 +710,7 @@ After this phase, the app reads from a merged data source (seed ⊕ overlay) ins
 ### Task 2.1: Normalize seed in `js/shortcuts.js`
 
 **Files:**
+
 - Modify: `js/shortcuts.js`
 
 - [ ] **Step 1: Convert items objects to arrays with ids**
@@ -699,11 +729,23 @@ export default [
     color: "yellow",
     icon: "home",
     items: [
-      { id: "lnk-gmail", name: "gmail", url: "https://mail.google.com/mail/u/0/#inbox" },
-      { id: "lnk-facebook", name: "facebook", url: "https://www.facebook.com/" },
+      {
+        id: "lnk-gmail",
+        name: "gmail",
+        url: "https://mail.google.com/mail/u/0/#inbox",
+      },
+      {
+        id: "lnk-facebook",
+        name: "facebook",
+        url: "https://www.facebook.com/",
+      },
       { id: "lnk-twitter", name: "twitter", url: "https://twitter.com" },
       { id: "lnk-google", name: "google", url: "https://www.google.com/" },
-      { id: "lnk-proton", name: "proton", url: "https://account.protonvpn.com/dashboardV2" },
+      {
+        id: "lnk-proton",
+        name: "proton",
+        url: "https://account.protonvpn.com/dashboardV2",
+      },
     ],
   },
   {
@@ -715,8 +757,16 @@ export default [
       { id: "lnk-github", name: "github", url: "https://github.com/Bigu93" },
       { id: "lnk-devto", name: "dev.to", url: "https://dev.to" },
       { id: "lnk-devdocs", name: "docs", url: "https://devdocs.io/" },
-      { id: "lnk-idosell-npm", name: "idosell-npm", url: "https://www.npmjs.com/package/idosell" },
-      { id: "lnk-idosell-doc", name: "idosell-doc", url: "https://idosell-converter.vercel.app/" },
+      {
+        id: "lnk-idosell-npm",
+        name: "idosell-npm",
+        url: "https://www.npmjs.com/package/idosell",
+      },
+      {
+        id: "lnk-idosell-doc",
+        name: "idosell-doc",
+        url: "https://idosell-converter.vercel.app/",
+      },
     ],
   },
   {
@@ -725,8 +775,16 @@ export default [
     color: "cyan",
     icon: "graduation-cap",
     items: [
-      { id: "lnk-xss-rat", name: "xss_rat", url: "https://thexssrat.podia.com/" },
-      { id: "lnk-docker-lab", name: "docker", url: "https://labs.iximiuz.com/dashboard" },
+      {
+        id: "lnk-xss-rat",
+        name: "xss_rat",
+        url: "https://thexssrat.podia.com/",
+      },
+      {
+        id: "lnk-docker-lab",
+        name: "docker",
+        url: "https://labs.iximiuz.com/dashboard",
+      },
       { id: "lnk-courses-docs", name: "docs", url: "https://devdocs.io/" },
     ],
   },
@@ -737,11 +795,27 @@ export default [
     icon: "cpu",
     items: [
       { id: "lnk-chatgpt", name: "ChatGPT", url: "https://chatgpt.com/" },
-      { id: "lnk-perplexity", name: "Perplexity", url: "https://www.perplexity.ai/" },
+      {
+        id: "lnk-perplexity",
+        name: "Perplexity",
+        url: "https://www.perplexity.ai/",
+      },
       { id: "lnk-claude", name: "Claude", url: "https://claude.ai/new" },
-      { id: "lnk-gemini", name: "Gemini", url: "https://gemini.google.com/app" },
-      { id: "lnk-deepseek", name: "DeepSeek", url: "https://chat.deepseek.com/" },
-      { id: "lnk-ai-studio", name: "Google AI studio", url: "https://aistudio.google.com/" },
+      {
+        id: "lnk-gemini",
+        name: "Gemini",
+        url: "https://gemini.google.com/app",
+      },
+      {
+        id: "lnk-deepseek",
+        name: "DeepSeek",
+        url: "https://chat.deepseek.com/",
+      },
+      {
+        id: "lnk-ai-studio",
+        name: "Google AI studio",
+        url: "https://aistudio.google.com/",
+      },
       { id: "lnk-glm", name: "GLM", url: "https://chat.z.ai/" },
     ],
   },
@@ -751,14 +825,46 @@ export default [
     color: "red",
     icon: "terminal",
     items: [
-      { id: "lnk-tryhackme", name: "tryhackme", url: "https://tryhackme.com/dashboard" },
-      { id: "lnk-hackthebox", name: "hackthebox", url: "https://app.hackthebox.com/home" },
-      { id: "lnk-ine", name: "ine", url: "https://my.ine.com/dashboard/learning" },
-      { id: "lnk-pwn-college", name: "pwn.college", url: "https://pwn.college/" },
-      { id: "lnk-hacktricks", name: "hacktricks", url: "https://book.hacktricks.xyz/welcome/readme" },
-      { id: "lnk-hackersploit", name: "hackersploit", url: "https://hackersploit.org/penetration-testing-tutorials/" },
-      { id: "lnk-cryptohack", name: "cryptohack", url: "https://cryptohack.org/" },
-      { id: "lnk-hacking-articles", name: "hacking articles", url: "https://www.hackingarticles.in/" },
+      {
+        id: "lnk-tryhackme",
+        name: "tryhackme",
+        url: "https://tryhackme.com/dashboard",
+      },
+      {
+        id: "lnk-hackthebox",
+        name: "hackthebox",
+        url: "https://app.hackthebox.com/home",
+      },
+      {
+        id: "lnk-ine",
+        name: "ine",
+        url: "https://my.ine.com/dashboard/learning",
+      },
+      {
+        id: "lnk-pwn-college",
+        name: "pwn.college",
+        url: "https://pwn.college/",
+      },
+      {
+        id: "lnk-hacktricks",
+        name: "hacktricks",
+        url: "https://book.hacktricks.xyz/welcome/readme",
+      },
+      {
+        id: "lnk-hackersploit",
+        name: "hackersploit",
+        url: "https://hackersploit.org/penetration-testing-tutorials/",
+      },
+      {
+        id: "lnk-cryptohack",
+        name: "cryptohack",
+        url: "https://cryptohack.org/",
+      },
+      {
+        id: "lnk-hacking-articles",
+        name: "hacking articles",
+        url: "https://www.hackingarticles.in/",
+      },
     ],
   },
   {
@@ -769,8 +875,16 @@ export default [
     items: [
       { id: "lnk-trello", name: "trello", url: "https://trello.com" },
       { id: "lnk-linkedin", name: "linkedin", url: "https://linkedin.com" },
-      { id: "lnk-buto-panel", name: "buto panel", url: "https://butosklep.pl/panel" },
-      { id: "lnk-bing-ads", name: "bing ads", url: "https://ui.ads.microsoft.com/campaign/vnext/overview" },
+      {
+        id: "lnk-buto-panel",
+        name: "buto panel",
+        url: "https://butosklep.pl/panel",
+      },
+      {
+        id: "lnk-bing-ads",
+        name: "bing ads",
+        url: "https://ui.ads.microsoft.com/campaign/vnext/overview",
+      },
     ],
   },
   {
@@ -782,10 +896,18 @@ export default [
       { id: "lnk-wykop", name: "wykop", url: "https://wykop.pl/" },
       { id: "lnk-youtube", name: "youtube", url: "https://www.youtube.com/" },
       { id: "lnk-twitch", name: "twitch", url: "https://www.twitch.tv/" },
-      { id: "lnk-pepper", name: "pepper", url: "https://www.pepper.pl/dlaciebie" },
+      {
+        id: "lnk-pepper",
+        name: "pepper",
+        url: "https://www.pepper.pl/dlaciebie",
+      },
       { id: "lnk-ytmusic", name: "ytmusic", url: "https://music.youtube.com/" },
       { id: "lnk-ggdeals", name: "ggdeals", url: "https://gg.deals/" },
-      { id: "lnk-torrent", name: "torrent", url: "https://polskie-torrenty.eu/" },
+      {
+        id: "lnk-torrent",
+        name: "torrent",
+        url: "https://polskie-torrenty.eu/",
+      },
       { id: "lnk-xtorrent", name: "xtorrent", url: "https://xtorrenty.org/" },
     ],
   },
@@ -797,11 +919,31 @@ export default [
     items: [
       { id: "lnk-tugazeta", name: "tugazeta", url: "https://tugazeta.pl/" },
       { id: "lnk-sekurak", name: "sekurak", url: "https://sekurak.pl/" },
-      { id: "lnk-world-news", name: "world_news", url: "https://brutalist.report/topic/news?limit=5" },
-      { id: "lnk-tech-news", name: "tech_news", url: "https://brutalist.report/topic/tech?limit=10" },
-      { id: "lnk-business-news", name: "business_news", url: "https://brutalist.report/topic/business?limit=10" },
-      { id: "lnk-gaming-news", name: "gaming_news", url: "https://brutalist.report/topic/gaming?limit=10" },
-      { id: "lnk-r-polska", name: "/r/polska", url: "https://www.reddit.com/r/Polska/" },
+      {
+        id: "lnk-world-news",
+        name: "world_news",
+        url: "https://brutalist.report/topic/news?limit=5",
+      },
+      {
+        id: "lnk-tech-news",
+        name: "tech_news",
+        url: "https://brutalist.report/topic/tech?limit=10",
+      },
+      {
+        id: "lnk-business-news",
+        name: "business_news",
+        url: "https://brutalist.report/topic/business?limit=10",
+      },
+      {
+        id: "lnk-gaming-news",
+        name: "gaming_news",
+        url: "https://brutalist.report/topic/gaming?limit=10",
+      },
+      {
+        id: "lnk-r-polska",
+        name: "/r/polska",
+        url: "https://www.reddit.com/r/Polska/",
+      },
     ],
   },
   {
@@ -814,7 +956,11 @@ export default [
       { id: "lnk-olx", name: "olx", url: "https://www.olx.pl/" },
       { id: "lnk-etsy", name: "etsy", url: "https://www.etsy.com/" },
       { id: "lnk-emp-shop", name: "emp-shop", url: "https://www.emp-shop.pl/" },
-      { id: "lnk-rockmetalshop", name: "rockmetalshop", url: "https://rockmetalshop.pl/" },
+      {
+        id: "lnk-rockmetalshop",
+        name: "rockmetalshop",
+        url: "https://rockmetalshop.pl/",
+      },
       { id: "lnk-kfd", name: "kfd", url: "https://sklep.kfd.pl/" },
     ],
   },
@@ -824,10 +970,22 @@ export default [
     color: "blue",
     icon: "joystick",
     items: [
-      { id: "lnk-r-gaming", name: "/r/gaming", url: "https://www.reddit.com/r/gaming/" },
-      { id: "lnk-gry-online", name: "gry-online", url: "https://www.gry-online.pl/" },
+      {
+        id: "lnk-r-gaming",
+        name: "/r/gaming",
+        url: "https://www.reddit.com/r/gaming/",
+      },
+      {
+        id: "lnk-gry-online",
+        name: "gry-online",
+        url: "https://www.gry-online.pl/",
+      },
       { id: "lnk-gog", name: "gog", url: "https://www.gog.com/" },
-      { id: "lnk-steam", name: "steam", url: "https://store.steampowered.com/" },
+      {
+        id: "lnk-steam",
+        name: "steam",
+        url: "https://store.steampowered.com/",
+      },
     ],
   },
   {
@@ -836,10 +994,26 @@ export default [
     color: "light-gray",
     icon: "star",
     items: [
-      { id: "lnk-gynvael", name: "gynvael", url: "https://gynvael.coldwind.pl/" },
-      { id: "lnk-network-chuck", name: "network_chuck", url: "https://learn.networkchuck.com/" },
-      { id: "lnk-ippsec", name: "ippsec", url: "https://www.youtube.com/@ippsec/videos" },
-      { id: "lnk-hammond", name: "hammond", url: "https://www.youtube.com/@_JohnHammond/videos" },
+      {
+        id: "lnk-gynvael",
+        name: "gynvael",
+        url: "https://gynvael.coldwind.pl/",
+      },
+      {
+        id: "lnk-network-chuck",
+        name: "network_chuck",
+        url: "https://learn.networkchuck.com/",
+      },
+      {
+        id: "lnk-ippsec",
+        name: "ippsec",
+        url: "https://www.youtube.com/@ippsec/videos",
+      },
+      {
+        id: "lnk-hammond",
+        name: "hammond",
+        url: "https://www.youtube.com/@_JohnHammond/videos",
+      },
     ],
   },
   {
@@ -848,11 +1022,19 @@ export default [
     color: "green",
     icon: "server",
     items: [
-      { id: "lnk-homelab-dashboard", name: "homelab dashboard", url: "http://dashboard.lan" },
+      {
+        id: "lnk-homelab-dashboard",
+        name: "homelab dashboard",
+        url: "http://dashboard.lan",
+      },
       { id: "lnk-bookmarks", name: "bookmarks", url: "http://linkding.lan" },
       { id: "lnk-dns", name: "dns", url: "http://adguard.lan" },
       { id: "lnk-proxy", name: "proxy manager", url: "http://nginx.lan" },
-      { id: "lnk-cyberchef-lan", name: "cyberchef", url: "http://cyberchef.lan" },
+      {
+        id: "lnk-cyberchef-lan",
+        name: "cyberchef",
+        url: "http://cyberchef.lan",
+      },
       { id: "lnk-speedtest", name: "speedtest", url: "http://speed.lan" },
       { id: "lnk-portainer", name: "portainer", url: "http://portainer.lan" },
       { id: "lnk-torrent-lan", name: "torrent", url: "http://torrent.lan" },
@@ -866,17 +1048,41 @@ export default [
     color: "red",
     icon: "flag",
     items: [
-      { id: "lnk-cyberchef", name: "CyberChef", url: "https://gchq.github.io/CyberChef/" },
+      {
+        id: "lnk-cyberchef",
+        name: "CyberChef",
+        url: "https://gchq.github.io/CyberChef/",
+      },
       { id: "lnk-hex", name: "Hex", url: "https://hexed.it/" },
-      { id: "lnk-online-converter", name: "OnlineConverter", url: "https://www.rapidtables.com/convert/number/ascii-hex-bin-dec-converter.html" },
+      {
+        id: "lnk-online-converter",
+        name: "OnlineConverter",
+        url: "https://www.rapidtables.com/convert/number/ascii-hex-bin-dec-converter.html",
+      },
       { id: "lnk-xor", name: "XOR", url: "https://xor.pw/" },
       { id: "lnk-regex", name: "Regex", url: "https://www.debuggex.com/" },
       { id: "lnk-ascii", name: "ASCII", url: "https://www.asciitable.com/" },
       { id: "lnk-quipquip", name: "QuipQuip", url: "https://quipqiup.com/" },
-      { id: "lnk-crackstation", name: "Crackstation", url: "https://crackstation.net/" },
-      { id: "lnk-pentestbook", name: "PentestBook", url: "https://pentestbook.six2dez.com/" },
-      { id: "lnk-practical-ctf", name: "Practical CTF", url: "https://book.jorianwoltjer.com/" },
-      { id: "lnk-john-ermac", name: "john_ermac", url: "https://johnermac.github.io/menu/" },
+      {
+        id: "lnk-crackstation",
+        name: "Crackstation",
+        url: "https://crackstation.net/",
+      },
+      {
+        id: "lnk-pentestbook",
+        name: "PentestBook",
+        url: "https://pentestbook.six2dez.com/",
+      },
+      {
+        id: "lnk-practical-ctf",
+        name: "Practical CTF",
+        url: "https://book.jorianwoltjer.com/",
+      },
+      {
+        id: "lnk-john-ermac",
+        name: "john_ermac",
+        url: "https://johnermac.github.io/menu/",
+      },
     ],
   },
   {
@@ -885,25 +1091,97 @@ export default [
     color: "gray",
     icon: "shield",
     items: [
-      { id: "lnk-nthw", name: "NTHW", url: "https://github.com/notthehiddenwiki/NTHW" },
-      { id: "lnk-exploit-notes", name: "Exploit notes", url: "https://exploit-notes.hdks.org/" },
-      { id: "lnk-security-links", name: "SecurityLinks", url: "https://security-links.hdks.org/" },
-      { id: "lnk-praetorian", name: "Praetorian", url: "https://www.praetorian.com/blog/" },
-      { id: "lnk-hibp", name: "haveibeenpwned", url: "https://haveibeenpwned.com/" },
-      { id: "lnk-r-blackhat", name: "/r/blackhat", url: "https://www.reddit.com/r/blackhat/?rdt=35278" },
-      { id: "lnk-zenarmor", name: "zenarmor", url: "https://www.zenarmor.com/docs/network-security-tutorials/best-firewalls-for-schools" },
+      {
+        id: "lnk-nthw",
+        name: "NTHW",
+        url: "https://github.com/notthehiddenwiki/NTHW",
+      },
+      {
+        id: "lnk-exploit-notes",
+        name: "Exploit notes",
+        url: "https://exploit-notes.hdks.org/",
+      },
+      {
+        id: "lnk-security-links",
+        name: "SecurityLinks",
+        url: "https://security-links.hdks.org/",
+      },
+      {
+        id: "lnk-praetorian",
+        name: "Praetorian",
+        url: "https://www.praetorian.com/blog/",
+      },
+      {
+        id: "lnk-hibp",
+        name: "haveibeenpwned",
+        url: "https://haveibeenpwned.com/",
+      },
+      {
+        id: "lnk-r-blackhat",
+        name: "/r/blackhat",
+        url: "https://www.reddit.com/r/blackhat/?rdt=35278",
+      },
+      {
+        id: "lnk-zenarmor",
+        name: "zenarmor",
+        url: "https://www.zenarmor.com/docs/network-security-tutorials/best-firewalls-for-schools",
+      },
       { id: "lnk-cuckoo", name: "cuckoo", url: "https://sandbox.pikker.ee/" },
-      { id: "lnk-canary-tokens", name: "canary_tokens", url: "https://canarytokens.org/nest/" },
-      { id: "lnk-html-spec", name: "HTML Standard", url: "https://html.spec.whatwg.org/multipage/parsing.html" },
-      { id: "lnk-webgoat", name: "WebGoat", url: "https://github.com/WebGoat/WebGoat?tab=readme-ov-file" },
-      { id: "lnk-mxss-cheat", name: "mXSS cheatsheet", url: "https://sonarsource.github.io/mxss-cheatsheet/" },
-      { id: "lnk-owasp-cheat", name: "OWASP cheatsheet", url: "https://cheatsheetseries.owasp.org/index.html" },
-      { id: "lnk-haax-cheat", name: "Offensive Sec cheatsheet", url: "https://cheatsheet.haax.fr/" },
-      { id: "lnk-xss-rat-notes", name: "XSS rat", url: "https://thexssrat.notion.site/Uncle-rat-s-notes-0ca25196b8c84147bf35a5c84d6b18de" },
-      { id: "lnk-awesome-bugbounty", name: "Awesome BugBounty", url: "https://github.com/fardeen-ahmed/Bug-bounty-Writeups" },
-      { id: "lnk-hacker-recipes", name: "HackerRecipes", url: "https://www.thehacker.recipes/" },
-      { id: "lnk-red-team-notes", name: "Red Team Notes", url: "https://www.ired.team/" },
-      { id: "lnk-red-team-llm", name: "Red Team LLM", url: "https://cph-sec.gitbook.io/ai-llm-red-team-handbook-and-field-manual" },
+      {
+        id: "lnk-canary-tokens",
+        name: "canary_tokens",
+        url: "https://canarytokens.org/nest/",
+      },
+      {
+        id: "lnk-html-spec",
+        name: "HTML Standard",
+        url: "https://html.spec.whatwg.org/multipage/parsing.html",
+      },
+      {
+        id: "lnk-webgoat",
+        name: "WebGoat",
+        url: "https://github.com/WebGoat/WebGoat?tab=readme-ov-file",
+      },
+      {
+        id: "lnk-mxss-cheat",
+        name: "mXSS cheatsheet",
+        url: "https://sonarsource.github.io/mxss-cheatsheet/",
+      },
+      {
+        id: "lnk-owasp-cheat",
+        name: "OWASP cheatsheet",
+        url: "https://cheatsheetseries.owasp.org/index.html",
+      },
+      {
+        id: "lnk-haax-cheat",
+        name: "Offensive Sec cheatsheet",
+        url: "https://cheatsheet.haax.fr/",
+      },
+      {
+        id: "lnk-xss-rat-notes",
+        name: "XSS rat",
+        url: "https://thexssrat.notion.site/Uncle-rat-s-notes-0ca25196b8c84147bf35a5c84d6b18de",
+      },
+      {
+        id: "lnk-awesome-bugbounty",
+        name: "Awesome BugBounty",
+        url: "https://github.com/fardeen-ahmed/Bug-bounty-Writeups",
+      },
+      {
+        id: "lnk-hacker-recipes",
+        name: "HackerRecipes",
+        url: "https://www.thehacker.recipes/",
+      },
+      {
+        id: "lnk-red-team-notes",
+        name: "Red Team Notes",
+        url: "https://www.ired.team/",
+      },
+      {
+        id: "lnk-red-team-llm",
+        name: "Red Team LLM",
+        url: "https://cph-sec.gitbook.io/ai-llm-red-team-handbook-and-field-manual",
+      },
     ],
   },
   {
@@ -912,7 +1190,11 @@ export default [
     color: "purple",
     icon: "activity",
     items: [
-      { id: "lnk-buganski", name: "Bugański", url: "https://czlowiekuruszsie.pl/" },
+      {
+        id: "lnk-buganski",
+        name: "Bugański",
+        url: "https://czlowiekuruszsie.pl/",
+      },
     ],
   },
   {
@@ -921,11 +1203,27 @@ export default [
     color: "blue",
     icon: "book",
     items: [
-      { id: "lnk-annas-archive", name: "Anna's Archive", url: "https://pl.annas-archive.org/" },
+      {
+        id: "lnk-annas-archive",
+        name: "Anna's Archive",
+        url: "https://pl.annas-archive.org/",
+      },
       { id: "lnk-btdigg", name: "BTDigg", url: "https://btdig.com/" },
-      { id: "lnk-libgen-fiction", name: "Polish fiction", url: "https://libgen.is/fiction/?q=&criteria=&language=Polish&format=" },
-      { id: "lnk-libgen-nonfiction", name: "Polish non-fiction", url: "https://libgen.is/search.php?&req=polish&phrase=1&view=simple&column=language&sort=id&sortmode=DESC" },
-      { id: "lnk-libgen-it", name: "Polish IT", url: "https://libgen.is/search.php?&req=Helion&phrase=1&view=simple&column=publisher&sort=id&sortmode=DESC&page=2" },
+      {
+        id: "lnk-libgen-fiction",
+        name: "Polish fiction",
+        url: "https://libgen.is/fiction/?q=&criteria=&language=Polish&format=",
+      },
+      {
+        id: "lnk-libgen-nonfiction",
+        name: "Polish non-fiction",
+        url: "https://libgen.is/search.php?&req=polish&phrase=1&view=simple&column=language&sort=id&sortmode=DESC",
+      },
+      {
+        id: "lnk-libgen-it",
+        name: "Polish IT",
+        url: "https://libgen.is/search.php?&req=Helion&phrase=1&view=simple&column=publisher&sort=id&sortmode=DESC&page=2",
+      },
     ],
   },
 ];
@@ -1022,6 +1320,7 @@ git commit -m "refactor(shortcuts): normalize seed to arrays with stable ids"
 ### Task 2.2: Create storage module
 
 **Files:**
+
 - Create: `js/storage.js`
 
 - [ ] **Step 1: Write `js/storage.js`**
@@ -1134,11 +1433,11 @@ export function migrateLegacyFavorites(overlay, seed) {
   }
   if (!Array.isArray(urls) || urls.length === 0) return overlay;
   const urlToId = new Map();
-  seed.forEach((cat) =>
-    cat.items.forEach((it) => urlToId.set(it.url, it.id)),
-  );
+  seed.forEach((cat) => cat.items.forEach((it) => urlToId.set(it.url, it.id)));
   const ids = urls.map((u) => urlToId.get(u)).filter(Boolean);
-  overlay.favorites = Array.from(new Set([...(overlay.favorites || []), ...ids]));
+  overlay.favorites = Array.from(
+    new Set([...(overlay.favorites || []), ...ids]),
+  );
   try {
     localStorage.removeItem("favorites");
   } catch {
@@ -1170,6 +1469,7 @@ git commit -m "feat(storage): add localStorage overlay loader + migrations"
 ### Task 2.3: Create data merge module
 
 **Files:**
+
 - Create: `js/data.js`
 
 - [ ] **Step 1: Write `js/data.js`**
@@ -1302,7 +1602,14 @@ const storage = await import("./js/storage.js");
 const { merge } = await import("./js/data.js");
 const overlay = storage.load();
 const out = merge(seed, overlay);
-console.log("Categories:", out.length, "First cat:", out[0].category, "First link:", out[0].items[0]);
+console.log(
+  "Categories:",
+  out.length,
+  "First cat:",
+  out[0].category,
+  "First link:",
+  out[0].items[0],
+);
 ```
 
 Expected: `Categories: 17 First cat: Main First link: {id: "lnk-gmail", name: "gmail", url: "..."}`.
@@ -1317,6 +1624,7 @@ git commit -m "feat(data): add seed+overlay merge function"
 ### Task 2.4: Wire storage + merge into main.js
 
 **Files:**
+
 - Modify: `js/main.js`, `js/render/grid.js`, `js/render/sidebar.js`
 
 - [ ] **Step 1: Rewrite `js/main.js` to use merged data**
@@ -1328,13 +1636,24 @@ Replace `js/main.js` entirely:
 // App entry point. Loads overlay, merges with seed, wires modules.
 
 import seed from "./shortcuts.js";
-import { load as loadOverlay, save as saveOverlay, migrateLegacyFavorites } from "./storage.js";
+import {
+  load as loadOverlay,
+  save as saveOverlay,
+  migrateLegacyFavorites,
+} from "./storage.js";
 import { merge } from "./data.js";
 import { clearExpiredFavicons } from "./favicons.js";
 import { startClock } from "./clock.js";
 import { initTheme } from "./theme.js";
-import { initSidebar, setActive as setSidebarActive } from "./render/sidebar.js";
-import { initGrid, setData as setGridData, setState as setGridState } from "./render/grid.js";
+import {
+  initSidebar,
+  setActive as setSidebarActive,
+} from "./render/sidebar.js";
+import {
+  initGrid,
+  setData as setGridData,
+  setState as setGridState,
+} from "./render/grid.js";
 
 let overlay = loadOverlay();
 overlay = migrateLegacyFavorites(overlay, seed);
@@ -1376,7 +1695,8 @@ initGrid({
   onToggleFavorite: toggleFavorite,
 });
 
-document.querySelector('[data-cat="all"]').onclick = () => selectCategory("all");
+document.querySelector('[data-cat="all"]').onclick = () =>
+  selectCategory("all");
 
 const filterInput = document.getElementById("filter");
 filterInput.addEventListener("input", (e) => {
@@ -1475,6 +1795,7 @@ Apply the spec's typography, spacing, color, and animation refinements. Layout (
 ### Task 3.1: Swap font to Geist + retune type scale
 
 **Files:**
+
 - Modify: `index.html`, `styles/main.css`
 
 - [ ] **Step 1: Replace font link in `index.html`**
@@ -1484,9 +1805,12 @@ In `index.html` `<head>`, no current font link tag exists (Inter is imported via
 Add inside `<head>` (above the stylesheet link):
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap"
+  rel="stylesheet"
+/>
 ```
 
 - [ ] **Step 2: Update `styles/main.css` font family + type scale**
@@ -1516,7 +1840,7 @@ body {
 Update the `:root` block — add the mono font variable next to dimensions:
 
 ```css
-  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+--font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 ```
 
 Update `.greeting-wrap h1`:
@@ -1602,6 +1926,7 @@ git commit -m "style: swap to Geist + retune type scale"
 ### Task 3.2: Update color tokens + spacing
 
 **Files:**
+
 - Modify: `styles/main.css`
 
 - [ ] **Step 1: Replace `:root` dark theme variables**
@@ -1619,7 +1944,7 @@ In `styles/main.css`, replace the `:root` block entirely:
   --surface-1: rgba(148, 163, 184, 0.04);
   --surface-2: rgba(148, 163, 184, 0.08);
   --surface-3: rgba(148, 163, 184, 0.12);
-  --surface-hover: rgba(148, 163, 184, 0.10);
+  --surface-hover: rgba(148, 163, 184, 0.1);
 
   /* Borders */
   --border-subtle: rgba(255, 255, 255, 0.06);
@@ -1666,7 +1991,7 @@ In `styles/main.css`, replace the `:root` block entirely:
 
   --surface-1: rgba(15, 23, 42, 0.03);
   --surface-2: rgba(15, 23, 42, 0.06);
-  --surface-3: rgba(15, 23, 42, 0.10);
+  --surface-3: rgba(15, 23, 42, 0.1);
   --surface-hover: rgba(15, 23, 42, 0.08);
 
   --border-subtle: rgba(15, 23, 42, 0.06);
@@ -1772,6 +2097,7 @@ git commit -m "style: tighten spacing + retune color tokens (slate-950 dark, sto
 ### Task 3.3: Card + dot + sidebar polish
 
 **Files:**
+
 - Modify: `styles/main.css`
 
 - [ ] **Step 1: Update `.cat-dot` for soft glow**
@@ -1956,11 +2282,13 @@ git commit -m "style: polish cards, favicon container, sidebar active, star butt
 ### Task 3.4: Replace animations
 
 **Files:**
+
 - Modify: `styles/main.css`
 
 - [ ] **Step 1: Delete the staggered cascade + sheen sweep + replace with calm fade**
 
 Find and delete these blocks from `styles/main.css`:
+
 - `.link-card::after { … }` (already deleted in 3.3)
 - `.link-card:hover::after { … }` (already deleted in 3.3)
 - All `.category-section:nth-child(N)` `animation-delay` rules
@@ -1972,8 +2300,12 @@ Keep `@keyframes fadeIn` (we still use it) but redefine if it doesn't translate:
 
 ```css
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 ```
 
@@ -2011,6 +2343,7 @@ Reusable modal and toast components used by every CRUD UI in subsequent phases.
 ### Task 4.1: Create modal + toast module
 
 **Files:**
+
 - Create: `js/crud/modal.js`
 - Modify: `styles/main.css`
 
@@ -2095,7 +2428,12 @@ export function closeModal() {
   if (cb) cb();
 }
 
-export function confirmDialog({ title, message, confirmLabel = "Confirm", danger = false }) {
+export function confirmDialog({
+  title,
+  message,
+  confirmLabel = "Confirm",
+  danger = false,
+}) {
   return new Promise((resolve) => {
     const footer = document.createElement("div");
     footer.style.display = "flex";
@@ -2182,8 +2520,14 @@ Append to the bottom of `styles/main.css`:
 }
 
 @keyframes modalIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modal-header {
@@ -2357,7 +2701,9 @@ Append to the bottom of `styles/main.css`:
   box-shadow: var(--shadow-lg);
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
   pointer-events: auto;
   max-width: 360px;
 }
@@ -2412,6 +2758,7 @@ Settings panel reachable via gear icon in sidebar footer. Covers username, theme
 ### Task 5.1: Add engines registry
 
 **Files:**
+
 - Create: `js/engines.js`
 
 - [ ] **Step 1: Write `js/engines.js`**
@@ -2421,22 +2768,49 @@ Settings panel reachable via gear icon in sidebar footer. Covers username, theme
 // Search engine registry. Built-ins + user-added customs.
 
 export const BUILTIN_ENGINES = [
-  { key: "ddg",    label: "DuckDuckGo", urlTemplate: "https://duckduckgo.com/?q=%s" },
-  { key: "google", label: "Google",     urlTemplate: "https://www.google.com/search?q=%s" },
-  { key: "bing",   label: "Bing",       urlTemplate: "https://www.bing.com/search?q=%s" },
-  { key: "kagi",   label: "Kagi",       urlTemplate: "https://kagi.com/search?q=%s" },
+  {
+    key: "ddg",
+    label: "DuckDuckGo",
+    urlTemplate: "https://duckduckgo.com/?q=%s",
+  },
+  {
+    key: "google",
+    label: "Google",
+    urlTemplate: "https://www.google.com/search?q=%s",
+  },
+  {
+    key: "bing",
+    label: "Bing",
+    urlTemplate: "https://www.bing.com/search?q=%s",
+  },
+  { key: "kagi", label: "Kagi", urlTemplate: "https://kagi.com/search?q=%s" },
 ];
 
 // Default prefix-shortcuts (user can override via customs).
 export const DEFAULT_PREFIXES = [
-  { key: "g",  label: "Google",  urlTemplate: "https://www.google.com/search?q=%s" },
-  { key: "d",  label: "DuckDuckGo", urlTemplate: "https://duckduckgo.com/?q=%s" },
-  { key: "y",  label: "YouTube", urlTemplate: "https://www.youtube.com/results?search_query=%s" },
-  { key: "gh", label: "GitHub",  urlTemplate: "https://github.com/search?q=%s" },
+  {
+    key: "g",
+    label: "Google",
+    urlTemplate: "https://www.google.com/search?q=%s",
+  },
+  {
+    key: "d",
+    label: "DuckDuckGo",
+    urlTemplate: "https://duckduckgo.com/?q=%s",
+  },
+  {
+    key: "y",
+    label: "YouTube",
+    urlTemplate: "https://www.youtube.com/results?search_query=%s",
+  },
+  { key: "gh", label: "GitHub", urlTemplate: "https://github.com/search?q=%s" },
 ];
 
 export function getAllEngines(overlay) {
-  const customs = (overlay.settings?.customEngines || []).map((e) => ({ ...e, custom: true }));
+  const customs = (overlay.settings?.customEngines || []).map((e) => ({
+    ...e,
+    custom: true,
+  }));
   return [...BUILTIN_ENGINES, ...customs];
 }
 
@@ -2447,7 +2821,9 @@ export function getAllPrefixes(overlay) {
 }
 
 export function resolveEngine(key, overlay) {
-  return getAllEngines(overlay).find((e) => e.key === key) || BUILTIN_ENGINES[0];
+  return (
+    getAllEngines(overlay).find((e) => e.key === key) || BUILTIN_ENGINES[0]
+  );
 }
 
 export function searchUrl(template, query) {
@@ -2476,6 +2852,7 @@ git commit -m "feat(engines): add search engine registry"
 ### Task 5.2: Add settings button to sidebar + open settings panel
 
 **Files:**
+
 - Modify: `index.html`, `js/main.js`
 - Create: `js/crud/settings.js`
 
@@ -2587,7 +2964,8 @@ export function openSettings(scrollTo) {
   `;
 
   // Pre-fill values
-  body.querySelector("#set-username").value = overlayRef.settings.username || "";
+  body.querySelector("#set-username").value =
+    overlayRef.settings.username || "";
   const defEngSel = body.querySelector("#set-default-engine");
   populateEngineOptions(defEngSel);
   defEngSel.value = overlayRef.settings.defaultEngine || "ddg";
@@ -2608,22 +2986,32 @@ export function openSettings(scrollTo) {
     overlayRef.settings.defaultEngine = e.target.value;
     persistAndNotify();
   };
-  body.querySelector("#set-add-engine").onclick = () => addCustomRow(body.querySelector("#set-customs"));
+  body.querySelector("#set-add-engine").onclick = () =>
+    addCustomRow(body.querySelector("#set-customs"));
 
   body.querySelector("#set-weather-key").onchange = (e) => {
-    overlayRef.settings.weather = { ...(overlayRef.settings.weather || {}), apiKey: e.target.value.trim() };
+    overlayRef.settings.weather = {
+      ...(overlayRef.settings.weather || {}),
+      apiKey: e.target.value.trim(),
+    };
     persistAndNotify();
   };
   body.querySelector("#set-weather-units").onchange = (e) => {
-    overlayRef.settings.weather = { ...(overlayRef.settings.weather || {}), units: e.target.value };
+    overlayRef.settings.weather = {
+      ...(overlayRef.settings.weather || {}),
+      units: e.target.value,
+    };
     persistAndNotify();
   };
-  body.querySelector("#set-weather-loc").onblur = (e) => geocode(e.target.value, body);
+  body.querySelector("#set-weather-loc").onblur = (e) =>
+    geocode(e.target.value, body);
   body.querySelector("#set-weather-test").onclick = () => testWeather(body);
 
   body.querySelector("#set-export").onclick = exportData;
-  body.querySelector("#set-import").onclick = () => body.querySelector("#set-import-file").click();
-  body.querySelector("#set-import-file").onchange = (e) => importData(e.target.files[0]);
+  body.querySelector("#set-import").onclick = () =>
+    body.querySelector("#set-import-file").click();
+  body.querySelector("#set-import-file").onchange = (e) =>
+    importData(e.target.files[0]);
   body.querySelector("#set-reset").onclick = resetData;
   body.querySelector("#set-full-reset").onclick = fullReset;
 
@@ -2699,8 +3087,13 @@ function customRow(eng, idx) {
 }
 
 function addCustomRow(root) {
-  if (!overlayRef.settings.customEngines) overlayRef.settings.customEngines = [];
-  overlayRef.settings.customEngines.push({ key: "", label: "", urlTemplate: "" });
+  if (!overlayRef.settings.customEngines)
+    overlayRef.settings.customEngines = [];
+  overlayRef.settings.customEngines.push({
+    key: "",
+    label: "",
+    urlTemplate: "",
+  });
   renderCustoms(root);
 }
 
@@ -2772,7 +3165,9 @@ async function testWeather(body) {
 }
 
 function exportData() {
-  const blob = new Blob([JSON.stringify(overlayRef, null, 2)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify(overlayRef, null, 2)], {
+    type: "application/json",
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   const date = new Date().toISOString().slice(0, 10);
@@ -2801,7 +3196,8 @@ async function importData(file) {
   }
   const ok = await confirmDialog({
     title: "Import overlay",
-    message: "This replaces all your current links, edits, favorites, and settings. Continue?",
+    message:
+      "This replaces all your current links, edits, favorites, and settings. Continue?",
     confirmLabel: "Replace",
     danger: true,
   });
@@ -2815,7 +3211,8 @@ async function importData(file) {
 async function resetData() {
   const ok = await confirmDialog({
     title: "Reset to defaults",
-    message: "Deletes all your added links, edits, deletions, reorderings, and favorites. Settings (theme, weather, engines, username) are kept.",
+    message:
+      "Deletes all your added links, edits, deletions, reorderings, and favorites. Settings (theme, weather, engines, username) are kept.",
     confirmLabel: "Reset",
     danger: true,
   });
@@ -2835,7 +3232,8 @@ async function resetData() {
 async function fullReset() {
   const ok = await confirmDialog({
     title: "Full reset",
-    message: "Deletes EVERYTHING — links, edits, settings, theme, weather, engines. Cannot be undone.",
+    message:
+      "Deletes EVERYTHING — links, edits, settings, theme, weather, engines. Cannot be undone.",
     confirmLabel: "Wipe everything",
     danger: true,
   });
@@ -2878,7 +3276,11 @@ export function refreshData() {
 Add `setSidebarData` import:
 
 ```js
-import { initSidebar, setActive as setSidebarActive, setData as setSidebarData } from "./render/sidebar.js";
+import {
+  initSidebar,
+  setActive as setSidebarActive,
+  setData as setSidebarData,
+} from "./render/sidebar.js";
 ```
 
 - [ ] **Step 4: Add `setData` export to `js/render/sidebar.js`**
@@ -2897,8 +3299,12 @@ export function setData(data, activeCategory) {
 
 ```css
 /* --- Settings panel --- */
-.settings-body { color: var(--text-main); }
-.settings-section { margin-bottom: 1.5rem; }
+.settings-body {
+  color: var(--text-main);
+}
+.settings-section {
+  margin-bottom: 1.5rem;
+}
 .settings-section h3 {
   font-size: 0.75rem;
   font-weight: 600;
@@ -2912,7 +3318,9 @@ export function setData(data, activeCategory) {
   color: var(--text-muted);
   margin: 0 0 0.625rem;
 }
-.settings-hint a { color: var(--accent-primary); }
+.settings-hint a {
+  color: var(--accent-primary);
+}
 ```
 
 - [ ] **Step 6: Verify**
@@ -2933,6 +3341,7 @@ git commit -m "feat(settings): add settings panel with username, engines, weathe
 ### Task 6.1: Create link editor module
 
 **Files:**
+
 - Create: `js/crud/link-editor.js`
 
 - [ ] **Step 1: Write `js/crud/link-editor.js`**
@@ -2972,7 +3381,10 @@ function makeLinkId(name) {
   return `lnk-user-${slug}-${Date.now().toString(36)}`;
 }
 
-export function openLinkEditor({ linkId = null, defaultCategoryId = null } = {}) {
+export function openLinkEditor({
+  linkId = null,
+  defaultCategoryId = null,
+} = {}) {
   const isEdit = !!linkId;
   let existing = null;
   let existingCatId = null;
@@ -3121,7 +3533,11 @@ export function openLinkEditor({ linkId = null, defaultCategoryId = null } = {})
     if (bad) return;
 
     if (isEdit) {
-      editLink(existing.id, existingCatId, { name, url, categoryId: catS.value });
+      editLink(existing.id, existingCatId, {
+        name,
+        url,
+        categoryId: catS.value,
+      });
     } else {
       addLink(catS.value, { id: makeLinkId(name), name, url });
     }
@@ -3132,7 +3548,12 @@ export function openLinkEditor({ linkId = null, defaultCategoryId = null } = {})
 
   footer.append(leftGroup, rightGroup);
 
-  const modal = openModal({ title: isEdit ? "Edit link" : "New link", body, footer, width: "440px" });
+  const modal = openModal({
+    title: isEdit ? "Edit link" : "New link",
+    body,
+    footer,
+    width: "440px",
+  });
 
   modal.dialog.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
@@ -3169,7 +3590,10 @@ function editLink(linkId, currentCatId, patch) {
     }
   }
   // Otherwise seed link — write to overlay.edited
-  overlayRef.edited.links[linkId] = { ...(overlayRef.edited.links[linkId] || {}), ...patch };
+  overlayRef.edited.links[linkId] = {
+    ...(overlayRef.edited.links[linkId] || {}),
+    ...patch,
+  };
   persist();
 }
 
@@ -3224,12 +3648,16 @@ function deleteLink(linkId) {
   font-size: 1.5rem;
   font-weight: 300;
   cursor: pointer;
-  box-shadow: var(--shadow-accent), 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    var(--shadow-accent),
+    0 6px 20px rgba(0, 0, 0, 0.3);
   z-index: 50;
   transition: transform var(--transition);
 }
 
-.fab:hover { transform: translateY(-2px) scale(1.05); }
+.fab:hover {
+  transform: translateY(-2px) scale(1.05);
+}
 
 /* --- Edit pencil on link cards --- */
 .edit-btn {
@@ -3244,8 +3672,14 @@ function deleteLink(linkId) {
   display: flex;
 }
 
-.link-card:hover .edit-btn { opacity: 0.6; }
-.edit-btn:hover { opacity: 1 !important; color: var(--accent-primary); background: var(--surface-2); }
+.link-card:hover .edit-btn {
+  opacity: 0.6;
+}
+.edit-btn:hover {
+  opacity: 1 !important;
+  color: var(--accent-primary);
+  background: var(--surface-2);
+}
 ```
 
 - [ ] **Step 3: Wire FAB + edit pencil into render/grid + main**
@@ -3263,7 +3697,13 @@ In `js/render/grid.js`, update `renderLinkCard` to add an edit pencil between ti
 Replace `initGrid`:
 
 ```js
-export function initGrid({ data, state, onToggleFavorite, onEditLink, onAddLinkToCategory }) {
+export function initGrid({
+  data,
+  state,
+  onToggleFavorite,
+  onEditLink,
+  onAddLinkToCategory,
+}) {
   dataRef = data;
   stateRef = state;
   onFavoriteToggle = onToggleFavorite;
@@ -3362,7 +3802,8 @@ filtered.forEach((cat) => {
     const empty = document.createElement("div");
     empty.className = "empty-cat";
     empty.innerHTML = `No links yet. <button class="btn btn-ghost" type="button">+ Add your first link</button>`;
-    empty.querySelector("button").onclick = () => onAddToCatCb && onAddToCatCb(cat.id);
+    empty.querySelector("button").onclick = () =>
+      onAddToCatCb && onAddToCatCb(cat.id);
     section.append(header, empty);
   } else {
     cat.items.forEach((item) => grid.appendChild(renderLinkCard(item)));
@@ -3392,8 +3833,13 @@ Append styles for empty-cat + add-btn:
   opacity: 0;
   transition: var(--transition);
 }
-.category-section:hover .cat-add-btn { opacity: 1; }
-.cat-add-btn:hover { color: var(--accent-primary); border-color: var(--accent-primary); }
+.category-section:hover .cat-add-btn {
+  opacity: 1;
+}
+.cat-add-btn:hover {
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
 .empty-cat {
   background: var(--surface-1);
   border: 1px dashed var(--border-subtle);
@@ -3454,6 +3900,7 @@ document.body.appendChild(fab);
 - [ ] **Step 5: Verify**
 
 Reload. Expected:
+
 - Floating + bottom-right; click → new-link modal opens. Add a link to "Main" with name `test` + url `https://example.com` → appears in Main; reload → still there.
 - Hover an existing card → pencil + star both visible; click pencil → edit modal pre-populated; change name → saved.
 - Edit a seed link's name (e.g., `gmail` → `Gmail`) → persists; delete it → gone; reload → still gone (overlay deleted list); Reset to defaults via settings → gmail back.
@@ -3475,6 +3922,7 @@ git commit -m "feat(crud): add link editor (add/edit/delete) + FAB + per-categor
 ### Task 7.1: Create category editor
 
 **Files:**
+
 - Create: `js/crud/category-editor.js`
 
 - [ ] **Step 1: Write `js/crud/category-editor.js`**
@@ -3487,11 +3935,34 @@ import { openModal, closeModal, confirmDialog, toast } from "./modal.js";
 import { save as saveOverlay } from "../storage.js";
 import { ICONS } from "../icons.js";
 
-const COLORS = ["yellow", "cyan", "blue", "red", "green", "purple", "light-gray", "gray", "black"];
+const COLORS = [
+  "yellow",
+  "cyan",
+  "blue",
+  "red",
+  "green",
+  "purple",
+  "light-gray",
+  "gray",
+  "black",
+];
 const ICON_KEYS = [
-  "home", "code", "graduation-cap", "cpu", "terminal", "briefcase",
-  "gamepad-2", "newspaper", "shopping-cart", "joystick", "star",
-  "server", "flag", "shield", "activity", "book",
+  "home",
+  "code",
+  "graduation-cap",
+  "cpu",
+  "terminal",
+  "briefcase",
+  "gamepad-2",
+  "newspaper",
+  "shopping-cart",
+  "joystick",
+  "star",
+  "server",
+  "flag",
+  "shield",
+  "activity",
+  "book",
 ];
 
 let overlayRef = null;
@@ -3565,7 +4036,11 @@ export function openCategoryEditor({ categoryId = null } = {}) {
     sw.title = c;
     sw.onclick = () => {
       selectedColor = c;
-      colorRoot.querySelectorAll(".swatch").forEach((el) => el.classList.toggle("selected", el.dataset.color === c));
+      colorRoot
+        .querySelectorAll(".swatch")
+        .forEach((el) =>
+          el.classList.toggle("selected", el.dataset.color === c),
+        );
     };
     colorRoot.appendChild(sw);
   });
@@ -3579,7 +4054,11 @@ export function openCategoryEditor({ categoryId = null } = {}) {
     btn.title = k;
     btn.onclick = () => {
       selectedIcon = k;
-      iconRoot.querySelectorAll(".icon-cell").forEach((el) => el.classList.toggle("selected", el.dataset.icon === k));
+      iconRoot
+        .querySelectorAll(".icon-cell")
+        .forEach((el) =>
+          el.classList.toggle("selected", el.dataset.icon === k),
+        );
     };
     iconRoot.appendChild(btn);
   });
@@ -3631,7 +4110,11 @@ export function openCategoryEditor({ categoryId = null } = {}) {
       return;
     }
     if (isEdit) {
-      editCategory(existing.id, { category: name, color: selectedColor, icon: selectedIcon });
+      editCategory(existing.id, {
+        category: name,
+        color: selectedColor,
+        icon: selectedIcon,
+      });
     } else {
       addCategory({
         id: makeCatId(name),
@@ -3647,7 +4130,12 @@ export function openCategoryEditor({ categoryId = null } = {}) {
   rightGroup.append(cancel, save);
 
   footer.append(leftGroup, rightGroup);
-  openModal({ title: isEdit ? "Edit category" : "New category", body, footer, width: "480px" });
+  openModal({
+    title: isEdit ? "Edit category" : "New category",
+    body,
+    footer,
+    width: "480px",
+  });
 }
 
 function addCategory(cat) {
@@ -3663,7 +4151,10 @@ function editCategory(catId, patch) {
     persist();
     return;
   }
-  overlayRef.edited.categories[catId] = { ...(overlayRef.edited.categories[catId] || {}), ...patch };
+  overlayRef.edited.categories[catId] = {
+    ...(overlayRef.edited.categories[catId] || {}),
+    ...patch,
+  };
   persist();
 }
 
@@ -3680,7 +4171,9 @@ function deleteCategory(catId) {
     delete overlayRef.edited.categories[catId];
   }
   // also remove from order
-  overlayRef.order.categories = (overlayRef.order.categories || []).filter((id) => id !== catId);
+  overlayRef.order.categories = (overlayRef.order.categories || []).filter(
+    (id) => id !== catId,
+  );
   delete overlayRef.order.links?.[catId];
   persist();
 }
@@ -3707,16 +4200,38 @@ function deleteCategory(catId) {
   padding: 0;
 }
 
-.swatch.yellow { color: #facc15; }
-.swatch.cyan { color: #22d3ee; }
-.swatch.blue { color: #60a5fa; }
-.swatch.red { color: #fb7185; }
-.swatch.green { color: #4ade80; }
-.swatch.purple { color: #c084fc; }
-.swatch.light-gray { color: #cbd5e1; }
-.swatch.gray { color: #94a3b8; }
-.swatch.black { color: #1e293b; border: 2px solid var(--border-subtle); }
-.swatch.selected { border-color: var(--text-main); box-shadow: 0 0 0 3px var(--accent-glow); }
+.swatch.yellow {
+  color: #facc15;
+}
+.swatch.cyan {
+  color: #22d3ee;
+}
+.swatch.blue {
+  color: #60a5fa;
+}
+.swatch.red {
+  color: #fb7185;
+}
+.swatch.green {
+  color: #4ade80;
+}
+.swatch.purple {
+  color: #c084fc;
+}
+.swatch.light-gray {
+  color: #cbd5e1;
+}
+.swatch.gray {
+  color: #94a3b8;
+}
+.swatch.black {
+  color: #1e293b;
+  border: 2px solid var(--border-subtle);
+}
+.swatch.selected {
+  border-color: var(--text-main);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
 
 .icon-grid {
   display: grid;
@@ -3737,10 +4252,20 @@ function deleteCategory(catId) {
   transition: var(--transition);
 }
 
-.icon-cell svg { width: 18px; height: 18px; }
+.icon-cell svg {
+  width: 18px;
+  height: 18px;
+}
 
-.icon-cell:hover { background: var(--surface-2); color: var(--text-main); }
-.icon-cell.selected { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--surface-2); }
+.icon-cell:hover {
+  background: var(--surface-2);
+  color: var(--text-main);
+}
+.icon-cell.selected {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--surface-2);
+}
 ```
 
 - [ ] **Step 3: Add hover controls to sidebar + section headers**
@@ -3802,7 +4327,13 @@ Add module vars + extend `initSidebar`:
 let onEditCb = null;
 let onAddCb = null;
 
-export function initSidebar({ data, activeCategory, onCategorySelect, onEditCategory, onAddCategory }) {
+export function initSidebar({
+  data,
+  activeCategory,
+  onCategorySelect,
+  onEditCategory,
+  onAddCategory,
+}) {
   dataRef = data;
   activeCategoryRef = activeCategory;
   onSelect = onCategorySelect;
@@ -3832,15 +4363,23 @@ export function initSidebar({ data, activeCategory, onCategorySelect, onEditCate
   border-radius: 4px;
 }
 
-.nav-item:hover .nav-edit { display: inline-flex; }
-.nav-item .nav-edit:hover { color: var(--accent-primary); background: var(--surface-2); }
+.nav-item:hover .nav-edit {
+  display: inline-flex;
+}
+.nav-item .nav-edit:hover {
+  color: var(--accent-primary);
+  background: var(--surface-2);
+}
 
 .nav-item.nav-add {
   color: var(--text-dim);
   border: 1px dashed var(--border-subtle);
   margin-top: 0.5rem;
 }
-.nav-item.nav-add:hover { color: var(--accent-primary); border-color: var(--accent-primary); }
+.nav-item.nav-add:hover {
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
 ```
 
 - [ ] **Step 5: Wire category editor into `js/main.js`**
@@ -3848,7 +4387,10 @@ export function initSidebar({ data, activeCategory, onCategorySelect, onEditCate
 Add import:
 
 ```js
-import { initCategoryEditor, openCategoryEditor } from "./crud/category-editor.js";
+import {
+  initCategoryEditor,
+  openCategoryEditor,
+} from "./crud/category-editor.js";
 ```
 
 Initialize after link editor:
@@ -3891,6 +4433,7 @@ git commit -m "feat(crud): add category editor + sidebar controls + counts"
 ### Task 8.1: Create DnD module
 
 **Files:**
+
 - Create: `js/crud/dnd.js`
 
 - [ ] **Step 1: Write `js/crud/dnd.js`**
@@ -3948,7 +4491,9 @@ export function attach() {
         item.classList.add("drop-target");
       }
     });
-    item.addEventListener("dragleave", () => item.classList.remove("drop-target"));
+    item.addEventListener("dragleave", () =>
+      item.classList.remove("drop-target"),
+    );
     item.addEventListener("drop", (e) => {
       if (window._dragKind !== "link") return;
       e.preventDefault();
@@ -3989,13 +4534,16 @@ function onLinkDrop(e) {
 
 function onLinkDragEnd(e) {
   e.currentTarget.classList.remove("dragging");
-  document.querySelectorAll(".drop-target").forEach((el) => el.classList.remove("drop-target"));
+  document
+    .querySelectorAll(".drop-target")
+    .forEach((el) => el.classList.remove("drop-target"));
   window._draggedLinkId = null;
   window._dragKind = null;
 }
 
 function onCatDragStart(e) {
-  window._draggedCatLabel = e.currentTarget.querySelector(".label")?.textContent;
+  window._draggedCatLabel =
+    e.currentTarget.querySelector(".label")?.textContent;
   window._dragKind = "cat";
   e.dataTransfer.effectAllowed = "move";
   e.currentTarget.classList.add("dragging");
@@ -4027,62 +4575,83 @@ function bindTouchDrag(el, kind) {
   let pressTimer = null;
   let dragging = false;
   let ghost = null;
-  let touchStartX = 0, touchStartY = 0;
+  let touchStartX = 0,
+    touchStartY = 0;
   let currentTarget = null;
 
-  el.addEventListener("touchstart", (e) => {
-    const t = e.touches[0];
-    touchStartX = t.clientX;
-    touchStartY = t.clientY;
-    pressTimer = setTimeout(() => {
-      dragging = true;
-      window._dragKind = kind;
-      if (kind === "link") window._draggedLinkId = el.dataset.linkId;
-      if (kind === "cat") window._draggedCatLabel = el.querySelector(".label")?.textContent;
-      ghost = el.cloneNode(true);
-      ghost.style.position = "fixed";
-      ghost.style.pointerEvents = "none";
-      ghost.style.opacity = "0.8";
+  el.addEventListener(
+    "touchstart",
+    (e) => {
+      const t = e.touches[0];
+      touchStartX = t.clientX;
+      touchStartY = t.clientY;
+      pressTimer = setTimeout(() => {
+        dragging = true;
+        window._dragKind = kind;
+        if (kind === "link") window._draggedLinkId = el.dataset.linkId;
+        if (kind === "cat")
+          window._draggedCatLabel = el.querySelector(".label")?.textContent;
+        ghost = el.cloneNode(true);
+        ghost.style.position = "fixed";
+        ghost.style.pointerEvents = "none";
+        ghost.style.opacity = "0.8";
+        ghost.style.left = t.clientX + "px";
+        ghost.style.top = t.clientY + "px";
+        ghost.style.zIndex = "300";
+        document.body.appendChild(ghost);
+        el.classList.add("dragging");
+      }, 350);
+    },
+    { passive: true },
+  );
+
+  el.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!dragging) {
+        const t = e.touches[0];
+        if (
+          Math.abs(t.clientX - touchStartX) > 10 ||
+          Math.abs(t.clientY - touchStartY) > 10
+        ) {
+          clearTimeout(pressTimer);
+        }
+        return;
+      }
+      e.preventDefault();
+      const t = e.touches[0];
       ghost.style.left = t.clientX + "px";
       ghost.style.top = t.clientY + "px";
-      ghost.style.zIndex = "300";
-      document.body.appendChild(ghost);
-      el.classList.add("dragging");
-    }, 350);
-  }, { passive: true });
 
-  el.addEventListener("touchmove", (e) => {
-    if (!dragging) {
-      const t = e.touches[0];
-      if (Math.abs(t.clientX - touchStartX) > 10 || Math.abs(t.clientY - touchStartY) > 10) {
-        clearTimeout(pressTimer);
-      }
-      return;
-    }
-    e.preventDefault();
-    const t = e.touches[0];
-    ghost.style.left = t.clientX + "px";
-    ghost.style.top = t.clientY + "px";
-
-    // find drop target under finger
-    ghost.style.display = "none";
-    const under = document.elementFromPoint(t.clientX, t.clientY);
-    ghost.style.display = "";
-    document.querySelectorAll(".drop-target").forEach((el) => el.classList.remove("drop-target"));
-    if (under) {
-      const targetCard = under.closest(kind === "link" ? ".link-card" : ".nav-item");
-      if (targetCard && targetCard !== el) {
-        targetCard.classList.add("drop-target");
-        currentTarget = targetCard;
-      } else if (kind === "link") {
-        const targetNav = under.closest(".nav-item");
-        if (targetNav && targetNav.dataset.cat !== "all" && targetNav.id !== "new-cat-btn") {
-          targetNav.classList.add("drop-target");
-          currentTarget = targetNav;
+      // find drop target under finger
+      ghost.style.display = "none";
+      const under = document.elementFromPoint(t.clientX, t.clientY);
+      ghost.style.display = "";
+      document
+        .querySelectorAll(".drop-target")
+        .forEach((el) => el.classList.remove("drop-target"));
+      if (under) {
+        const targetCard = under.closest(
+          kind === "link" ? ".link-card" : ".nav-item",
+        );
+        if (targetCard && targetCard !== el) {
+          targetCard.classList.add("drop-target");
+          currentTarget = targetCard;
+        } else if (kind === "link") {
+          const targetNav = under.closest(".nav-item");
+          if (
+            targetNav &&
+            targetNav.dataset.cat !== "all" &&
+            targetNav.id !== "new-cat-btn"
+          ) {
+            targetNav.classList.add("drop-target");
+            currentTarget = targetNav;
+          }
         }
       }
-    }
-  }, { passive: false });
+    },
+    { passive: false },
+  );
 
   el.addEventListener("touchend", () => {
     clearTimeout(pressTimer);
@@ -4097,7 +4666,11 @@ function bindTouchDrag(el, kind) {
       if (kind === "link") {
         if (currentTarget.classList.contains("link-card")) {
           const targetSection = currentTarget.closest(".category-section");
-          reorderLink(window._draggedLinkId, currentTarget.dataset.linkId, targetSection?.dataset.categoryId);
+          reorderLink(
+            window._draggedLinkId,
+            currentTarget.dataset.linkId,
+            targetSection?.dataset.categoryId,
+          );
         } else {
           const label = currentTarget.querySelector(".label")?.textContent;
           moveLinkToCategoryByLabel(window._draggedLinkId, label);
@@ -4119,10 +4692,14 @@ function bindTouchDrag(el, kind) {
 function reorderLink(draggedId, beforeId, targetCatId) {
   // We need to recompute the per-category order so we can persist it.
   // First, find the source category of draggedId.
-  const allSections = Array.from(document.querySelectorAll(".category-section"));
+  const allSections = Array.from(
+    document.querySelectorAll(".category-section"),
+  );
   const cardOrders = new Map(); // catId → array of linkIds (current visual order)
   allSections.forEach((sec) => {
-    const ids = Array.from(sec.querySelectorAll(".link-card")).map((c) => c.dataset.linkId);
+    const ids = Array.from(sec.querySelectorAll(".link-card")).map(
+      (c) => c.dataset.linkId,
+    );
     cardOrders.set(sec.dataset.categoryId, ids);
   });
 
@@ -4133,7 +4710,10 @@ function reorderLink(draggedId, beforeId, targetCatId) {
   if (!sourceCatId) return;
 
   // remove dragged from source
-  cardOrders.set(sourceCatId, cardOrders.get(sourceCatId).filter((id) => id !== draggedId));
+  cardOrders.set(
+    sourceCatId,
+    cardOrders.get(sourceCatId).filter((id) => id !== draggedId),
+  );
 
   // insert before beforeId in target
   const targetList = cardOrders.get(targetCatId) || [];
@@ -4151,7 +4731,8 @@ function reorderLink(draggedId, beforeId, targetCatId) {
       const i = arr.findIndex((l) => l.id === draggedId);
       if (i !== -1) {
         const [moved] = arr.splice(i, 1);
-        if (!overlayRef.added.links[targetCatId]) overlayRef.added.links[targetCatId] = [];
+        if (!overlayRef.added.links[targetCatId])
+          overlayRef.added.links[targetCatId] = [];
         overlayRef.added.links[targetCatId].push(moved);
         added = true;
         break;
@@ -4190,7 +4771,9 @@ function moveLinkToCategoryByLabel(draggedId, targetCatLabel) {
 }
 
 function reorderCategoryByLabel(draggedLabel, targetLabel) {
-  const labels = Array.from(document.querySelectorAll(".sidebar-nav .nav-item .label")).map((l) => l.textContent.trim());
+  const labels = Array.from(
+    document.querySelectorAll(".sidebar-nav .nav-item .label"),
+  ).map((l) => l.textContent.trim());
   // Need to map labels back to ids — we read from rendered sections (each .category-section has dataset.categoryId + .cat-name).
   const labelToId = new Map();
   document.querySelectorAll(".category-section").forEach((sec) => {
@@ -4269,6 +4852,7 @@ The `reorderLink` function handles the `__end__` sentinel by appending — alrea
 - [ ] **Step 4: Verify**
 
 Reload. Expected:
+
 - Drag `github` card → drop on `gmail` card → github moves before gmail in Main; persists.
 - Drag any link → drop on a sidebar category → link moves to that category; persists.
 - Drag a sidebar category → drop on another → sidebar order changes; persists across reload.
@@ -4291,6 +4875,7 @@ Replace the inline filter input handling with a proper search module: live-filte
 ### Task 9.1: Add engine chip to header
 
 **Files:**
+
 - Modify: `index.html`
 
 - [ ] **Step 1: Replace search container in `index.html`**
@@ -4299,7 +4884,12 @@ Replace the existing `<div class="search-container">…</div>` block with:
 
 ```html
 <div class="search-container">
-  <button id="engine-chip" class="engine-chip" type="button" title="Switch search engine">
+  <button
+    id="engine-chip"
+    class="engine-chip"
+    type="button"
+    title="Switch search engine"
+  >
     <span class="engine-label">DDG</span>
     <span class="engine-caret">▾</span>
   </button>
@@ -4348,7 +4938,9 @@ Replace the existing `<div class="search-container">…</div>` block with:
   max-width: 480px;
 }
 
-.search-icon { display: none; }
+.search-icon {
+  display: none;
+}
 
 .engine-chip {
   position: absolute;
@@ -4371,8 +4963,14 @@ Replace the existing `<div class="search-container">…</div>` block with:
   z-index: 2;
 }
 
-.engine-chip:hover { color: var(--text-main); background: var(--surface-3); }
-.engine-chip.override { color: var(--accent-primary); border-color: var(--accent-primary); }
+.engine-chip:hover {
+  color: var(--text-main);
+  background: var(--surface-3);
+}
+.engine-chip.override {
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
 
 .engine-menu {
   position: absolute;
@@ -4401,8 +4999,14 @@ Replace the existing `<div class="search-container">…</div>` block with:
   font-family: inherit;
 }
 
-.engine-menu button:hover { background: var(--surface-2); }
-.engine-menu .divider { height: 1px; background: var(--border-subtle); margin: 0.25rem 0; }
+.engine-menu button:hover {
+  background: var(--surface-2);
+}
+.engine-menu .divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 0.25rem 0;
+}
 
 /* --- Search results --- */
 .search-results {
@@ -4439,7 +5043,10 @@ Replace the existing `<div class="search-container">…</div>` block with:
   border-radius: 6px;
 }
 
-.search-result .link-favicon img { width: 14px; height: 14px; }
+.search-result .link-favicon img {
+  width: 14px;
+  height: 14px;
+}
 
 .search-result .meta {
   font-size: 0.6875rem;
@@ -4464,6 +5071,7 @@ Replace the existing `<div class="search-container">…</div>` block with:
 ### Task 9.2: Create search module
 
 **Files:**
+
 - Create: `js/search.js`
 - Modify: `js/render/grid.js` (remove its in-built search), `js/main.js`
 
@@ -4474,7 +5082,13 @@ Replace the existing `<div class="search-container">…</div>` block with:
 // Unified smart search: live shortcut filter + web search fallback + engine prefixes.
 
 import { getFavicon } from "./favicons.js";
-import { BUILTIN_ENGINES, getAllEngines, resolveEngine, searchUrl, detectPrefix } from "./engines.js";
+import {
+  BUILTIN_ENGINES,
+  getAllEngines,
+  resolveEngine,
+  searchUrl,
+  detectPrefix,
+} from "./engines.js";
 import { save as saveOverlay } from "./storage.js";
 
 let overlayRef = null;
@@ -4506,7 +5120,11 @@ export function initSearch({ overlay, getCategories }) {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "/" && document.activeElement !== input && !isTypingTarget(document.activeElement)) {
+    if (
+      e.key === "/" &&
+      document.activeElement !== input &&
+      !isTypingTarget(document.activeElement)
+    ) {
       e.preventDefault();
       input.focus();
       input.select();
@@ -4616,7 +5234,10 @@ function handleEnter(e) {
 function runWebSearch(query) {
   const detected = detectPrefix(query, overlayRef);
   if (detected) {
-    window.open(searchUrl(detected.prefix.urlTemplate, detected.query), "_blank");
+    window.open(
+      searchUrl(detected.prefix.urlTemplate, detected.query),
+      "_blank",
+    );
     return;
   }
   const eng = resolveEngine(getDefaultEngineFn(), overlayRef);
@@ -4624,7 +5245,8 @@ function runWebSearch(query) {
 }
 
 function score(name, url, q) {
-  const n = name.toLowerCase(), u = url.toLowerCase();
+  const n = name.toLowerCase(),
+    u = url.toLowerCase();
   if (n.startsWith(q)) return 3;
   if (n.includes(q)) return 2;
   if (u.includes(q)) return 1;
@@ -4650,7 +5272,15 @@ export function render() {
     (getCategoriesFn() || []).forEach((cat) => {
       cat.items.forEach((it) => {
         const s = score(it.name, it.url, lower);
-        if (s > 0) matches.push({ kind: "shortcut", linkId: it.id, name: it.name, url: it.url, category: cat.category, _score: s });
+        if (s > 0)
+          matches.push({
+            kind: "shortcut",
+            linkId: it.id,
+            name: it.name,
+            url: it.url,
+            category: cat.category,
+            _score: s,
+          });
       });
     });
     matches.sort((a, b) => b._score - a._score || a.name.localeCompare(b.name));
@@ -4760,7 +5390,8 @@ function render() {
       const empty = document.createElement("div");
       empty.className = "empty-cat";
       empty.innerHTML = `No links yet. <button class="btn btn-ghost" type="button">+ Add your first link</button>`;
-      empty.querySelector("button").onclick = () => onAddToCatCb && onAddToCatCb(cat.id);
+      empty.querySelector("button").onclick = () =>
+        onAddToCatCb && onAddToCatCb(cat.id);
       section.append(header, empty);
     } else {
       cat.items.forEach((item) => grid.appendChild(renderLinkCard(item)));
@@ -4820,6 +5451,7 @@ export function refreshData() {
 - [ ] **Step 4: Verify**
 
 Reload. Expected:
+
 - Engine chip left of input shows "DuckDuckGo" (or current default).
 - Type `git` → search overlay shows "Search DuckDuckGo for 'git'" at top, then matching shortcuts (github first).
 - Press ↓ ↓ → selection moves down with left stripe indicator.
@@ -4848,6 +5480,7 @@ git commit -m "feat(search): unified smart search with engine chip, prefixes, ke
 ### Task 10.1: Create weather module + chip
 
 **Files:**
+
 - Create: `js/weather.js`
 - Modify: `index.html`, `js/main.js`, `styles/main.css`
 
@@ -4857,7 +5490,12 @@ In `index.html`, replace the `.header-right` block with:
 
 ```html
 <div class="header-right">
-  <button id="weather-chip" class="weather-chip" type="button" title="Weather settings">
+  <button
+    id="weather-chip"
+    class="weather-chip"
+    type="button"
+    title="Weather settings"
+  >
     <span class="weather-icon">⚙</span>
     <span class="weather-temp">Set up weather</span>
   </button>
@@ -4866,7 +5504,12 @@ In `index.html`, replace the `.header-right` block with:
   </div>
 
   <div class="search-container">
-    <button id="engine-chip" class="engine-chip" type="button" title="Switch search engine">
+    <button
+      id="engine-chip"
+      class="engine-chip"
+      type="button"
+      title="Switch search engine"
+    >
       <span class="engine-label">DDG</span>
       <span class="engine-caret">▾</span>
     </button>
@@ -4900,17 +5543,28 @@ In `index.html`, replace the `.header-right` block with:
   transition: var(--transition);
 }
 
-.weather-chip:hover { background: var(--surface-2); color: var(--text-main); }
+.weather-chip:hover {
+  background: var(--surface-2);
+  color: var(--text-main);
+}
 
 .weather-chip.unconfigured {
   border-style: dashed;
   opacity: 0.7;
 }
 
-.weather-chip.error { border-color: #fb7185; color: #fda4af; }
+.weather-chip.error {
+  border-color: #fb7185;
+  color: #fda4af;
+}
 
-.weather-chip .weather-temp { font-variant-numeric: tabular-nums; }
-.weather-chip .weather-icon { font-size: 1rem; line-height: 1; }
+.weather-chip .weather-temp {
+  font-variant-numeric: tabular-nums;
+}
+.weather-chip .weather-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
 .weather-chip .weather-loc {
   color: var(--text-dim);
   font-size: 0.75rem;
@@ -4927,7 +5581,9 @@ In `index.html`, replace the `.header-right` block with:
     align-items: stretch;
     width: 100%;
   }
-  .weather-chip { align-self: flex-end; }
+  .weather-chip {
+    align-self: flex-end;
+  }
 }
 ```
 
@@ -5000,7 +5656,8 @@ function writeCache(obj) {
 
 export function refresh() {
   const cfg = overlayRef.settings.weather;
-  if (!cfg || !cfg.apiKey || cfg.lat == null || cfg.lon == null) return render();
+  if (!cfg || !cfg.apiKey || cfg.lat == null || cfg.lon == null)
+    return render();
   fetch(
     `https://api.openweathermap.org/data/2.5/weather?lat=${cfg.lat}&lon=${cfg.lon}&units=${cfg.units || "metric"}&appid=${cfg.apiKey}`,
   )
@@ -5044,7 +5701,12 @@ export function render() {
   if (cache && Date.now() - cache.fetchedAt < STALE_MS) {
     paintFromCache(cache);
   } else {
-    paintFromCache(cache || { data: { temp: "—", icon: "…", label: cfg.label, units: cfg.units }, fetchedAt: Date.now() });
+    paintFromCache(
+      cache || {
+        data: { temp: "—", icon: "…", label: cfg.label, units: cfg.units },
+        fetchedAt: Date.now(),
+      },
+    );
     refresh();
   }
 }
@@ -5078,7 +5740,11 @@ function renderError(msg) {
 Add import:
 
 ```js
-import { initWeather, render as renderWeather, refresh as refreshWeather } from "./weather.js";
+import {
+  initWeather,
+  render as renderWeather,
+  refresh as refreshWeather,
+} from "./weather.js";
 ```
 
 After other inits, add:
@@ -5122,6 +5788,7 @@ git commit -m "feat(weather): add OpenWeatherMap chip with 15min cache"
 Closes two spec gaps: sidebar pinned group + edit pencil on grid category headers.
 
 **Files:**
+
 - Modify: `js/render/sidebar.js`, `js/render/grid.js`, `js/main.js`, `styles/main.css`
 
 - [ ] **Step 1: Render pinned group in sidebar**
@@ -5136,7 +5803,15 @@ let onLinkClickCb = null;
 Extend `initSidebar` signature:
 
 ```js
-export function initSidebar({ data, activeCategory, onCategorySelect, onEditCategory, onAddCategory, favorites, onPinnedLinkOpen }) {
+export function initSidebar({
+  data,
+  activeCategory,
+  onCategorySelect,
+  onEditCategory,
+  onAddCategory,
+  favorites,
+  onPinnedLinkOpen,
+}) {
   dataRef = data;
   activeCategoryRef = activeCategory;
   onSelect = onCategorySelect;
@@ -5169,7 +5844,8 @@ function render() {
   const pinnedLinks = [];
   dataRef.forEach((cat) => {
     cat.items.forEach((l) => {
-      if (favoritesRef.has(l.id)) pinnedLinks.push({ link: l, color: cat.color });
+      if (favoritesRef.has(l.id))
+        pinnedLinks.push({ link: l, color: cat.color });
     });
   });
 
@@ -5257,7 +5933,12 @@ initSidebar({
 Add import:
 
 ```js
-import { initSidebar, setActive as setSidebarActive, setData as setSidebarData, setFavorites as setSidebarFavorites } from "./render/sidebar.js";
+import {
+  initSidebar,
+  setActive as setSidebarActive,
+  setData as setSidebarData,
+  setFavorites as setSidebarFavorites,
+} from "./render/sidebar.js";
 ```
 
 Update `toggleFavorite` to also refresh sidebar:
@@ -5281,7 +5962,9 @@ export function refreshData() {
   // drop orphaned favorites (links that no longer exist)
   const allIds = new Set();
   categories.forEach((c) => c.items.forEach((l) => allIds.add(l.id)));
-  state.favorites = new Set([...state.favorites].filter((id) => allIds.has(id)));
+  state.favorites = new Set(
+    [...state.favorites].filter((id) => allIds.has(id)),
+  );
   overlay.favorites = [...state.favorites];
 
   setGridData(categories);
@@ -5359,7 +6042,14 @@ Add module var + extend `initGrid` signature:
 ```js
 let onEditCategoryCb = null;
 
-export function initGrid({ data, state, onToggleFavorite, onEditLink, onAddLinkToCategory, onEditCategory }) {
+export function initGrid({
+  data,
+  state,
+  onToggleFavorite,
+  onEditLink,
+  onAddLinkToCategory,
+  onEditCategory,
+}) {
   dataRef = data;
   stateRef = state;
   onFavoriteToggle = onToggleFavorite;
@@ -5397,6 +6087,7 @@ git commit -m "feat(ui): pinned favorites group in sidebar + grid-header edit"
 ### Task 11.1: Create help module
 
 **Files:**
+
 - Create: `js/help.js`
 - Modify: `js/main.js`, `styles/main.css`
 
@@ -5421,7 +6112,13 @@ export function initHelp({ overlay }) {
       e.preventDefault();
       openHelp();
     }
-    if (e.key.toLowerCase() === "t" && !isTypingTarget(document.activeElement) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (
+      e.key.toLowerCase() === "t" &&
+      !isTypingTarget(document.activeElement) &&
+      !e.ctrlKey &&
+      !e.metaKey &&
+      !e.altKey
+    ) {
       const themeBtn = document.getElementById("theme-toggle");
       if (themeBtn) themeBtn.click();
     }
@@ -5435,7 +6132,9 @@ export function initHelp({ overlay }) {
 
 function isTypingTarget(el) {
   if (!el) return false;
-  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable;
+  return (
+    el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable
+  );
 }
 
 function openHelp(isFirstRun = false) {
@@ -5450,7 +6149,9 @@ function openHelp(isFirstRun = false) {
 
   const dismissBtn = document.createElement("button");
   dismissBtn.className = "btn btn-ghost";
-  dismissBtn.textContent = isFirstRun ? "Don't show on start" : "Don't show on start";
+  dismissBtn.textContent = isFirstRun
+    ? "Don't show on start"
+    : "Don't show on start";
   dismissBtn.onclick = () => {
     overlayRef.settings.helpDismissed = true;
     saveOverlay(overlayRef);
@@ -5464,7 +6165,12 @@ function openHelp(isFirstRun = false) {
 
   footer.append(dismissBtn, ok);
 
-  openModal({ title: "Welcome to your startpage", body, footer, width: "480px" });
+  openModal({
+    title: "Welcome to your startpage",
+    body,
+    footer,
+    width: "480px",
+  });
 }
 
 const HELP_HTML = `
@@ -5536,8 +6242,14 @@ const HELP_HTML = `
 - [ ] **Step 2: Append help styles**
 
 ```css
-.help-body { color: var(--text-main); font-size: 0.875rem; line-height: 1.55; }
-.help-section { margin-bottom: 1.25rem; }
+.help-body {
+  color: var(--text-main);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+.help-section {
+  margin-bottom: 1.25rem;
+}
 .help-section h3 {
   margin: 0 0 0.5rem;
   font-size: 0.75rem;
@@ -5546,10 +6258,19 @@ const HELP_HTML = `
   text-transform: uppercase;
   color: var(--text-dim);
 }
-.help-section ul { padding-left: 1.25rem; margin: 0; }
-.help-section li { margin: 0.25rem 0; color: var(--text-muted); }
-.help-section li strong { color: var(--text-main); }
-.help-section code, .help-section kbd {
+.help-section ul {
+  padding-left: 1.25rem;
+  margin: 0;
+}
+.help-section li {
+  margin: 0.25rem 0;
+  color: var(--text-muted);
+}
+.help-section li strong {
+  color: var(--text-main);
+}
+.help-section code,
+.help-section kbd {
   background: var(--surface-2);
   border: 1px solid var(--border-subtle);
   border-radius: 4px;
@@ -5558,10 +6279,20 @@ const HELP_HTML = `
   font-size: 0.8125rem;
   color: var(--text-main);
 }
-.help-section a { color: var(--accent-primary); }
-.kbd-table { width: 100%; border-collapse: collapse; }
-.kbd-table td { padding: 0.25rem 0.5rem 0.25rem 0; color: var(--text-muted); }
-.kbd-table td:first-child { width: 130px; }
+.help-section a {
+  color: var(--accent-primary);
+}
+.kbd-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.kbd-table td {
+  padding: 0.25rem 0.5rem 0.25rem 0;
+  color: var(--text-muted);
+}
+.kbd-table td:first-child {
+  width: 130px;
+}
 ```
 
 - [ ] **Step 3: Wire help in `js/main.js`**
@@ -5581,6 +6312,7 @@ initHelp({ overlay });
 - [ ] **Step 4: Verify**
 
 Reload in a fresh browser profile (so `helpDismissed` is false). Expected:
+
 - Help panel auto-shows after ~600ms.
 - Click "Don't show on start" → closes; reload → does not auto-show.
 - Press `?` anywhere (not in an input) → opens.
@@ -5598,11 +6330,12 @@ git commit -m "feat(help): in-app help guide with first-run auto-show"
 ### Task 11.2: Rewrite README
 
 **Files:**
+
 - Modify: `README.md`
 
 - [ ] **Step 1: Replace `README.md` contents**
 
-```markdown
+````markdown
 # Startpage
 
 A personal browser start page. Glassmorphic dashboard with full link CRUD, smart search, weather, and a help guide built in. No server, no build step — open `index.html` and go.
@@ -5616,6 +6349,7 @@ A personal browser start page. Glassmorphic dashboard with full link CRUD, smart
 ```bash
 git clone https://github.com/Bigu93/homepage.git
 ```
+````
 
 Set your browser's new-tab / homepage to the path of `index.html` inside the repo.
 
@@ -5641,16 +6375,16 @@ Fork the repo → Settings → Pages → Deploy from a branch → `main` / root.
 
 ## Keyboard
 
-| Key | Action |
-|---|---|
-| `/` | Focus search |
-| `Esc` | Clear / close |
-| `↑` / `↓` | Navigate results |
-| `Enter` | Open top match (new tab) |
-| `Ctrl+Enter` | Open in current tab |
-| `Shift+Enter` | Force web search |
-| `?` | Help |
-| `T` | Toggle theme |
+| Key           | Action                   |
+| ------------- | ------------------------ |
+| `/`           | Focus search             |
+| `Esc`         | Clear / close            |
+| `↑` / `↓`     | Navigate results         |
+| `Enter`       | Open top match (new tab) |
+| `Ctrl+Enter`  | Open in current tab      |
+| `Shift+Enter` | Force web search         |
+| `?`           | Help                     |
+| `T`           | Toggle theme             |
 
 ## Data
 
@@ -5665,18 +6399,20 @@ Vanilla JS (ES modules), HTML, CSS. No bundler, no runtime deps, no test framewo
 ## License
 
 See [LICENSE](LICENSE).
-```
+
+````
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add README.md
 git commit -m "docs: rewrite README to match current product"
-```
+````
 
 ### Task 11.3: Final cleanup + verification
 
 **Files:**
+
 - Inspect: all `js/` files, `styles/main.css`
 
 - [ ] **Step 1: Remove dead code**
@@ -5748,4 +6484,3 @@ EOF
 - Each task is bite-sized; if any task feels too large, split it before starting.
 - All file paths in this plan are relative to repo root.
 - After implementation, do NOT delete this plan — leave it as a reference next to the spec.
-

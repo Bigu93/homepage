@@ -2,22 +2,49 @@
 // Search engine registry. Built-ins + user-added customs.
 
 export const BUILTIN_ENGINES = [
-  { key: "ddg",    label: "DuckDuckGo", urlTemplate: "https://duckduckgo.com/?q=%s" },
-  { key: "google", label: "Google",     urlTemplate: "https://www.google.com/search?q=%s" },
-  { key: "bing",   label: "Bing",       urlTemplate: "https://www.bing.com/search?q=%s" },
-  { key: "kagi",   label: "Kagi",       urlTemplate: "https://kagi.com/search?q=%s" },
+  {
+    key: "ddg",
+    label: "DuckDuckGo",
+    urlTemplate: "https://duckduckgo.com/?q=%s",
+  },
+  {
+    key: "google",
+    label: "Google",
+    urlTemplate: "https://www.google.com/search?q=%s",
+  },
+  {
+    key: "bing",
+    label: "Bing",
+    urlTemplate: "https://www.bing.com/search?q=%s",
+  },
+  { key: "kagi", label: "Kagi", urlTemplate: "https://kagi.com/search?q=%s" },
 ];
 
 // Default prefix-shortcuts (user can override via customs).
 export const DEFAULT_PREFIXES = [
-  { key: "g",  label: "Google",  urlTemplate: "https://www.google.com/search?q=%s" },
-  { key: "d",  label: "DuckDuckGo", urlTemplate: "https://duckduckgo.com/?q=%s" },
-  { key: "y",  label: "YouTube", urlTemplate: "https://www.youtube.com/results?search_query=%s" },
-  { key: "gh", label: "GitHub",  urlTemplate: "https://github.com/search?q=%s" },
+  {
+    key: "g",
+    label: "Google",
+    urlTemplate: "https://www.google.com/search?q=%s",
+  },
+  {
+    key: "d",
+    label: "DuckDuckGo",
+    urlTemplate: "https://duckduckgo.com/?q=%s",
+  },
+  {
+    key: "y",
+    label: "YouTube",
+    urlTemplate: "https://www.youtube.com/results?search_query=%s",
+  },
+  { key: "gh", label: "GitHub", urlTemplate: "https://github.com/search?q=%s" },
 ];
 
 export function getAllEngines(overlay) {
-  const customs = (overlay.settings?.customEngines || []).map((e) => ({ ...e, custom: true }));
+  const customs = (overlay.settings?.customEngines || []).map((e) => ({
+    ...e,
+    custom: true,
+  }));
   return [...BUILTIN_ENGINES, ...customs];
 }
 
@@ -28,7 +55,9 @@ export function getAllPrefixes(overlay) {
 }
 
 export function resolveEngine(key, overlay) {
-  return getAllEngines(overlay).find((e) => e.key === key) || BUILTIN_ENGINES[0];
+  return (
+    getAllEngines(overlay).find((e) => e.key === key) || BUILTIN_ENGINES[0]
+  );
 }
 
 export function searchUrl(template, query) {

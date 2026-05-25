@@ -16,7 +16,13 @@ export function initHelp({ overlay }) {
       e.preventDefault();
       openHelp();
     }
-    if (e.key.toLowerCase() === "t" && !isTypingTarget(document.activeElement) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (
+      e.key.toLowerCase() === "t" &&
+      !isTypingTarget(document.activeElement) &&
+      !e.ctrlKey &&
+      !e.metaKey &&
+      !e.altKey
+    ) {
       const themeBtn = document.getElementById("theme-toggle");
       if (themeBtn) themeBtn.click();
     }
@@ -30,7 +36,9 @@ export function initHelp({ overlay }) {
 
 function isTypingTarget(el) {
   if (!el) return false;
-  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable;
+  return (
+    el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable
+  );
 }
 
 function openHelp(isFirstRun = false) {
@@ -45,7 +53,9 @@ function openHelp(isFirstRun = false) {
 
   const dismissBtn = document.createElement("button");
   dismissBtn.className = "btn btn-ghost";
-  dismissBtn.textContent = isFirstRun ? "Don't show on start" : "Don't show on start";
+  dismissBtn.textContent = isFirstRun
+    ? "Don't show on start"
+    : "Don't show on start";
   dismissBtn.onclick = () => {
     overlayRef.settings.helpDismissed = true;
     saveOverlay(overlayRef);
@@ -59,7 +69,12 @@ function openHelp(isFirstRun = false) {
 
   footer.append(dismissBtn, ok);
 
-  openModal({ title: "Welcome to your startpage", body, footer, width: "480px" });
+  openModal({
+    title: "Welcome to your startpage",
+    body,
+    footer,
+    width: "480px",
+  });
 }
 
 const HELP_HTML = `

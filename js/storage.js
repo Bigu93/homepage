@@ -105,11 +105,11 @@ export function migrateLegacyFavorites(overlay, seed) {
   }
   if (!Array.isArray(urls) || urls.length === 0) return overlay;
   const urlToId = new Map();
-  seed.forEach((cat) =>
-    cat.items.forEach((it) => urlToId.set(it.url, it.id)),
-  );
+  seed.forEach((cat) => cat.items.forEach((it) => urlToId.set(it.url, it.id)));
   const ids = urls.map((u) => urlToId.get(u)).filter(Boolean);
-  overlay.favorites = Array.from(new Set([...(overlay.favorites || []), ...ids]));
+  overlay.favorites = Array.from(
+    new Set([...(overlay.favorites || []), ...ids]),
+  );
   try {
     localStorage.removeItem("favorites");
   } catch {

@@ -63,7 +63,8 @@ function writeCache(obj) {
 
 export function refresh() {
   const cfg = overlayRef.settings.weather;
-  if (!cfg || !cfg.apiKey || cfg.lat == null || cfg.lon == null) return render();
+  if (!cfg || !cfg.apiKey || cfg.lat == null || cfg.lon == null)
+    return render();
   fetch(
     `https://api.openweathermap.org/data/2.5/weather?lat=${cfg.lat}&lon=${cfg.lon}&units=${cfg.units || "metric"}&appid=${cfg.apiKey}`,
   )
@@ -107,7 +108,12 @@ export function render() {
   if (cache && Date.now() - cache.fetchedAt < STALE_MS) {
     paintFromCache(cache);
   } else {
-    paintFromCache(cache || { data: { temp: "—", icon: "…", label: cfg.label, units: cfg.units }, fetchedAt: Date.now() });
+    paintFromCache(
+      cache || {
+        data: { temp: "—", icon: "…", label: cfg.label, units: cfg.units },
+        fetchedAt: Date.now(),
+      },
+    );
     refresh();
   }
 }

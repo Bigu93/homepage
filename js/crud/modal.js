@@ -76,7 +76,12 @@ export function closeModal() {
   if (cb) cb();
 }
 
-export function confirmDialog({ title, message, confirmLabel = "Confirm", danger = false }) {
+export function confirmDialog({
+  title,
+  message,
+  confirmLabel = "Confirm",
+  danger = false,
+}) {
   return new Promise((resolve) => {
     const footer = document.createElement("div");
     footer.style.display = "flex";
