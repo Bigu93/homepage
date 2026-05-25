@@ -9,16 +9,14 @@ let onSelect = null;
 let onEditCb = null;
 let onAddCb = null;
 let favoritesRef = new Set();
-let onLinkClickCb = null;
 
-export function initSidebar({ data, activeCategory, onCategorySelect, onEditCategory, onAddCategory, favorites, onPinnedLinkOpen }) {
+export function initSidebar({ data, activeCategory, onCategorySelect, onEditCategory, onAddCategory, favorites }) {
   dataRef = data;
   activeCategoryRef = activeCategory;
   onSelect = onCategorySelect;
   onEditCb = onEditCategory;
   onAddCb = onAddCategory;
   favoritesRef = favorites || new Set();
-  onLinkClickCb = onPinnedLinkOpen;
   render();
 }
 

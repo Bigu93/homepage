@@ -2,7 +2,7 @@
 // Unified smart search: live shortcut filter + web search fallback + engine prefixes.
 
 import { getFavicon } from "./favicons.js";
-import { BUILTIN_ENGINES, getAllEngines, resolveEngine, searchUrl, detectPrefix } from "./engines.js";
+import { getAllEngines, resolveEngine, searchUrl, detectPrefix } from "./engines.js";
 import { save as saveOverlay } from "./storage.js";
 
 let overlayRef = null;

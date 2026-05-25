@@ -5,15 +5,6 @@ function clone(o) {
   return JSON.parse(JSON.stringify(o));
 }
 
-// Build a flat map of all seed link ids → category id (used for moves).
-function indexSeed(seed) {
-  const linkIdToCat = new Map();
-  seed.forEach((cat) => {
-    cat.items.forEach((it) => linkIdToCat.set(it.id, cat.id));
-  });
-  return linkIdToCat;
-}
-
 export function merge(seed, overlay) {
   // 1. Start with seed (cloned so we don't mutate it)
   let categories = clone(seed);

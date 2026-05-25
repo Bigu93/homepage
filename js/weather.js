@@ -120,8 +120,12 @@ function paintFromCache(cache) {
   const loc = chip.querySelector(".weather-loc");
   loc.hidden = false;
   loc.textContent = (d.label || "").slice(0, 14);
-  const ago = Math.round((Date.now() - cache.fetchedAt) / 60000);
-  chip.title = `Feels like ${Math.round(d.feels)}°, humidity ${d.humidity}%, updated ${ago}m ago`;
+  if (d.feels != null && d.humidity != null) {
+    const ago = Math.round((Date.now() - cache.fetchedAt) / 60000);
+    chip.title = `Feels like ${Math.round(d.feels)}°, humidity ${d.humidity}%, updated ${ago}m ago`;
+  } else {
+    chip.title = "Loading weather…";
+  }
 }
 
 function renderError(msg) {
