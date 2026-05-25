@@ -20,10 +20,10 @@ export function initSidebar({ data, activeCategory, onCategorySelect, onEditCate
 
 export function setActive(category) {
   activeCategoryRef = category;
-  document.querySelectorAll(".nav-item").forEach((el) => {
+  document.querySelectorAll(".sidebar-nav .nav-item").forEach((el) => {
     el.classList.remove("active");
     const isAll = category === "all" && el.dataset.cat === "all";
-    const isCat = el.textContent.trim() === category;
+    const isCat = el.dataset.cat === category;
     if (isAll || isCat) el.classList.add("active");
   });
 }
@@ -42,6 +42,7 @@ function render() {
     const btn = document.createElement("button");
     btn.className = `nav-item ${activeCategoryRef === cat.category ? "active" : ""}`;
     btn.onclick = () => onSelect && onSelect(cat.category);
+    btn.dataset.cat = cat.category;
 
     const iconSpan = document.createElement("span");
     iconSpan.className = "icon";
