@@ -6,11 +6,15 @@ import { ICONS } from "../icons.js";
 let dataRef = [];
 let activeCategoryRef = "all";
 let onSelect = null;
+let onEditCb = null;
+let onAddCb = null;
 
-export function initSidebar({ data, activeCategory, onCategorySelect }) {
+export function initSidebar({ data, activeCategory, onCategorySelect, onEditCategory, onAddCategory }) {
   dataRef = data;
   activeCategoryRef = activeCategory;
   onSelect = onCategorySelect;
+  onEditCb = onEditCategory;
+  onAddCb = onAddCategory;
   render();
 }
 
@@ -47,7 +51,28 @@ function render() {
     labelSpan.className = "label";
     labelSpan.textContent = cat.category;
 
-    btn.append(iconSpan, labelSpan);
+    const count = document.createElement("span");
+    count.className = "nav-count";
+    count.textContent = cat.items.length;
+
+    const editBtn = document.createElement("span");
+    editBtn.className = "nav-edit";
+    editBtn.title = "Edit category";
+    editBtn.innerHTML = ICONS.pencil;
+    editBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (onEditCb) onEditCb(cat.id);
+    };
+
+    btn.append(iconSpan, labelSpan, count, editBtn);
     root.appendChild(btn);
   });
+
+  // "+ New category" button
+  const addBtn = document.createElement("button");
+  addBtn.id = "new-cat-btn";
+  addBtn.className = "nav-item nav-add";
+  addBtn.innerHTML = `<span class="icon">${ICONS.plus}</span><span class="label">New category</span>`;
+  addBtn.onclick = () => onAddCb && onAddCb();
+  root.appendChild(addBtn);
 }

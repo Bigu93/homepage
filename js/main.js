@@ -11,6 +11,7 @@ import { initSidebar, setActive as setSidebarActive, setData as setSidebarData }
 import { initGrid, setData as setGridData, setState as setGridState } from "./render/grid.js";
 import { initSettings } from "./crud/settings.js";
 import { initLinkEditor, openLinkEditor } from "./crud/link-editor.js";
+import { initCategoryEditor, openCategoryEditor } from "./crud/category-editor.js";
 import { ICONS } from "./icons.js";
 
 let overlay = loadOverlay();
@@ -46,6 +47,8 @@ initSidebar({
   data: categories,
   activeCategory: state.activeCategory,
   onCategorySelect: selectCategory,
+  onEditCategory: (catId) => openCategoryEditor({ categoryId: catId }),
+  onAddCategory: () => openCategoryEditor({}),
 });
 initGrid({
   data: categories,
@@ -61,6 +64,11 @@ initSettings({
   },
 });
 initLinkEditor({
+  overlay,
+  getCategories: () => categories,
+  onChange: refreshData,
+});
+initCategoryEditor({
   overlay,
   getCategories: () => categories,
   onChange: refreshData,

@@ -853,3 +853,83 @@ body {
   align-items: center;
   gap: 0.5rem;
 }
+
+/* --- Swatch grid + icon grid --- */
+.swatch-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: currentColor;
+  transition: var(--transition);
+  padding: 0;
+}
+
+.swatch.yellow { color: #facc15; }
+.swatch.cyan { color: #22d3ee; }
+.swatch.blue { color: #60a5fa; }
+.swatch.red { color: #fb7185; }
+.swatch.green { color: #4ade80; }
+.swatch.purple { color: #c084fc; }
+.swatch.light-gray { color: #cbd5e1; }
+.swatch.gray { color: #94a3b8; }
+.swatch.black { color: #1e293b; border: 2px solid var(--border-subtle); }
+.swatch.selected { border-color: var(--text-main); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.375rem;
+}
+
+.icon-cell {
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.icon-cell svg { width: 18px; height: 18px; }
+
+.icon-cell:hover { background: var(--surface-2); color: var(--text-main); }
+.icon-cell.selected { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--surface-2); }
+
+.nav-item .nav-count {
+  margin-left: auto;
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  padding: 0 0.375rem;
+}
+
+.nav-item .nav-edit {
+  display: none;
+  align-items: center;
+  margin-left: 0.25rem;
+  color: var(--text-dim);
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.nav-item:hover .nav-edit { display: inline-flex; }
+.nav-item .nav-edit:hover { color: var(--accent-primary); background: var(--surface-2); }
+
+.nav-item.nav-add {
+  color: var(--text-dim);
+  border: 1px dashed var(--border-subtle);
+  margin-top: 0.5rem;
+}
+.nav-item.nav-add:hover { color: var(--accent-primary); border-color: var(--accent-primary); }
