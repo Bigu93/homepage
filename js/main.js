@@ -12,6 +12,7 @@ import { initGrid, setData as setGridData, setState as setGridState } from "./re
 import { initSettings } from "./crud/settings.js";
 import { initLinkEditor, openLinkEditor } from "./crud/link-editor.js";
 import { initCategoryEditor, openCategoryEditor } from "./crud/category-editor.js";
+import { initDnD, attach as attachDnD } from "./crud/dnd.js";
 import { ICONS } from "./icons.js";
 
 let overlay = loadOverlay();
@@ -74,6 +75,12 @@ initCategoryEditor({
   onChange: refreshData,
 });
 
+initDnD({
+  overlay,
+  onChange: refreshData,
+});
+attachDnD();
+
 document.querySelector('[data-cat="all"]').onclick = () => selectCategory("all");
 
 const filterInput = document.getElementById("filter");
@@ -94,6 +101,7 @@ export function refreshData() {
   categories = merge(seed, overlay);
   setGridData(categories);
   setSidebarData(categories, state.activeCategory);
+  attachDnD();
 }
 
 export function getOverlay() {

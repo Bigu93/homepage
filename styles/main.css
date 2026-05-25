@@ -933,3 +933,14 @@ body {
   margin-top: 0.5rem;
 }
 .nav-item.nav-add:hover { color: var(--accent-primary); border-color: var(--accent-primary); }
+
+.link-card.dragging,
+.nav-item.dragging {
+  opacity: 0.4;
+}
+
+.link-card.drop-target,
+.nav-item.drop-target {
+  outline: 2px dashed var(--accent-primary);
+  outline-offset: -2px;
+}
