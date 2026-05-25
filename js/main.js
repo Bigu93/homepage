@@ -14,6 +14,7 @@ import { initLinkEditor, openLinkEditor } from "./crud/link-editor.js";
 import { initCategoryEditor, openCategoryEditor } from "./crud/category-editor.js";
 import { initDnD, attach as attachDnD } from "./crud/dnd.js";
 import { initSearch, render as renderSearch } from "./search.js";
+import { initWeather, render as renderWeather } from "./weather.js";
 import { ICONS } from "./icons.js";
 
 let overlay = loadOverlay();
@@ -89,6 +90,8 @@ initSearch({
   getCategories: () => categories,
 });
 
+initWeather({ overlay });
+
 // When search clears, re-render the grid normally.
 document.addEventListener("search:cleared", () => {
   state.searchQuery = "";
@@ -106,6 +109,7 @@ export function refreshData() {
   setGridData(categories);
   setSidebarData(categories, state.activeCategory);
   attachDnD();
+  renderWeather();
   // If a search is active, re-render the search overlay so changes appear immediately.
   if (document.getElementById("filter").value.trim()) renderSearch();
 }
