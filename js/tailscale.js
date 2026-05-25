@@ -57,12 +57,16 @@ function paint(state) {
   if (!chipEl || !dotEl) return;
   chipEl.dataset.state = state;
   dotEl.className = `status-dot status-dot-${state}`;
-  const now = new Date().toLocaleTimeString();
-  const labels = {
-    unknown: "Tailscale — not checked yet",
-    checking: "Checking Tailscale…",
-    on: `Tailscale up — checked ${now}`,
-    off: `Tailscale down — checked ${now}`,
-  };
-  chipEl.title = labels[state] || labels.unknown;
+  let title;
+  if (state === "on" || state === "off") {
+    const now = new Date().toLocaleTimeString();
+    title = state === "on"
+      ? `Tailscale up — checked ${now}`
+      : `Tailscale down — checked ${now}`;
+  } else if (state === "checking") {
+    title = "Checking Tailscale…";
+  } else {
+    title = "Tailscale — not checked yet";
+  }
+  chipEl.title = title;
 }

@@ -76,8 +76,8 @@ export function openSettings(scrollTo) {
         <button class="btn" id="set-export">Export JSON</button>
         <button class="btn" id="set-import">Import JSON</button>
         <input type="file" id="set-import-file" accept="application/json" style="display:none">
-        <button class="btn btn-danger" id="set-reset">Reset to defaults</button>
         <button class="btn" id="set-clear-stats">Clear usage stats</button>
+        <button class="btn btn-danger" id="set-reset">Reset to defaults</button>
         <button class="btn btn-danger" id="set-full-reset">Full reset (incl. settings)</button>
       </div>
     </section>
