@@ -1424,7 +1424,23 @@ body {
     border-bottom: none;
     box-shadow: var(--shadow-lg);
     padding: 1.25rem 0.75rem;
+    /* Let the whole sidebar scroll as one unit so footer is reachable */
+    display: block;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Nav: don't flex-grow on mobile; flow naturally in scrollable sidebar */
+  .sidebar-nav {
+    flex: none;
+    overflow-y: visible;
+  }
+
+  /* Footer: visible and in normal flow (900 px rule hides it; restore here) */
+  .sidebar-footer {
+    display: block;
+    position: static;
+    margin-top: 1rem;
   }
 
   /* Sidebar open state */
