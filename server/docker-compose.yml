@@ -6,11 +6,15 @@ services:
       - "127.0.0.1:8800:8800"
     volumes:
       - /var/lib/startpage:/var/lib/startpage
+      # Serve the frontend (repo root, one level up from server/)
+      - ../:/frontend:ro
       # Mount tailscale CLI + socket from host so server can read tailnet status
       - /usr/bin/tailscale:/usr/bin/tailscale:ro
       - /var/run/tailscale:/var/run/tailscale:ro
     environment:
       STARTPAGE_DATA_DIR: /var/lib/startpage
+      # Serve frontend static files from the repo root
+      STARTPAGE_FRONTEND_DIR: /frontend
       # OWM key — set in .env or export before running compose
       STARTPAGE_OWM_API_KEY: ${OWM_API_KEY:-}
       # Allow requests from any origin on the tailnet (tighten if desired)
