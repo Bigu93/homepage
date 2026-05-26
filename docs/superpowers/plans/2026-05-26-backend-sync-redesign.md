@@ -7,6 +7,7 @@
 **Architecture:** See spec `docs/superpowers/specs/2026-05-26-backend-sync-design.md`.
 
 **Tech stack additions:**
+
 - Backend: Python 3.11+, FastAPI, Uvicorn, httpx, pydantic-settings, SQLite (stdlib `sqlite3` or `aiosqlite`).
 - Container: Docker / docker-compose.
 - Client additions: `service-worker.js`, `manifest.webmanifest`, new `js/sync.js`, new `js/api.js`, refactors to existing modules.
@@ -90,6 +91,7 @@
 - [ ] **Step 5:** Make `uvicorn app.main:app --host 0.0.0.0 --port 8800` runnable.
 
 **Smoke test:**
+
 - `uvicorn …` starts.
 - `curl localhost:8800/healthz` → `{"ok": true}`.
 - `curl localhost:8800/docs` shows Swagger.
@@ -104,6 +106,7 @@
 - [ ] **Step 4:** Provide a `get_db()` FastAPI dependency yielding a connection.
 
 **Smoke test:**
+
 - Start server with fresh data dir. `sqlite3 db.sqlite '.tables'` shows all tables + `schema_migrations`.
 - Restart — no re-application errors.
 
@@ -116,6 +119,7 @@
 - [ ] **Step 3:** Attach `require_token` as a router-level dependency on all routers except `health`.
 
 **Smoke test:**
+
 - `curl /api/v1/sync` (later route) → 401 without header, 200 with valid token.
 
 ---
@@ -133,6 +137,7 @@
 - [ ] **Step 5:** Tests in `tests/test_sync.py`: empty → 204; first push → 1; conflicting push → 409; concurrent pushes serialize.
 
 **Smoke test:**
+
 - `curl -X PUT -H 'Authorization: Bearer …' -d '{"overlay":{},"clientMtime":1,"baseRevision":0}' /api/v1/sync` → 200, revision 1.
 - Repeat with `baseRevision=0` → 409.
 
@@ -151,6 +156,7 @@
 - [ ] **Step 5:** Settings UI: new "Sync" section with Base URL input, Token input (password field), Enable toggle, "Test connection" button, "Sync now" button, last-sync timestamp.
 
 **Smoke test:**
+
 - Enable sync on PC, add a link, observe push.
 - Open on phone (same settings), pull triggers, link appears.
 - Edit on phone offline, edit on PC, reconnect phone → LWW resolves to newest mtime.
@@ -173,6 +179,7 @@
 - [ ] **Step 3:** Handle "tailscale not installed" by returning 503 with `{detail:"tailscale CLI not found"}`. Document the `-v /usr/bin/tailscale:/usr/bin/tailscale:ro` compose mount.
 
 **Smoke test:**
+
 - `curl /api/v1/tailscale/status` on the host → live data.
 - Disable tailscaled → server returns `online: false`.
 
@@ -185,6 +192,7 @@
 - [ ] **Step 3:** Tooltip should say "Backend says tailnet up — last checked …" when in backend mode.
 
 **Smoke test:**
+
 - Sync disabled → existing behavior unchanged.
 - Sync enabled, backend reachable → chip flips to backend mode and shows accurate state.
 
@@ -208,6 +216,7 @@
 - [ ] **Step 2:** Optional admin route `POST /api/v1/favicon/refresh?url=…` (auth required) to force refresh.
 
 **Smoke test:**
+
 - `curl /api/v1/favicon?url=https://github.com` saves bytes; second call hits cache (compare `X-Cache: HIT` header if added).
 - Phone loads favicons via backend without CORS issues.
 

@@ -31,9 +31,13 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   const keep = new Set([SHELL_CACHE, DYNAMIC_CACHE]);
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => !keep.has(k)).map((k) => caches.delete(k))),
-    ),
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys.filter((k) => !keep.has(k)).map((k) => caches.delete(k)),
+        ),
+      ),
   );
   self.clients.claim();
 });
@@ -46,7 +50,8 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
 
   // Only handle same-origin or API requests
-  if (url.origin !== location.origin && !url.pathname.startsWith("/api/")) return;
+  if (url.origin !== location.origin && !url.pathname.startsWith("/api/"))
+    return;
 
   const path = url.pathname;
 
@@ -63,7 +68,10 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Stale-while-revalidate for favicon + weather
-  if (path.startsWith("/api/v1/favicon") || path.startsWith("/api/v1/weather")) {
+  if (
+    path.startsWith("/api/v1/favicon") ||
+    path.startsWith("/api/v1/weather")
+  ) {
     event.respondWith(staleWhileRevalidate(request, DYNAMIC_CACHE));
     return;
   }
@@ -124,6 +132,10 @@ async function staleWhileRevalidate(request, cacheName) {
 }
 
 function isShellAsset(path) {
-  return path === "/" || path === "/index.html" || path === "/favicon.png" ||
-         path === "/manifest.webmanifest";
+  return (
+    path === "/" ||
+    path === "/index.html" ||
+    path === "/favicon.png" ||
+    path === "/manifest.webmanifest"
+  );
 }

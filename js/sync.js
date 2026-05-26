@@ -14,16 +14,16 @@ let _onPulled = null;
 let _onConflict = null;
 let _pollTimer = null;
 
-const POLL_FOCUSED_MS  = 60_000;
-const POLL_HIDDEN_MS   = 5 * 60_000;
+const POLL_FOCUSED_MS = 60_000;
+const POLL_HIDDEN_MS = 5 * 60_000;
 
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
 export function init({ overlay, onPulled, onConflict }) {
-  _overlay   = overlay;
-  _onPulled  = onPulled;
+  _overlay = overlay;
+  _onPulled = onPulled;
   _onConflict = onConflict;
 
   if (!_syncEnabled()) return;
@@ -34,7 +34,7 @@ export function init({ overlay, onPulled, onConflict }) {
     saveOverlay(_overlay);
   }
 
-  pull();   // immediate pull on load
+  pull(); // immediate pull on load
   _schedulePoll();
 
   document.addEventListener("visibilitychange", _onVisibility);
@@ -99,7 +99,7 @@ async function _pull() {
   _restoreLocalOnly(_overlay, localOnly);
 
   _overlay.settings.sync.lastRevision = data.revision;
-  _overlay.settings.sync.lastSyncAt   = Date.now();
+  _overlay.settings.sync.lastSyncAt = Date.now();
   saveOverlay(_overlay);
 
   _log("pulled revision", data.revision);
@@ -131,7 +131,7 @@ async function _push() {
   const data = await resp.json();
   if (data.accepted) {
     _overlay.settings.sync.lastRevision = data.revision;
-    _overlay.settings.sync.lastSyncAt   = Date.now();
+    _overlay.settings.sync.lastSyncAt = Date.now();
     saveOverlay(_overlay);
     _log("pushed revision", data.revision);
   }
@@ -139,7 +139,7 @@ async function _push() {
 
 async function _resolveConflict(serverData) {
   // LWW: compare clientMtime vs serverMtime, newer wins.
-  const localMtime  = _overlay.settings.sync.lastSyncAt || 0;
+  const localMtime = _overlay.settings.sync.lastSyncAt || 0;
   const serverMtime = serverData.server_mtime || 0;
 
   _log("conflict — local mtime", localMtime, "server mtime", serverMtime);
@@ -150,7 +150,7 @@ async function _resolveConflict(serverData) {
     Object.assign(_overlay, serverData.overlay);
     _restoreLocalOnly(_overlay, localOnly);
     _overlay.settings.sync.lastRevision = serverData.server_revision;
-    _overlay.settings.sync.lastSyncAt   = Date.now();
+    _overlay.settings.sync.lastSyncAt = Date.now();
     saveOverlay(_overlay);
     _onConflict?.("server_won");
     _onPulled?.();
@@ -170,14 +170,14 @@ async function _resolveConflict(serverData) {
 
 function _extractLocalOnly(overlay) {
   return {
-    sync:  structuredClone(overlay.settings?.sync),
+    sync: structuredClone(overlay.settings?.sync),
     theme: overlay.settings?.theme,
   };
 }
 
 function _restoreLocalOnly(overlay, saved) {
   if (!overlay.settings) overlay.settings = {};
-  overlay.settings.sync  = saved.sync;
+  overlay.settings.sync = saved.sync;
   overlay.settings.theme = saved.theme;
 }
 

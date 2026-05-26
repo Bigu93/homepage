@@ -50,6 +50,7 @@ The startpage is now available at `https://<hostname>.tail-xxxxx.ts.net/` with a
 ## Client configuration
 
 Open startpage → Settings → Sync:
+
 - **Base URL**: `https://<hostname>.tail-xxxxx.ts.net` (or `http://localhost:8800` locally)
 - **Token**: value from step 4 above
 - Enable sync, hit "Test connection", click "Sync now"
@@ -57,6 +58,7 @@ Open startpage → Settings → Sync:
 ## Data
 
 All data lives in `/var/lib/startpage/`:
+
 - `db.sqlite` — overlay, click events, probe results, handoff log
 - `favicons/` — cached favicon images > 32 KB
 - `token` — bearer token (chmod 600)
@@ -69,22 +71,22 @@ Swagger UI: `http://localhost:8800/docs`
 
 ### Key endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/healthz` | Liveness (no auth) |
-| `GET` | `/api/v1/sync` | Pull current overlay |
-| `PUT` | `/api/v1/sync` | Push overlay (LWW) |
-| `GET` | `/api/v1/favicon?url=…` | Favicon proxy + cache |
-| `GET` | `/api/v1/weather?city=…` | OWM proxy |
-| `GET` | `/api/v1/tailscale/status` | Server-side tailscale detect |
-| `GET` | `/api/v1/probes` | Health probe results |
-| `POST` | `/api/v1/probes/targets` | Add probe target |
-| `POST` | `/api/v1/clicks` | Batch click events |
-| `GET` | `/api/v1/stats/frequent` | Cross-device frequent links |
-| `DELETE` | `/api/v1/stats` | Clear all click data |
-| `POST` | `/api/v1/handoff` | Send URL to another device |
-| `GET` | `/api/v1/handoff/stream?deviceId=…` | SSE listener |
-| `GET` | `/api/v1/meta?url=…` | og:title / og:image for link-add UX |
+| Method   | Path                                | Description                         |
+| -------- | ----------------------------------- | ----------------------------------- |
+| `GET`    | `/healthz`                          | Liveness (no auth)                  |
+| `GET`    | `/api/v1/sync`                      | Pull current overlay                |
+| `PUT`    | `/api/v1/sync`                      | Push overlay (LWW)                  |
+| `GET`    | `/api/v1/favicon?url=…`             | Favicon proxy + cache               |
+| `GET`    | `/api/v1/weather?city=…`            | OWM proxy                           |
+| `GET`    | `/api/v1/tailscale/status`          | Server-side tailscale detect        |
+| `GET`    | `/api/v1/probes`                    | Health probe results                |
+| `POST`   | `/api/v1/probes/targets`            | Add probe target                    |
+| `POST`   | `/api/v1/clicks`                    | Batch click events                  |
+| `GET`    | `/api/v1/stats/frequent`            | Cross-device frequent links         |
+| `DELETE` | `/api/v1/stats`                     | Clear all click data                |
+| `POST`   | `/api/v1/handoff`                   | Send URL to another device          |
+| `GET`    | `/api/v1/handoff/stream?deviceId=…` | SSE listener                        |
+| `GET`    | `/api/v1/meta?url=…`                | og:title / og:image for link-add UX |
 
 ## Running bare-metal (without Docker)
 

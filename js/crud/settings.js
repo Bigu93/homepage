@@ -176,34 +176,43 @@ export function openSettings(scrollTo) {
   // Sync section
   const sync = overlayRef.settings.sync || {};
   body.querySelector("#set-sync-enabled").checked = !!sync.enabled;
-  body.querySelector("#set-sync-url").value       = sync.baseUrl || "";
-  body.querySelector("#set-sync-token").value     = sync.token || "";
-  body.querySelector("#set-sync-device-id").textContent = sync.deviceId || "(none)";
+  body.querySelector("#set-sync-url").value = sync.baseUrl || "";
+  body.querySelector("#set-sync-token").value = sync.token || "";
+  body.querySelector("#set-sync-device-id").textContent =
+    sync.deviceId || "(none)";
   _updateSyncLastLabel(body, sync);
 
   const persistSync = () => {
     overlayRef.settings.sync = {
       ...(overlayRef.settings.sync || {}),
-      enabled:  body.querySelector("#set-sync-enabled").checked,
-      baseUrl:  body.querySelector("#set-sync-url").value.trim().replace(/\/+$/, ""),
-      token:    body.querySelector("#set-sync-token").value.trim(),
+      enabled: body.querySelector("#set-sync-enabled").checked,
+      baseUrl: body
+        .querySelector("#set-sync-url")
+        .value.trim()
+        .replace(/\/+$/, ""),
+      token: body.querySelector("#set-sync-token").value.trim(),
     };
     persistAndNotify();
   };
   body.querySelector("#set-sync-enabled").onchange = persistSync;
-  body.querySelector("#set-sync-url").onchange     = persistSync;
-  body.querySelector("#set-sync-token").onchange   = persistSync;
+  body.querySelector("#set-sync-url").onchange = persistSync;
+  body.querySelector("#set-sync-token").onchange = persistSync;
 
   body.querySelector("#set-sync-test").onclick = async () => {
     const statusEl = body.querySelector("#set-sync-status");
     statusEl.textContent = "Testing…";
     const s = {
-      baseUrl:  body.querySelector("#set-sync-url").value.trim().replace(/\/+$/, ""),
-      token:    body.querySelector("#set-sync-token").value.trim(),
+      baseUrl: body
+        .querySelector("#set-sync-url")
+        .value.trim()
+        .replace(/\/+$/, ""),
+      token: body.querySelector("#set-sync-token").value.trim(),
       deviceId: overlayRef.settings.sync?.deviceId || "",
     };
     const result = await testConnection(s);
-    statusEl.textContent = result.ok ? `✓ ${result.message}` : `✗ ${result.message}`;
+    statusEl.textContent = result.ok
+      ? `✓ ${result.message}`
+      : `✗ ${result.message}`;
     statusEl.style.color = result.ok ? "var(--accent)" : "var(--error, #e55)";
   };
 

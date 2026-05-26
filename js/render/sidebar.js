@@ -55,7 +55,9 @@ function render() {
 
   // topLinks is async (may fetch from backend). Render sync parts immediately,
   // then patch in the frequent group when the promise resolves.
-  topLinks(dataRef, 6).then((frequentLinks) => _renderFull(root, frequentLinks));
+  topLinks(dataRef, 6).then((frequentLinks) =>
+    _renderFull(root, frequentLinks),
+  );
 }
 
 function _renderFull(root, frequentLinks) {

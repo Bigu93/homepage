@@ -3,13 +3,23 @@
 // Injects Authorization header + baseUrl from overlay.settings.sync.
 
 export class NetError extends Error {
-  constructor(msg) { super(msg); this.name = "NetError"; }
+  constructor(msg) {
+    super(msg);
+    this.name = "NetError";
+  }
 }
 export class AuthError extends Error {
-  constructor() { super("Invalid or missing token"); this.name = "AuthError"; }
+  constructor() {
+    super("Invalid or missing token");
+    this.name = "AuthError";
+  }
 }
 export class ConflictError extends Error {
-  constructor(body) { super("Sync conflict"); this.name = "ConflictError"; this.body = body; }
+  constructor(body) {
+    super("Sync conflict");
+    this.name = "ConflictError";
+    this.body = body;
+  }
 }
 
 /**
@@ -25,7 +35,7 @@ export async function apiFetch(sync, path, opts = {}) {
   const headers = {
     "Content-Type": "application/json",
     ...(opts.headers || {}),
-    "Authorization": `Bearer ${sync.token}`,
+    Authorization: `Bearer ${sync.token}`,
     "X-Device-Id": sync.deviceId || "",
   };
 

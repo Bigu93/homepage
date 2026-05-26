@@ -26,10 +26,15 @@ export function initTailscale(overlay) {
   dotEl = chipEl.querySelector(".status-dot");
 
   // Clear any previous interval (called on refreshData)
-  if (_intervalId) { clearInterval(_intervalId); _intervalId = null; }
+  if (_intervalId) {
+    clearInterval(_intervalId);
+    _intervalId = null;
+  }
   // Clone listener-safe: remove old click by replacing node is overkill;
   // use a flag on chipEl instead.
-  chipEl.onclick = () => { if (!inFlight) runProbe(); };
+  chipEl.onclick = () => {
+    if (!inFlight) runProbe();
+  };
 
   // Backend mode: server handles the probe authoritatively.
   if (_backendEnabled()) {
@@ -75,7 +80,9 @@ function makeTimeoutSignal(ms) {
 async function probeBackend() {
   try {
     const sync = overlayRef.settings.sync;
-    const resp = await apiFetch(sync, "/api/v1/tailscale/status", { method: "GET" });
+    const resp = await apiFetch(sync, "/api/v1/tailscale/status", {
+      method: "GET",
+    });
     if (!resp.ok) return { state: "off", source: "backend" };
     const data = await resp.json();
     const on = data?.self?.online === true;
@@ -123,7 +130,7 @@ function paint(state, source) {
   dotEl.className = `status-dot status-dot-${state}`;
   let title;
   const now = new Date().toLocaleTimeString();
-  const via = source === "backend" ? "backend" : (source || probeUrl());
+  const via = source === "backend" ? "backend" : source || probeUrl();
   if (state === "on") {
     title = `Tailscale up — checked ${now} (${via})`;
   } else if (state === "off") {

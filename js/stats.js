@@ -101,7 +101,9 @@ export async function topLinks(merged, n = 6) {
     }
     try {
       const sync = overlayRef.settings.sync;
-      const resp = await apiFetch(sync, `/api/v1/stats/frequent?n=${n}`, { method: "GET" });
+      const resp = await apiFetch(sync, `/api/v1/stats/frequent?n=${n}`, {
+        method: "GET",
+      });
       if (resp.ok) {
         _cachedFrequent = await resp.json(); // [{ link_id, count }]
         _cachedAt = Date.now();
@@ -143,7 +145,9 @@ function _topLinksLocal(merged, n) {
     if (!entry) continue;
     ranked.push({ ...entry, count: c });
   }
-  ranked.sort((a, b) => b.count - a.count || a.link.name.localeCompare(b.link.name));
+  ranked.sort(
+    (a, b) => b.count - a.count || a.link.name.localeCompare(b.link.name),
+  );
   return ranked.slice(0, n);
 }
 

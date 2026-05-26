@@ -11,7 +11,7 @@
 
 The startpage today is fully client-side: vanilla JS ES modules, `localStorage` overlay (`startpage_overlay_v1`), no build, no server. Recent features (Tailscale chip, click stats, favicon cache) push the limits of what a browser-only app can do:
 
-- **Tailscale detection** is constrained by browser security. HTTP MagicDNS probe works on `http://`/`file://`, but HTTPS deployments need a user-configured probe URL workaround. A server *on* the tailnet sidesteps both.
+- **Tailscale detection** is constrained by browser security. HTTP MagicDNS probe works on `http://`/`file://`, but HTTPS deployments need a user-configured probe URL workaround. A server _on_ the tailnet sidesteps both.
 - **Sync** between PC and mobile does not exist. Users must export/import JSON manually.
 - **Weather API key** ships in the client. Acceptable for personal use, not ideal.
 - **Favicon CORS** fails on certain hosts; the in-browser cache cannot retry centrally.
@@ -27,31 +27,31 @@ Client retains **offline-first** behavior: it still reads/writes the `localStora
 
 The backend additionally provides:
 
-| Endpoint | Purpose |
-|---|---|
-| `GET/PUT /api/v1/sync` | Pull / push overlay (LWW) |
-| `GET /api/v1/favicon?url=…` | Server-side favicon fetch + cache |
-| `GET /api/v1/weather?city=…` | OWM proxy, server holds key |
-| `GET /api/v1/probes` | Health of configured tailnet targets |
+| Endpoint                       | Purpose                                                               |
+| ------------------------------ | --------------------------------------------------------------------- |
+| `GET/PUT /api/v1/sync`         | Pull / push overlay (LWW)                                             |
+| `GET /api/v1/favicon?url=…`    | Server-side favicon fetch + cache                                     |
+| `GET /api/v1/weather?city=…`   | OWM proxy, server holds key                                           |
+| `GET /api/v1/probes`           | Health of configured tailnet targets                                  |
 | `GET /api/v1/tailscale/status` | Server reports own tailscale up/down via local `tailscale status` CLI |
-| `POST /api/v1/clicks` | Append click events; server aggregates |
-| `GET /api/v1/stats/frequent` | Cross-device frequent links |
-| `GET /api/v1/meta?url=…` | Title / og:image on link add (optional) |
-| `POST /api/v1/handoff` | "Open on phone / send to PC" via SSE |
-| `GET /api/v1/handoff/stream` | SSE listener for handoff |
-| `GET /healthz` | Liveness (no auth) |
+| `POST /api/v1/clicks`          | Append click events; server aggregates                                |
+| `GET /api/v1/stats/frequent`   | Cross-device frequent links                                           |
+| `GET /api/v1/meta?url=…`       | Title / og:image on link add (optional)                               |
+| `POST /api/v1/handoff`         | "Open on phone / send to PC" via SSE                                  |
+| `GET /api/v1/handoff/stream`   | SSE listener for handoff                                              |
+| `GET /healthz`                 | Liveness (no auth)                                                    |
 
 ## 3. Options Considered
 
 ### Option A — Python + FastAPI + SQLite (CHOSEN)
 
-| Dimension | Assessment |
-|---|---|
-| Complexity | Low |
-| Cost | Free, self-hosted |
-| Scalability | More than enough (single-user, ~tens of writes/min) |
+| Dimension        | Assessment                                                   |
+| ---------------- | ------------------------------------------------------------ |
+| Complexity       | Low                                                          |
+| Cost             | Free, self-hosted                                            |
+| Scalability      | More than enough (single-user, ~tens of writes/min)          |
 | Team familiarity | Owner comfortable with Python; AI agents handle FastAPI well |
-| Pi/NAS fit | Runs anywhere Python 3.11+ runs; ARM support trivial |
+| Pi/NAS fit       | Runs anywhere Python 3.11+ runs; ARM support trivial         |
 
 **Pros:** Fast iteration, batteries-included (Pydantic validation, automatic OpenAPI), SQLite = single file backup, plenty of training data for coding agents.
 **Cons:** Heavier runtime than Go binary; needs venv or container management on the host.
@@ -264,23 +264,24 @@ Body: { "overlay": {...}, "clientMtime": 1700000123456,
 
 ## 5. Trade-off Analysis
 
-| Concern | LWW whole-overlay (chosen) | Field-level LWW | CRDT |
-|---|---|---|---|
-| Implementation effort | ~50 LOC | ~200 LOC | ~500 LOC + Yjs deps |
-| Concurrent offline edits | Last writer wins, other side loses | Per-key merge | True merge |
-| Single-user fit | Excellent | Overkill | Massive overkill |
-| Future multi-user | Add user_id, still works | Same | Same |
+| Concern                  | LWW whole-overlay (chosen)         | Field-level LWW | CRDT                |
+| ------------------------ | ---------------------------------- | --------------- | ------------------- |
+| Implementation effort    | ~50 LOC                            | ~200 LOC        | ~500 LOC + Yjs deps |
+| Concurrent offline edits | Last writer wins, other side loses | Per-key merge   | True merge          |
+| Single-user fit          | Excellent                          | Overkill        | Massive overkill    |
+| Future multi-user        | Add user_id, still works           | Same            | Same                |
 
-| Concern | FastAPI (chosen) | Go | Node |
-|---|---|---|---|
-| Owner familiarity | High | Low | Medium |
-| AI agent code quality | Excellent | Good | Excellent |
-| Footprint on Pi | ~60 MB RAM idle | ~10 MB | ~50 MB |
-| Iteration speed | Highest | Lowest | High |
+| Concern               | FastAPI (chosen) | Go     | Node      |
+| --------------------- | ---------------- | ------ | --------- |
+| Owner familiarity     | High             | Low    | Medium    |
+| AI agent code quality | Excellent        | Good   | Excellent |
+| Footprint on Pi       | ~60 MB RAM idle  | ~10 MB | ~50 MB    |
+| Iteration speed       | Highest          | Lowest | High      |
 
 ## 6. Consequences
 
 **Easier**
+
 - Mobile sync becomes real.
 - Tailscale detection becomes definitive (server reads `tailscale status`).
 - Secrets (OWM key, future API keys) leave the client.
@@ -288,11 +289,13 @@ Body: { "overlay": {...}, "clientMtime": 1700000123456,
 - Cross-device features (handoff, merged stats) become trivial to add.
 
 **Harder**
+
 - A new process to operate (start, update, back up).
 - Two failure modes instead of one (offline backend → graceful degradation needed).
 - Bootstrap step: token provisioning + probe URL config on each device.
 
 **Revisit later**
+
 - Multi-user (add `user_id` column + per-user token).
 - Conflict policy if real multi-device concurrent editing becomes painful → upgrade to field-level LWW.
 - TLS termination strategy (Tailscale serve vs Caddy vs traefik).
