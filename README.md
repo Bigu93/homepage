@@ -53,9 +53,29 @@ Everything lives in your browser's `localStorage`. Use **Export** in Settings to
 
 `js/shortcuts.js` is the seed — edit it directly if you want a different default link list. New entries you add via the UI live in the overlay (`localStorage` key `startpage_overlay_v1`) on top of the seed.
 
+When the optional backend is enabled, the overlay syncs automatically across devices (last-write-wins).
+
 ## Tech
 
 Vanilla JS (ES modules), HTML, CSS. No bundler, no runtime deps, no test framework. Tested in Chromium + Firefox.
+
+## Optional self-hosted backend
+
+A lightweight FastAPI + SQLite server that adds cross-device sync, server-side Tailscale peer detection, favicon and weather proxies, health probes, and per-link click stats.
+
+The server code lives in the `server/` directory.
+
+**Start it:**
+
+```bash
+cd server && docker compose up -d
+```
+
+Grab the one-time bootstrap token from the container logs (`docker compose logs`).
+
+**Connect the app:** open Settings → Sync, enter the Base URL (e.g. `http://your-host:8000`) and the bootstrap token.
+
+Full setup instructions, environment variables, and API reference: [`server/README.md`](server/README.md).
 
 ## License
 
