@@ -52,10 +52,14 @@ export function setFavorites(favs) {
 function render() {
   const root = document.getElementById("sidebar-categories");
   if (!root) return;
-  root.innerHTML = "";
 
-  // --- Frequent group (most clicked) ---
-  const frequentLinks = topLinks(dataRef, 6);
+  // topLinks is async (may fetch from backend). Render sync parts immediately,
+  // then patch in the frequent group when the promise resolves.
+  topLinks(dataRef, 6).then((frequentLinks) => _renderFull(root, frequentLinks));
+}
+
+function _renderFull(root, frequentLinks) {
+  root.innerHTML = "";
   if (frequentLinks.length) {
     const fHeading = document.createElement("div");
     fHeading.className = "nav-section-label";

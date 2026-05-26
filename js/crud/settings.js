@@ -470,7 +470,7 @@ async function clearStatsHandler() {
     danger: true,
   });
   if (!ok) return;
-  clearStats();
+  await clearStats();
   if (onChangeCb) onChangeCb();
   toast("Usage stats cleared.", "success");
 }

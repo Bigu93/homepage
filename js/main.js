@@ -8,7 +8,7 @@ import {
   migrateLegacyFavorites,
 } from "./storage.js";
 import { merge } from "./data.js";
-import { clearExpiredFavicons } from "./favicons.js";
+import { clearExpiredFavicons, initFavicons } from "./favicons.js";
 import { startClock } from "./clock.js";
 import { initTheme } from "./theme.js";
 import {
@@ -65,6 +65,7 @@ function toggleFavorite(linkId) {
   setSidebarFavorites(state.favorites);
 }
 
+initFavicons(overlay);
 clearExpiredFavicons();
 initTheme();
 startClock(overlay.settings?.username || "Marcin");

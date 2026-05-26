@@ -61,8 +61,45 @@ function writeCache(obj) {
   }
 }
 
+function _backendWeatherUrl(cfg) {
+  const sync = overlayRef?.settings?.sync;
+  if (sync?.enabled && sync?.baseUrl && cfg?.label) {
+    const base = sync.baseUrl.replace(/\/+$/, "");
+    return `${base}/api/v1/weather?city=${encodeURIComponent(cfg.label)}&units=${cfg.units || "metric"}`;
+  }
+  return null;
+}
+
 export function refresh() {
   const cfg = overlayRef.settings.weather;
+  const backendUrl = _backendWeatherUrl(cfg);
+
+  // Backend mode: no API key needed on client
+  if (backendUrl) {
+    fetch(backendUrl, {
+      headers: { "Authorization": `Bearer ${overlayRef.settings.sync.token}` },
+    })
+      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then((data) => {
+        writeCache({
+          data: {
+            temp: data.main.temp,
+            feels: data.main.feels_like,
+            humidity: data.main.humidity,
+            label: cfg.label,
+            icon: ICON_MAP[data.weather[0]?.main] || "•",
+            units: cfg.units || "metric",
+          },
+          fetchedAt: Date.now(),
+          lat: cfg.lat,
+          lon: cfg.lon,
+        });
+        render();
+      })
+      .catch((e) => { console.warn("[weather] backend fetch failed:", e); renderError(e.message); });
+    return;
+  }
+
   if (!cfg || !cfg.apiKey || cfg.lat == null || cfg.lon == null)
     return render();
   fetch(

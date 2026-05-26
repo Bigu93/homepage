@@ -1,9 +1,13 @@
 // js/tailscale.js
 // Tailscale up/down indicator.
-// On HTTP/file: probes MagicDNS http://100.100.100.100/ directly.
-// On HTTPS: MagicDNS is blocked by mixed-content policy; uses a user-supplied
-// custom probe URL (any HTTPS endpoint on the tailnet — NAS, router, HA, etc.)
-// stored in overlay.settings.tailscaleProbeUrl.
+//
+// Priority order:
+//   1. Backend mode (sync enabled) — GET /api/v1/tailscale/status via backend.
+//      Definitive: server runs tailscale status CLI. No browser mixed-content issue.
+//   2. Custom probe URL (HTTPS pages without backend) — any HTTPS tailnet endpoint.
+//   3. MagicDNS direct probe (HTTP / file:// pages).
+
+import { apiFetch } from "./api.js";
 
 const MAGIC_DNS_URL = "http://100.100.100.100/";
 const PROBE_TIMEOUT_MS = 1500;
@@ -13,6 +17,7 @@ let chipEl = null;
 let dotEl = null;
 let inFlight = false;
 let overlayRef = null;
+let _intervalId = null;
 
 export function initTailscale(overlay) {
   overlayRef = overlay;
@@ -20,22 +25,37 @@ export function initTailscale(overlay) {
   if (!chipEl) return;
   dotEl = chipEl.querySelector(".status-dot");
 
+  // Clear any previous interval (called on refreshData)
+  if (_intervalId) { clearInterval(_intervalId); _intervalId = null; }
+  // Clone listener-safe: remove old click by replacing node is overkill;
+  // use a flag on chipEl instead.
+  chipEl.onclick = () => { if (!inFlight) runProbe(); };
+
+  // Backend mode: server handles the probe authoritatively.
+  if (_backendEnabled()) {
+    paint("unknown");
+    runProbe();
+    _intervalId = setInterval(runProbe, INTERVAL_MS);
+    return;
+  }
+
+  // Legacy browser-only path
   const useCustom = location.protocol === "https:";
   const customUrl = overlayRef?.settings?.tailscaleProbeUrl?.trim();
 
   if (useCustom && !customUrl) {
-    // HTTPS but no probe URL configured.
     paint("configure");
     return;
   }
 
   paint("unknown");
-  chipEl.addEventListener("click", () => {
-    if (inFlight) return;
-    runProbe();
-  });
   runProbe();
-  setInterval(runProbe, INTERVAL_MS);
+  _intervalId = setInterval(runProbe, INTERVAL_MS);
+}
+
+function _backendEnabled() {
+  const sync = overlayRef?.settings?.sync;
+  return !!(sync?.enabled && sync?.baseUrl && sync?.token);
 }
 
 function probeUrl() {
@@ -52,19 +72,30 @@ function makeTimeoutSignal(ms) {
   return ctrl.signal;
 }
 
-async function probe() {
+async function probeBackend() {
+  try {
+    const sync = overlayRef.settings.sync;
+    const resp = await apiFetch(sync, "/api/v1/tailscale/status", { method: "GET" });
+    if (!resp.ok) return { state: "off", source: "backend" };
+    const data = await resp.json();
+    const on = data?.self?.online === true;
+    return { state: on ? "on" : "off", source: "backend" };
+  } catch {
+    // Backend unreachable — fall back to direct probe
+    return null;
+  }
+}
+
+async function probeDirect() {
   const url = probeUrl();
-  const isCustom = url !== MAGIC_DNS_URL;
   try {
     await fetch(url, {
-      // Custom HTTPS URL: use cors (or no-cors for NAS endpoints that lack CORS headers).
-      // We don't need the body — any response (even 403/404) means the tailnet is reachable.
-      mode: isCustom ? "no-cors" : "no-cors",
+      mode: "no-cors",
       signal: makeTimeoutSignal(PROBE_TIMEOUT_MS),
     });
-    return "on";
+    return { state: "on", source: url };
   } catch {
-    return "off";
+    return { state: "off", source: url };
   }
 }
 
@@ -72,23 +103,31 @@ async function runProbe() {
   if (inFlight) return;
   inFlight = true;
   paint("checking");
-  const state = await probe();
+
+  let result = null;
+  if (_backendEnabled()) {
+    result = await probeBackend();
+  }
+  // Fall back to direct probe if backend returned null (unreachable)
+  if (!result) {
+    result = await probeDirect();
+  }
+
   inFlight = false;
-  paint(state);
+  paint(result.state, result.source);
 }
 
-function paint(state) {
+function paint(state, source) {
   if (!chipEl || !dotEl) return;
   chipEl.dataset.state = state;
   dotEl.className = `status-dot status-dot-${state}`;
   let title;
-  if (state === "on" || state === "off") {
-    const now = new Date().toLocaleTimeString();
-    const url = probeUrl();
-    title =
-      state === "on"
-        ? `Tailscale up — checked ${now} (${url})`
-        : `Tailscale down — checked ${now} (${url})`;
+  const now = new Date().toLocaleTimeString();
+  const via = source === "backend" ? "backend" : (source || probeUrl());
+  if (state === "on") {
+    title = `Tailscale up — checked ${now} (${via})`;
+  } else if (state === "off") {
+    title = `Tailscale down — checked ${now} (${via})`;
   } else if (state === "checking") {
     title = "Checking Tailscale…";
   } else if (state === "configure") {

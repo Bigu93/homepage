@@ -1,8 +1,21 @@
 // js/favicons.js
 // Favicon URL + bytes cache. 30-day TTL.
-// First fetch returns the remote URL (and kicks off a background dataURL copy
-// into localStorage). Subsequent loads return the dataURL — works offline and
-// without re-hitting Google's favicon endpoint.
+// Backend mode (sync enabled): returns /api/v1/favicon?url=… endpoint URL.
+//   Browser cache + service worker handle caching; no localStorage writes.
+// Offline / no backend: fetches Google S2, persists dataURL into localStorage.
+
+let _overlayRef = null;
+
+/** Call once at startup so favicons.js can check sync settings. */
+export function initFavicons(overlay) {
+  _overlayRef = overlay;
+}
+
+function _backendBase() {
+  const sync = _overlayRef?.settings?.sync;
+  if (sync?.enabled && sync?.baseUrl) return sync.baseUrl.replace(/\/+$/, "");
+  return null;
+}
 
 const CACHE_KEY = "favicons_cache";
 const EXPIRY_DAYS = 30;
@@ -86,11 +99,17 @@ async function persistDataUrl(linkUrl, remote) {
 }
 
 export function getFavicon(url) {
+  // Backend mode: delegate entirely to the proxy — browser cache + SW handles freshness.
+  const base = _backendBase();
+  if (base) {
+    return `${base}/api/v1/favicon?url=${encodeURIComponent(url)}`;
+  }
+
+  // Local fallback path
   const cache = readCache();
   const cached = cache[url];
   const fresh = cached && Date.now() < cached.timestamp + EXPIRY_MS;
   if (fresh) {
-    // Prefer bytes when we have them.
     if (cached.dataUrl) return cached.dataUrl;
     return cached.faviconUrl;
   }
