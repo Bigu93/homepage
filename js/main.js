@@ -184,3 +184,47 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
       .catch((err) => console.warn("[sw] registration failed:", err));
   });
 }
+
+// Mobile sidebar toggle
+(function () {
+  const toggle = document.getElementById("sidebar-toggle");
+  const sidebar = document.querySelector(".sidebar");
+  if (!toggle || !sidebar) return;
+
+  function openSidebar() {
+    document.body.classList.add("sidebar-open");
+    toggle.setAttribute("aria-expanded", "true");
+  }
+
+  function closeSidebar() {
+    document.body.classList.remove("sidebar-open");
+    toggle.setAttribute("aria-expanded", "false");
+  }
+
+  toggle.addEventListener("click", () => {
+    if (document.body.classList.contains("sidebar-open")) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  });
+
+  // Close on scrim click (the ::after pseudo-element)
+  document.addEventListener("click", (e) => {
+    if (
+      document.body.classList.contains("sidebar-open") &&
+      !sidebar.contains(e.target) &&
+      e.target !== toggle &&
+      !toggle.contains(e.target)
+    ) {
+      closeSidebar();
+    }
+  });
+
+  // Close after a nav-item click (link navigation on mobile)
+  sidebar.addEventListener("click", (e) => {
+    if (e.target.closest(".nav-item, .nav-pinned-item")) {
+      closeSidebar();
+    }
+  });
+})();
