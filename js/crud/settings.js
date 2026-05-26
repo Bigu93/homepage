@@ -5,6 +5,7 @@ import { openModal, closeModal, confirmDialog, toast } from "./modal.js";
 import { BUILTIN_ENGINES } from "../engines.js";
 import { reset as resetStorage, save as saveOverlay } from "../storage.js";
 import { clearStats } from "../stats.js";
+import { testConnection } from "../sync.js";
 
 let overlayRef = null;
 let onChangeCb = null;
@@ -78,6 +79,34 @@ export function openSettings(scrollTo) {
       </div>
     </section>
 
+    <section class="settings-section" data-section="sync">
+      <h3>Sync</h3>
+      <p class="settings-hint">Connect to the self-hosted backend for cross-device sync and server-side features. Runs on your tailnet.</p>
+      <div class="field">
+        <label>
+          <input type="checkbox" id="set-sync-enabled" style="margin-right:0.4rem">
+          Enable sync
+        </label>
+      </div>
+      <div class="field">
+        <label>Backend URL</label>
+        <input id="set-sync-url" type="url" placeholder="https://hostname.tail-xxx.ts.net">
+      </div>
+      <div class="field">
+        <label>Token</label>
+        <input id="set-sync-token" type="password" placeholder="paste bootstrap token here" autocomplete="off">
+      </div>
+      <div class="field" style="font-size:0.8125rem;opacity:0.7">
+        Device ID: <code id="set-sync-device-id"></code>
+      </div>
+      <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="set-sync-test">Test connection</button>
+        <button class="btn" id="set-sync-now">Sync now</button>
+        <span id="set-sync-status" style="font-size:0.8125rem"></span>
+      </div>
+      <div id="set-sync-last" style="font-size:0.75rem;opacity:0.6;margin-top:0.5rem"></div>
+    </section>
+
     <section class="settings-section" data-section="data">
       <h3>Data</h3>
       <p class="settings-hint">All your data lives in this browser's localStorage. Back up regularly.</p>
@@ -142,6 +171,54 @@ export function openSettings(scrollTo) {
   body.querySelector("#set-tailscale-url").onchange = (e) => {
     overlayRef.settings.tailscaleProbeUrl = e.target.value.trim();
     persistAndNotify();
+  };
+
+  // Sync section
+  const sync = overlayRef.settings.sync || {};
+  body.querySelector("#set-sync-enabled").checked = !!sync.enabled;
+  body.querySelector("#set-sync-url").value       = sync.baseUrl || "";
+  body.querySelector("#set-sync-token").value     = sync.token || "";
+  body.querySelector("#set-sync-device-id").textContent = sync.deviceId || "(none)";
+  _updateSyncLastLabel(body, sync);
+
+  const persistSync = () => {
+    overlayRef.settings.sync = {
+      ...(overlayRef.settings.sync || {}),
+      enabled:  body.querySelector("#set-sync-enabled").checked,
+      baseUrl:  body.querySelector("#set-sync-url").value.trim().replace(/\/+$/, ""),
+      token:    body.querySelector("#set-sync-token").value.trim(),
+    };
+    persistAndNotify();
+  };
+  body.querySelector("#set-sync-enabled").onchange = persistSync;
+  body.querySelector("#set-sync-url").onchange     = persistSync;
+  body.querySelector("#set-sync-token").onchange   = persistSync;
+
+  body.querySelector("#set-sync-test").onclick = async () => {
+    const statusEl = body.querySelector("#set-sync-status");
+    statusEl.textContent = "Testing…";
+    const s = {
+      baseUrl:  body.querySelector("#set-sync-url").value.trim().replace(/\/+$/, ""),
+      token:    body.querySelector("#set-sync-token").value.trim(),
+      deviceId: overlayRef.settings.sync?.deviceId || "",
+    };
+    const result = await testConnection(s);
+    statusEl.textContent = result.ok ? `✓ ${result.message}` : `✗ ${result.message}`;
+    statusEl.style.color = result.ok ? "var(--accent)" : "var(--error, #e55)";
+  };
+
+  body.querySelector("#set-sync-now").onclick = async () => {
+    const { pull, push } = await import("../sync.js");
+    const statusEl = body.querySelector("#set-sync-status");
+    statusEl.textContent = "Syncing…";
+    try {
+      await pull();
+      await push();
+      statusEl.textContent = "✓ Done";
+      _updateSyncLastLabel(body, overlayRef.settings.sync);
+    } catch (e) {
+      statusEl.textContent = `✗ ${e.message}`;
+    }
   };
 
   body.querySelector("#set-export").onclick = exportData;
@@ -410,4 +487,15 @@ async function fullReset() {
   resetStorage();
   toast("Wiped. Reloading…", "success");
   setTimeout(() => location.reload(), 600);
+}
+
+function _updateSyncLastLabel(body, sync) {
+  const el = body.querySelector("#set-sync-last");
+  if (!el || !sync) return;
+  if (sync.lastSyncAt) {
+    const d = new Date(sync.lastSyncAt);
+    el.textContent = `Last synced: ${d.toLocaleString()} (rev ${sync.lastRevision ?? 0})`;
+  } else {
+    el.textContent = "Never synced";
+  }
 }

@@ -2,7 +2,7 @@
 // Reads + writes the overlay (user diff over seed). Schema-versioned + migrations.
 
 const KEY = "startpage_overlay_v1";
-const CURRENT_SCHEMA = 2;
+const CURRENT_SCHEMA = 3;
 
 const EMPTY_OVERLAY = {
   schemaVersion: CURRENT_SCHEMA,
@@ -20,6 +20,15 @@ const EMPTY_OVERLAY = {
     username: "Marcin",
     helpDismissed: false,
     tailscaleProbeUrl: "",
+    // v3: backend sync (device-local — never synced to server)
+    sync: {
+      enabled: false,
+      baseUrl: "",
+      token: "",
+      deviceId: "",
+      lastRevision: 0,
+      lastSyncAt: null,
+    },
   },
 };
 
@@ -72,6 +81,23 @@ function migrate(overlay) {
   if (overlay.schemaVersion < 2) {
     overlay.clickCounts = overlay.clickCounts || {};
     overlay.schemaVersion = 2;
+  }
+  // v2 → v3: introduce settings.sync (device-local, never sent to server)
+  if (overlay.schemaVersion < 3) {
+    if (!overlay.settings) overlay.settings = {};
+    if (!overlay.settings.sync) {
+      overlay.settings.sync = {
+        enabled: false,
+        baseUrl: "",
+        token: "",
+        deviceId: crypto.randomUUID(),
+        lastRevision: 0,
+        lastSyncAt: null,
+      };
+    } else if (!overlay.settings.sync.deviceId) {
+      overlay.settings.sync.deviceId = crypto.randomUUID();
+    }
+    overlay.schemaVersion = 3;
   }
   if (overlay.schemaVersion > CURRENT_SCHEMA) {
     const ok = confirm(

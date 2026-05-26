@@ -35,6 +35,7 @@ import { initTailscale } from "./tailscale.js";
 import { initHelp } from "./help.js";
 import { ICONS } from "./icons.js";
 import { initStats } from "./stats.js";
+import { init as initSync, push as syncPush } from "./sync.js";
 
 let overlay = loadOverlay();
 overlay = migrateLegacyFavorites(overlay, seed);
@@ -119,6 +120,13 @@ initTailscale(overlay);
 
 initHelp({ overlay });
 
+// Backend sync — non-blocking, graceful offline fallback
+initSync({
+  overlay,
+  onPulled: () => refreshData(),
+  onConflict: (winner) => console.info("[sync] conflict resolved:", winner),
+});
+
 // When search clears, re-render the grid normally.
 document.addEventListener("search:cleared", () => {
   state.searchQuery = "";
@@ -157,6 +165,7 @@ export function getOverlay() {
 
 export function persistOverlay() {
   saveOverlay(overlay);
+  syncPush(); // push to backend after every local save
 }
 
 const fab = document.createElement("button");
@@ -165,3 +174,12 @@ fab.innerHTML = "+";
 fab.title = "Add link";
 fab.onclick = () => openLinkEditor({});
 document.body.appendChild(fab);
+
+// Register service worker (PWA — only on HTTPS or localhost)
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/service-worker.js")
+      .catch((err) => console.warn("[sw] registration failed:", err));
+  });
+}
