@@ -3,6 +3,7 @@
 
 import { ICONS } from "../icons.js";
 import { recordClick, topLinks } from "../stats.js";
+import { safeHttpHref } from "../url-utils.js";
 
 let dataRef = [];
 let activeCategoryRef = "all";
@@ -73,7 +74,7 @@ function _renderFull(root, frequentLinks) {
     frequentLinks.forEach((p) => {
       const a = document.createElement("a");
       a.className = "nav-pinned-item";
-      a.href = p.link.url;
+      a.href = safeHttpHref(p.link.url);
       a.target = "_blank";
       a.rel = "noopener noreferrer";
       const dot = document.createElement("span");
@@ -112,7 +113,7 @@ function _renderFull(root, frequentLinks) {
     pinnedLinks.forEach((p) => {
       const a = document.createElement("a");
       a.className = "nav-pinned-item";
-      a.href = p.link.url;
+      a.href = safeHttpHref(p.link.url);
       a.target = "_blank";
       a.rel = "noopener noreferrer";
       const dot = document.createElement("span");

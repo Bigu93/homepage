@@ -3,7 +3,8 @@
 
 import { openModal, closeModal, confirmDialog, toast } from "./modal.js";
 import { save as saveOverlay } from "../storage.js";
-import { getFavicon } from "../favicons.js";
+import { loadFavicon } from "../favicons.js";
+import { parseHttpUrl } from "../url-utils.js";
 
 let overlayRef = null;
 let categoriesRef = [];
@@ -100,7 +101,7 @@ export function openLinkEditor({
     urlI.value = existing.url;
     catS.value = existingCatId;
     previewName.textContent = existing.name;
-    previewImg.src = getFavicon(existing.url);
+    loadFavicon(previewImg, existing.url);
   } else if (defaultCategoryId) {
     catS.value = defaultCategoryId;
   }
@@ -109,8 +110,8 @@ export function openLinkEditor({
     previewName.textContent = nameI.value || "—";
     if (urlI.value) {
       try {
-        new URL(urlI.value);
-        previewImg.src = getFavicon(urlI.value);
+        parseHttpUrl(urlI.value);
+        loadFavicon(previewImg, urlI.value);
       } catch {
         /* invalid url, leave previous */
       }
@@ -174,9 +175,9 @@ export function openLinkEditor({
       bad = true;
     }
     try {
-      new URL(url);
+      parseHttpUrl(url);
     } catch (e) {
-      urlErr.textContent = `Invalid URL: ${e.message}`;
+      urlErr.textContent = e.message;
       urlErr.style.display = "block";
       urlI.classList.add("invalid");
       bad = true;

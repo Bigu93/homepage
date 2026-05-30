@@ -31,7 +31,7 @@ export function init({ overlay, onPulled, onConflict }) {
   // Ensure deviceId is set
   if (!_overlay.settings.sync.deviceId) {
     _overlay.settings.sync.deviceId = crypto.randomUUID();
-    saveOverlay(_overlay);
+    saveOverlay(_overlay, { silent: true });
   }
 
   pull(); // immediate pull on load
@@ -100,7 +100,7 @@ async function _pull() {
 
   _overlay.settings.sync.lastRevision = data.revision;
   _overlay.settings.sync.lastSyncAt = Date.now();
-  saveOverlay(_overlay);
+  saveOverlay(_overlay, { silent: true });
 
   _log("pulled revision", data.revision);
   _onPulled?.();
@@ -132,7 +132,7 @@ async function _push() {
   if (data.accepted) {
     _overlay.settings.sync.lastRevision = data.revision;
     _overlay.settings.sync.lastSyncAt = Date.now();
-    saveOverlay(_overlay);
+    saveOverlay(_overlay, { silent: true });
     _log("pushed revision", data.revision);
   }
 }
@@ -151,14 +151,14 @@ async function _resolveConflict(serverData) {
     _restoreLocalOnly(_overlay, localOnly);
     _overlay.settings.sync.lastRevision = serverData.server_revision;
     _overlay.settings.sync.lastSyncAt = Date.now();
-    saveOverlay(_overlay);
+    saveOverlay(_overlay, { silent: true });
     _onConflict?.("server_won");
     _onPulled?.();
     _log("conflict resolved: server won");
   } else {
     // Local is newer — re-push with updated base_revision
     _overlay.settings.sync.lastRevision = serverData.server_revision;
-    saveOverlay(_overlay);
+    saveOverlay(_overlay, { silent: true });
     _log("conflict resolved: local won, re-pushing");
     await _push();
   }

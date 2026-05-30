@@ -5,12 +5,10 @@ from __future__ import annotations
 import hashlib
 import re
 import time
-from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
-import httpx
-
 from ..config import Settings
+from .outbound import UnsafeUrlError, fetch_limited_bytes, fetch_limited_text, validate_http_url
 
 _TIMEOUT = 3.0
 _MAX_ICON_BYTES = 256 * 1024
@@ -31,6 +29,11 @@ async def fetch(page_url: str, settings: Settings) -> dict:
     Returns dict with keys: bytes | path, mime, source_url, status, expires_at.
     Tries: <link rel=icon> → /favicon.ico → Google S2.
     """
+    try:
+        validate_http_url(page_url)
+    except UnsafeUrlError:
+        return _miss(page_url)
+
     icon_url = await _discover_icon(page_url)
     if icon_url:
         result = await _fetch_bytes(icon_url)
@@ -51,18 +54,20 @@ async def fetch(page_url: str, settings: Settings) -> dict:
     if result:
         return _build_result(result, settings)
 
-    return {"bytes": None, "path": None, "mime": None, "source_url": page_url,
-            "status": -1, "expires_at": int(time.time() * 1000) + _TTL_MISS_MS}
+    return _miss(page_url)
 
 
 async def _discover_icon(page_url: str) -> str | None:
     """Parse page HTML for <link rel='icon'> or apple-touch-icon."""
     try:
-        async with httpx.AsyncClient(follow_redirects=True, timeout=_TIMEOUT) as client:
-            resp = await client.get(page_url, headers={"Accept": "text/html"})
-            if resp.status_code >= 400:
-                return None
-            html = resp.text[:_MAX_PAGE_BYTES]
+        resp, html = await fetch_limited_text(
+            page_url,
+            max_bytes=_MAX_PAGE_BYTES,
+            timeout=_TIMEOUT,
+            headers={"Accept": "text/html"},
+        )
+        if resp.status_code >= 400:
+            return None
     except Exception:
         return None
 
@@ -82,17 +87,28 @@ async def _discover_icon(page_url: str) -> str | None:
 
 async def _fetch_bytes(url: str) -> dict | None:
     try:
-        async with httpx.AsyncClient(follow_redirects=True, timeout=_TIMEOUT) as client:
-            resp = await client.get(url)
-            if resp.status_code >= 400:
-                return None
-            content = resp.content[:_MAX_ICON_BYTES]
-            if not content:
-                return None
-            mime = resp.headers.get("content-type", "image/x-icon").split(";")[0].strip()
-            return {"data": content, "mime": mime, "url": url, "status": resp.status_code}
+        resp, content = await fetch_limited_bytes(
+            url,
+            max_bytes=_MAX_ICON_BYTES,
+            timeout=_TIMEOUT,
+        )
+        if resp.status_code >= 400 or not content:
+            return None
+        mime = resp.headers.get("content-type", "image/x-icon").split(";")[0].strip()
+        return {"data": content, "mime": mime, "url": str(resp.url), "status": resp.status_code}
     except Exception:
         return None
+
+
+def _miss(url: str) -> dict:
+    return {
+        "bytes": None,
+        "path": None,
+        "mime": None,
+        "source_url": url,
+        "status": -1,
+        "expires_at": int(time.time() * 1000) + _TTL_MISS_MS,
+    }
 
 
 def _build_result(raw: dict, settings: Settings) -> dict:

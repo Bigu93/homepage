@@ -7,10 +7,10 @@ from __future__ import annotations
 import time
 
 import aiosqlite
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Response
 
 from ..auth import require_token
-from ..db import get_db
+from ..db import get_db, get_write_lock
 from ..schemas import FrequentLink
 
 router = APIRouter(dependencies=[Depends(require_token)], tags=["stats"])
@@ -41,5 +41,7 @@ async def frequent_links(
 
 @router.delete("/stats", status_code=204)
 async def clear_stats(db: aiosqlite.Connection = Depends(get_db)):
-    await db.execute("DELETE FROM click_event")
-    await db.commit()
+    async with get_write_lock():
+        await db.execute("DELETE FROM click_event")
+        await db.commit()
+    return Response(status_code=204)

@@ -1,7 +1,8 @@
 // js/search.js
 // Unified smart search: live shortcut filter + web search fallback + engine prefixes.
 
-import { getFavicon } from "./favicons.js";
+import { loadFavicon } from "./favicons.js";
+import { openSafeUrl, safeHttpHref } from "./url-utils.js";
 import {
   getAllEngines,
   resolveEngine,
@@ -143,9 +144,9 @@ function handleEnter(e) {
   if (selected) {
     if (selected.kind === "shortcut") {
       const where = e.ctrlKey || e.metaKey ? "_self" : "_blank";
-      window.open(selected.url, where);
+      openSafeUrl(selected.url, where);
     } else if (selected.kind === "web") {
-      window.open(selected.url, "_blank");
+      openSafeUrl(selected.url, "_blank");
     }
   }
 }
@@ -153,14 +154,11 @@ function handleEnter(e) {
 function runWebSearch(query) {
   const detected = detectPrefix(query, overlayRef);
   if (detected) {
-    window.open(
-      searchUrl(detected.prefix.urlTemplate, detected.query),
-      "_blank",
-    );
+    openSafeUrl(searchUrl(detected.prefix.urlTemplate, detected.query), "_blank");
     return;
   }
   const eng = resolveEngine(getDefaultEngineFn(), overlayRef);
-  window.open(searchUrl(eng.urlTemplate, query), "_blank");
+  openSafeUrl(searchUrl(eng.urlTemplate, query), "_blank");
 }
 
 function score(name, url, q) {
@@ -225,7 +223,7 @@ export function render() {
   // web row
   const webRow = document.createElement("a");
   webRow.className = "search-result search-web-row";
-  webRow.href = webUrl;
+  webRow.href = safeHttpHref(webUrl);
   webRow.target = "_blank";
   webRow.rel = "noopener noreferrer";
   const webIcon = document.createElement("div");
@@ -250,14 +248,14 @@ export function render() {
   matches.forEach((m, i) => {
     const row = document.createElement("a");
     row.className = "search-result";
-    row.href = m.url;
+    row.href = safeHttpHref(m.url);
     row.target = "_blank";
     row.rel = "noopener noreferrer";
     row.dataset.idx = String(i + 1);
     const favWrap = document.createElement("div");
     favWrap.className = "link-favicon";
     const img = document.createElement("img");
-    img.src = getFavicon(m.url);
+    loadFavicon(img, m.url);
     img.alt = "";
     favWrap.appendChild(img);
     const nameSpan = document.createElement("span");

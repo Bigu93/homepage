@@ -139,7 +139,9 @@ export function refresh() {
 
 export function render() {
   const cfg = overlayRef.settings.weather;
-  if (!cfg || !cfg.apiKey || cfg.lat == null || cfg.lon == null) {
+  const hasBackendWeather = !!_backendWeatherUrl(cfg);
+  const hasDirectWeather = !!(cfg?.apiKey && cfg.lat != null && cfg.lon != null);
+  if (!hasBackendWeather && !hasDirectWeather) {
     chip.className = "weather-chip unconfigured";
     iconEl.textContent = "⚙";
     tempEl.textContent = "Set up weather";
@@ -148,7 +150,7 @@ export function render() {
     return;
   }
   const cache = readCache();
-  if (cache && Date.now() - cache.fetchedAt < STALE_MS) {
+  if (cache && Date.now() - cache.fetchedAt < STALE_MS && _cacheMatches(cache, cfg)) {
     paintFromCache(cache);
   } else {
     paintFromCache(
@@ -159,6 +161,11 @@ export function render() {
     );
     refresh();
   }
+}
+
+function _cacheMatches(cache, cfg) {
+  const cached = cache.data || {};
+  return cached.label === cfg.label && cached.units === (cfg.units || "metric");
 }
 
 function paintFromCache(cache) {

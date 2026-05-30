@@ -11,7 +11,9 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import bootstrap, get_settings
 from .db import close_db, open_db
+from .routers import clicks, favicon, handoff, meta, probes, stats, sync, tailscale, weather
 from .routers.health import router as health_router
+from .services.probe_loop import start_probe_loop, stop_probe_loop
 
 
 @asynccontextmanager
@@ -20,31 +22,11 @@ async def lifespan(app: FastAPI):
     bootstrap(settings)
     await open_db(settings)
 
-    # Import and register all feature routers here so DB is ready
-    from .routers import (  # noqa: PLC0415
-        clicks,
-        favicon,
-        handoff,
-        meta,
-        probes,
-        stats,
-        sync,
-        tailscale,
-        weather,
-    )
-    from .services.probe_loop import start_probe_loop  # noqa: PLC0415
-
-    for router_module in (sync, favicon, weather, probes, tailscale, clicks, stats, handoff, meta):
-        app.include_router(router_module.router, prefix="/api/v1")
-
     await start_probe_loop(settings)
-
-    # Serve static frontend if configured
-    if settings.frontend_dir and Path(settings.frontend_dir).is_dir():
-        app.mount("/", StaticFiles(directory=settings.frontend_dir, html=True), name="frontend")
 
     yield
 
+    await stop_probe_loop()
     await close_db()
 
 
@@ -67,6 +49,10 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health_router)
+    for router_module in (sync, favicon, weather, probes, tailscale, clicks, stats, handoff, meta):
+        app.include_router(router_module.router, prefix="/api/v1")
+    if settings.frontend_dir and Path(settings.frontend_dir).is_dir():
+        app.mount("/", StaticFiles(directory=settings.frontend_dir, html=True), name="frontend")
     return app
 
 

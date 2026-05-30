@@ -55,9 +55,16 @@ export function load() {
   return migrate(parsed);
 }
 
-export function save(overlay) {
+export function normalize(overlay) {
+  return migrate(overlay);
+}
+
+export function save(overlay, options = {}) {
   try {
     localStorage.setItem(KEY, JSON.stringify(overlay));
+    if (!options.silent && typeof document !== "undefined") {
+      document.dispatchEvent(new CustomEvent("overlay:saved"));
+    }
     return true;
   } catch (e) {
     console.warn("[storage] write failed:", e);

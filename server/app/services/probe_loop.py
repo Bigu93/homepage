@@ -8,7 +8,7 @@ import time
 import httpx
 
 from ..config import Settings
-from ..db import _conn as _db_conn
+from ..db import get_write_lock
 
 _task: asyncio.Task | None = None
 _PRUNE_INTERVAL_S = 3600
@@ -20,6 +20,19 @@ async def start_probe_loop(settings: Settings) -> None:
     if _task and not _task.done():
         return
     _task = asyncio.create_task(_loop(settings))
+
+
+async def stop_probe_loop() -> None:
+    global _task
+    if not _task or _task.done():
+        _task = None
+        return
+    _task.cancel()
+    try:
+        await _task
+    except asyncio.CancelledError:
+        pass
+    _task = None
 
 
 async def _loop(settings: Settings) -> None:
@@ -65,11 +78,12 @@ async def _probe_one(target_id: int, url: str) -> None:
     rtt_ms = int((time.monotonic() - start) * 1000)
     ts = int(time.time() * 1000)
 
-    await _conn.execute(
-        "INSERT INTO probe_result (target_id, ts, ok, rtt_ms, status) VALUES (?, ?, ?, ?, ?)",
-        (target_id, ts, int(ok), rtt_ms, http_status),
-    )
-    await _conn.commit()
+    async with get_write_lock():
+        await _conn.execute(
+            "INSERT INTO probe_result (target_id, ts, ok, rtt_ms, status) VALUES (?, ?, ?, ?, ?)",
+            (target_id, ts, int(ok), rtt_ms, http_status),
+        )
+        await _conn.commit()
 
 
 async def _prune() -> None:
@@ -79,5 +93,6 @@ async def _prune() -> None:
         return
 
     cutoff = int(time.time() * 1000) - _KEEP_HISTORY_MS
-    await _conn.execute("DELETE FROM probe_result WHERE ts < ?", (cutoff,))
-    await _conn.commit()
+    async with get_write_lock():
+        await _conn.execute("DELETE FROM probe_result WHERE ts < ?", (cutoff,))
+        await _conn.commit()

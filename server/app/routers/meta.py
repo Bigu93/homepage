@@ -6,11 +6,11 @@ import re
 import time
 from typing import Any
 
-import httpx
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from ..auth import require_token
 from ..schemas import MetaResponse
+from ..services.outbound import UnsafeUrlError, fetch_limited_text
 
 router = APIRouter(dependencies=[Depends(require_token)], tags=["meta"])
 
@@ -28,14 +28,19 @@ async def get_meta(url: str = Query(...)):
 
     result = MetaResponse(url=url)
     try:
-        async with httpx.AsyncClient(follow_redirects=True, timeout=_TIMEOUT) as client:
-            resp = await client.get(url, headers={"Accept": "text/html"})
-            if resp.status_code < 400:
-                html = resp.text[:_MAX_BYTES]
-                result.title = _meta_tag(html, "title")
-                result.og_title = _meta_prop(html, "og:title")
-                result.og_image = _meta_prop(html, "og:image")
-                result.description = _meta_name(html, "description")
+        resp, html = await fetch_limited_text(
+            url,
+            max_bytes=_MAX_BYTES,
+            timeout=_TIMEOUT,
+            headers={"Accept": "text/html"},
+        )
+        if resp.status_code < 400:
+            result.title = _meta_tag(html, "title")
+            result.og_title = _meta_prop(html, "og:title")
+            result.og_image = _meta_prop(html, "og:image")
+            result.description = _meta_name(html, "description")
+    except UnsafeUrlError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     except Exception:
         pass
 
@@ -65,13 +70,13 @@ def _meta_prop(html: str, prop: str) -> str | None:
 
 def _meta_name(html: str, name: str) -> str | None:
     m = re.search(
-        rf'<meta[^>]+name=["\']description["\'][^>]*content=["\']([^"\']+)["\']',
+        r'<meta[^>]+name=["\']description["\'][^>]*content=["\']([^"\']+)["\']',
         html,
         re.IGNORECASE,
     )
     if not m:
         m = re.search(
-            rf'<meta[^>]+content=["\']([^"\']+)["\'][^>]*name=["\']description["\']',
+            r'<meta[^>]+content=["\']([^"\']+)["\'][^>]*name=["\']description["\']',
             html,
             re.IGNORECASE,
         )

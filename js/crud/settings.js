@@ -3,9 +3,14 @@
 
 import { openModal, closeModal, confirmDialog, toast } from "./modal.js";
 import { BUILTIN_ENGINES } from "../engines.js";
-import { reset as resetStorage, save as saveOverlay } from "../storage.js";
+import {
+  normalize as normalizeOverlay,
+  reset as resetStorage,
+  save as saveOverlay,
+} from "../storage.js";
 import { clearStats } from "../stats.js";
 import { testConnection } from "../sync.js";
+import { parseHttpUrl, validateSearchTemplate } from "../url-utils.js";
 
 let overlayRef = null;
 let onChangeCb = null;
@@ -112,6 +117,7 @@ export function openSettings(scrollTo) {
       <p class="settings-hint">All your data lives in this browser's localStorage. Back up regularly.</p>
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
         <button class="btn" id="set-export">Export JSON</button>
+        <button class="btn" id="set-export-secrets">Export with secrets</button>
         <button class="btn" id="set-import">Import JSON</button>
         <input type="file" id="set-import-file" accept="application/json" style="display:none">
         <button class="btn" id="set-clear-stats">Clear usage stats</button>
@@ -230,7 +236,8 @@ export function openSettings(scrollTo) {
     }
   };
 
-  body.querySelector("#set-export").onclick = exportData;
+  body.querySelector("#set-export").onclick = () => exportData(false);
+  body.querySelector("#set-export-secrets").onclick = () => exportData(true);
   body.querySelector("#set-import").onclick = () =>
     body.querySelector("#set-import-file").click();
   body.querySelector("#set-import-file").onchange = (e) =>
@@ -307,6 +314,14 @@ function customRow(eng, idx) {
   row.append(keyI, labelI, urlI, delBtn);
 
   const persist = () => {
+    try {
+      validateSearchTemplate(urlI.value.trim());
+      urlI.setCustomValidity("");
+    } catch (e) {
+      urlI.setCustomValidity(e.message);
+      urlI.reportValidity();
+      return;
+    }
     overlayRef.settings.customEngines[idx] = {
       key: keyI.value.trim(),
       label: labelI.value.trim(),
@@ -403,20 +418,21 @@ async function testWeather(body) {
   }
 }
 
-function exportData() {
-  const blob = new Blob([JSON.stringify(overlayRef, null, 2)], {
+function exportData(includeSecrets = false) {
+  const data = includeSecrets ? structuredClone(overlayRef) : redactedOverlay();
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
     type: "application/json",
   });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   const date = new Date().toISOString().slice(0, 10);
   a.href = url;
-  a.download = `startpage-backup-${date}.json`;
+  a.download = `startpage-backup-${includeSecrets ? "full-" : ""}${date}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-  toast("Exported.", "success");
+  toast(includeSecrets ? "Exported with secrets." : "Exported without secrets.", "success");
 }
 
 async function importData(file) {
@@ -433,6 +449,13 @@ async function importData(file) {
     toast("Missing schemaVersion — not a valid backup.", "error");
     return;
   }
+  let normalized;
+  try {
+    normalized = normalizeImportedOverlay(parsed);
+  } catch (e) {
+    toast(`Invalid backup: ${e.message}`, "error");
+    return;
+  }
   const ok = await confirmDialog({
     title: "Import overlay",
     message:
@@ -443,10 +466,73 @@ async function importData(file) {
   if (!ok) return;
   // Clear all existing keys then assign from parsed — full replace, not merge.
   for (const k of Object.keys(overlayRef)) delete overlayRef[k];
-  Object.assign(overlayRef, parsed);
+  Object.assign(overlayRef, normalized);
   persistAndNotify();
   toast("Imported. Reloading…", "success");
   setTimeout(() => location.reload(), 600);
+}
+
+function redactedOverlay() {
+  const copy = structuredClone(overlayRef);
+  if (copy.settings?.sync) {
+    copy.settings.sync.token = "";
+  }
+  if (copy.settings?.weather) {
+    copy.settings.weather.apiKey = "";
+  }
+  return copy;
+}
+
+function normalizeImportedOverlay(parsed) {
+  const overlay = normalizeOverlay(structuredClone(parsed));
+  overlay.added = normalizeObject(overlay.added, { categories: [], links: {} });
+  overlay.added.categories = normalizeArray(overlay.added.categories);
+  overlay.added.links = normalizeObject(overlay.added.links, {});
+  overlay.edited = normalizeObject(overlay.edited, { categories: {}, links: {} });
+  overlay.edited.categories = normalizeObject(overlay.edited.categories, {});
+  overlay.edited.links = normalizeObject(overlay.edited.links, {});
+  overlay.deleted = normalizeObject(overlay.deleted, { categories: [], links: [] });
+  overlay.deleted.categories = normalizeArray(overlay.deleted.categories);
+  overlay.deleted.links = normalizeArray(overlay.deleted.links);
+  overlay.order = normalizeObject(overlay.order, { categories: [], links: {} });
+  overlay.order.categories = normalizeArray(overlay.order.categories);
+  overlay.order.links = normalizeObject(overlay.order.links, {});
+  overlay.favorites = normalizeArray(overlay.favorites);
+  overlay.clickCounts = normalizeObject(overlay.clickCounts, {});
+  overlay.settings = normalizeObject(overlay.settings, {});
+  overlay.settings.customEngines = normalizeArray(overlay.settings.customEngines).filter((engine) => {
+    try {
+      if (!engine?.key || !engine?.urlTemplate) return false;
+      validateSearchTemplate(engine.urlTemplate);
+      return true;
+    } catch {
+      return false;
+    }
+  });
+
+  for (const links of Object.values(overlay.added.links)) {
+    if (!Array.isArray(links)) continue;
+    for (const link of links) validateImportedLink(link);
+  }
+  for (const patch of Object.values(overlay.edited.links)) {
+    if (patch?.url) parseHttpUrl(patch.url);
+  }
+  return overlay;
+}
+
+function validateImportedLink(link) {
+  if (!link?.id || !link?.name || !link?.url) {
+    throw new Error("imported links must include id, name, and url");
+  }
+  parseHttpUrl(link.url);
+}
+
+function normalizeObject(value, fallback) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : structuredClone(fallback);
+}
+
+function normalizeArray(value) {
+  return Array.isArray(value) ? value : [];
 }
 
 async function resetData() {

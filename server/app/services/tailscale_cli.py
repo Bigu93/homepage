@@ -31,7 +31,7 @@ async def status_json() -> dict[str, Any]:
         data = json.loads(stdout)
     except FileNotFoundError:
         data = {"error": "tailscale CLI not found", "online": False}
-    except asyncio.TimeoutError:
+    except TimeoutError:
         data = {"error": "timeout", "online": False}
     except Exception as e:
         data = {"error": str(e), "online": False}

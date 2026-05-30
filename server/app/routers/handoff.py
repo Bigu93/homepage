@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import StreamingResponse
 
 from ..auth import require_token
-from ..db import get_db
+from ..db import get_db, get_write_lock
 from ..schemas import HandoffRequest
 from ..services import handoff_bus
 
@@ -32,11 +32,12 @@ async def send_handoff(
     ts = int(time.time() * 1000)
     payload = body.model_dump()
 
-    await db.execute(
-        "INSERT INTO handoff_event (ts, from_dev, to_dev, payload) VALUES (?, ?, ?, ?)",
-        (ts, from_dev, body.to_device, json.dumps(payload)),
-    )
-    await db.commit()
+    async with get_write_lock():
+        await db.execute(
+            "INSERT INTO handoff_event (ts, from_dev, to_dev, payload) VALUES (?, ?, ?, ?)",
+            (ts, from_dev, body.to_device, json.dumps(payload)),
+        )
+        await db.commit()
 
     await handoff_bus.publish(
         event={"ts": ts, "from": from_dev, **payload},
@@ -61,7 +62,7 @@ async def handoff_stream(
                 try:
                     event = await asyncio.wait_for(q.get(), timeout=_PING_INTERVAL_S)
                     yield f"data: {json.dumps(event)}\n\n"
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     yield ": ping\n\n"
         finally:
             handoff_bus.unsubscribe(device_id)

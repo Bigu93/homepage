@@ -2,8 +2,9 @@
 // Renders the main content area: link cards grouped by category, or filtered search results.
 
 import { ICONS } from "../icons.js";
-import { getFavicon } from "../favicons.js";
+import { loadFavicon } from "../favicons.js";
 import { recordClick } from "../stats.js";
+import { safeHttpHref } from "../url-utils.js";
 
 let dataRef = [];
 let stateRef = null; // { activeCategory, searchQuery, favorites: Set }
@@ -100,7 +101,7 @@ function render() {
 
 function renderLinkCard(item) {
   const card = document.createElement("a");
-  card.href = item.url;
+  card.href = safeHttpHref(item.url);
   card.className = "link-card";
   card.target = "_blank";
   card.rel = "noopener noreferrer";
@@ -109,7 +110,7 @@ function renderLinkCard(item) {
   const faviconWrap = document.createElement("div");
   faviconWrap.className = "link-favicon";
   const icon = document.createElement("img");
-  icon.src = getFavicon(item.url);
+  loadFavicon(icon, item.url);
   icon.loading = "lazy";
   icon.alt = "";
   icon.onerror = () => {
@@ -149,6 +150,10 @@ function renderLinkCard(item) {
 
   card.append(faviconWrap, title, editBtn, favBtn);
   card.addEventListener("click", (e) => {
+    if (card.getAttribute("href") === "#") {
+      e.preventDefault();
+      return;
+    }
     // Ignore clicks on inner buttons (edit, favorite)
     if (e.target.closest("button")) return;
     recordClick(item.id);

@@ -3,9 +3,11 @@
 
 let openModalEl = null;
 let escListener = null;
+let previousFocus = null;
 
 export function openModal({ title, body, footer, onClose, width }) {
   closeModal();
+  previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
   const backdrop = document.createElement("div");
   backdrop.className = "modal-backdrop";
@@ -15,12 +17,17 @@ export function openModal({ title, body, footer, onClose, width }) {
 
   const dialog = document.createElement("div");
   dialog.className = "modal-dialog";
+  dialog.setAttribute("role", "dialog");
+  dialog.setAttribute("aria-modal", "true");
+  dialog.tabIndex = -1;
   if (width) dialog.style.maxWidth = width;
 
   const header = document.createElement("div");
   header.className = "modal-header";
   const h = document.createElement("h2");
+  h.id = `modal-title-${Date.now().toString(36)}`;
   h.textContent = title;
+  dialog.setAttribute("aria-labelledby", h.id);
   const closeBtn = document.createElement("button");
   closeBtn.className = "modal-close";
   closeBtn.setAttribute("aria-label", "Close");
@@ -48,14 +55,18 @@ export function openModal({ title, body, footer, onClose, width }) {
   openModalEl = backdrop;
 
   escListener = (e) => {
-    if (e.key === "Escape") closeModal();
+    if (e.key === "Escape") {
+      closeModal();
+      return;
+    }
+    if (e.key === "Tab") trapFocus(e, dialog);
   };
   document.addEventListener("keydown", escListener);
 
   // focus first input if any
   setTimeout(() => {
-    const first = dialog.querySelector("input, select, textarea, button");
-    if (first) first.focus();
+    const first = focusableElements(dialog)[0];
+    (first || dialog).focus();
   }, 0);
 
   if (onClose) backdrop.dataset.onClose = "1";
@@ -74,6 +85,34 @@ export function closeModal() {
     escListener = null;
   }
   if (cb) cb();
+  if (previousFocus?.isConnected) previousFocus.focus();
+  previousFocus = null;
+}
+
+function focusableElements(root) {
+  return Array.from(
+    root.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((el) => el.offsetParent !== null);
+}
+
+function trapFocus(e, dialog) {
+  const focusables = focusableElements(dialog);
+  if (!focusables.length) {
+    e.preventDefault();
+    dialog.focus();
+    return;
+  }
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
 }
 
 export function confirmDialog({
@@ -120,6 +159,8 @@ function getToastRoot() {
   if (toastRoot) return toastRoot;
   toastRoot = document.createElement("div");
   toastRoot.className = "toast-root";
+  toastRoot.setAttribute("aria-live", "polite");
+  toastRoot.setAttribute("aria-atomic", "true");
   document.body.appendChild(toastRoot);
   return toastRoot;
 }
@@ -128,6 +169,7 @@ export function toast(message, kind = "info", duration = 3500) {
   const root = getToastRoot();
   const el = document.createElement("div");
   el.className = `toast toast-${kind}`;
+  el.setAttribute("role", kind === "error" ? "alert" : "status");
   el.textContent = message;
   root.appendChild(el);
   // trigger enter animation on next frame

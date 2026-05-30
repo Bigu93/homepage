@@ -99,7 +99,9 @@ def test_favicon_refresh_clears_cache(client, db, auth_headers):
     asyncio.get_event_loop().run_until_complete(
         db.execute(
             """
-            INSERT INTO favicon_cache (url_hash, source_url, bytes, path, mime, fetched_at, expires_at, status)
+            INSERT INTO favicon_cache (
+                url_hash, source_url, bytes, path, mime, fetched_at, expires_at, status
+            )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (h, _URL, _PNG_BYTES, None, "image/png", now_ms, _FUTURE_EXPIRES, 200),

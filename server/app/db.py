@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 import time
+from collections.abc import AsyncGenerator
 from pathlib import Path
-from typing import AsyncGenerator
 
 import aiosqlite
 
-from .config import Settings, get_settings
+from .config import Settings
 
 _MIGRATIONS_DIR = Path(__file__).parent.parent / "migrations"
 
@@ -55,6 +56,7 @@ async def migrate(conn: aiosqlite.Connection) -> None:
 # ---------------------------------------------------------------------------
 
 _conn: aiosqlite.Connection | None = None
+_write_lock = asyncio.Lock()
 
 
 async def open_db(settings: Settings) -> None:
@@ -75,3 +77,7 @@ async def get_db() -> AsyncGenerator[aiosqlite.Connection, None]:
     if _conn is None:
         raise RuntimeError("DB not initialised — call open_db() at startup")
     yield _conn
+
+
+def get_write_lock() -> asyncio.Lock:
+    return _write_lock

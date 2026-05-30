@@ -21,3 +21,7 @@ services:
       STARTPAGE_CORS_ORIGINS: "*"
       # Override probe interval (seconds) if needed
       # STARTPAGE_PROBE_INTERVAL_S: "30"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL

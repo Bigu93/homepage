@@ -2,16 +2,14 @@
 
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
 
 import pytest
 import pytest_asyncio
-from fastapi.testclient import TestClient
 
-from app.config import Settings, _settings as _global_settings
 import app.config as config_module
 import app.db as db_module
+from app.config import Settings
 
 
 @pytest.fixture()

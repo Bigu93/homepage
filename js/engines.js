@@ -1,6 +1,8 @@
 // js/engines.js
 // Search engine registry. Built-ins + user-added customs.
 
+import { validateSearchTemplate } from "./url-utils.js";
+
 export const BUILTIN_ENGINES = [
   {
     key: "ddg",
@@ -49,15 +51,17 @@ export const DEFAULT_PREFIXES = [
 ];
 
 export function getAllEngines(overlay) {
-  const customs = (overlay.settings?.customEngines || []).map((e) => ({
-    ...e,
-    custom: true,
-  }));
+  const customs = (overlay.settings?.customEngines || [])
+    .filter(validEngine)
+    .map((e) => ({
+      ...e,
+      custom: true,
+    }));
   return [...BUILTIN_ENGINES, ...customs];
 }
 
 export function getAllPrefixes(overlay) {
-  const customs = overlay.settings?.customEngines || [];
+  const customs = (overlay.settings?.customEngines || []).filter(validEngine);
   // customs participate as both engine + prefix (key is the prefix)
   return [...DEFAULT_PREFIXES, ...customs];
 }
@@ -69,7 +73,17 @@ export function resolveEngine(key, overlay) {
 }
 
 export function searchUrl(template, query) {
-  return template.replace("%s", encodeURIComponent(query));
+  return validateSearchTemplate(template).replace("%s", encodeURIComponent(query));
+}
+
+function validEngine(engine) {
+  if (!engine?.key || !engine?.urlTemplate) return false;
+  try {
+    validateSearchTemplate(engine.urlTemplate);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // Returns {prefix, query} if query starts with a known prefix, else null.

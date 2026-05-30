@@ -1,7 +1,7 @@
 // js/favicons.js
 // Favicon URL + bytes cache. 30-day TTL.
-// Backend mode (sync enabled): returns /api/v1/favicon?url=… endpoint URL.
-//   Browser cache + service worker handle caching; no localStorage writes.
+// Backend favicon proxy requires Authorization headers, which <img> cannot send.
+// Use the public fallback from the browser and keep backend endpoints fetch-only.
 // Offline / no backend: fetches Google S2, persists dataURL into localStorage.
 
 let _overlayRef = null;
@@ -23,6 +23,7 @@ const EXPIRY_MS = EXPIRY_DAYS * 24 * 60 * 60 * 1000;
 
 // In-flight dataURL conversions, keyed by link URL, to avoid stampedes.
 const inFlight = new Set();
+const blobUrls = new WeakMap();
 
 function readCache() {
   try {
@@ -99,11 +100,7 @@ async function persistDataUrl(linkUrl, remote) {
 }
 
 export function getFavicon(url) {
-  // Backend mode: delegate entirely to the proxy — browser cache + SW handles freshness.
-  const base = _backendBase();
-  if (base) {
-    return `${base}/api/v1/favicon?url=${encodeURIComponent(url)}`;
-  }
+  if (_backendBase()) return remoteUrlFor(url);
 
   // Local fallback path
   const cache = readCache();
@@ -117,6 +114,35 @@ export function getFavicon(url) {
   // Fire-and-forget byte caching for next load.
   persistDataUrl(url, remote);
   return remote;
+}
+
+export function loadFavicon(img, url) {
+  img.src = getFavicon(url);
+
+  const sync = _overlayRef?.settings?.sync;
+  const base = _backendBase();
+  if (!base || !sync?.token) return;
+
+  fetch(`${base}/api/v1/favicon?url=${encodeURIComponent(url)}`, {
+    headers: {
+      Authorization: `Bearer ${sync.token}`,
+      "X-Device-Id": sync.deviceId || "",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.blob();
+    })
+    .then((blob) => {
+      const previous = blobUrls.get(img);
+      if (previous) URL.revokeObjectURL(previous);
+      const objectUrl = URL.createObjectURL(blob);
+      blobUrls.set(img, objectUrl);
+      img.src = objectUrl;
+    })
+    .catch(() => {
+      // Keep the public fallback favicon.
+    });
 }
 
 export function clearExpiredFavicons() {

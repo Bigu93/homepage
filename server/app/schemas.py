@@ -6,6 +6,8 @@ from typing import Any
 
 from pydantic import BaseModel, field_validator
 
+from .services.outbound import UnsafeUrlError, validate_http_url
+
 MAX_OVERLAY_BYTES = 5 * 1024 * 1024  # 5 MB
 
 
@@ -58,6 +60,14 @@ class ProbeTargetIn(BaseModel):
     name: str
     url: str
     enabled: bool = True
+
+    @field_validator("url")
+    @classmethod
+    def valid_probe_url(cls, v: str) -> str:
+        try:
+            return validate_http_url(v, allow_private=True)
+        except UnsafeUrlError as exc:
+            raise ValueError(str(exc)) from exc
 
 
 class ProbeTargetOut(BaseModel):

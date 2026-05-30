@@ -8,11 +8,11 @@ import json
 import time
 
 import aiosqlite
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Request, Response, status
 from fastapi.responses import JSONResponse
 
 from ..auth import require_token
-from ..db import get_db
+from ..db import get_db, get_write_lock
 from ..schemas import SyncConflict, SyncPullResponse, SyncPushRequest, SyncPushResponse
 
 router = APIRouter(dependencies=[Depends(require_token)], tags=["sync"])
@@ -27,7 +27,7 @@ async def pull_overlay(
         row = await cur.fetchone()
 
     if row is None:
-        raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     return SyncPullResponse(
         revision=row["revision"],
@@ -47,47 +47,61 @@ async def push_overlay(
     now_ms = int(time.time() * 1000)
     overlay_json = json.dumps(body.overlay)
 
-    async with db.execute("BEGIN IMMEDIATE"):
-        pass  # aiosqlite doesn't support explicit BEGIN, use isolation_level
+    async with get_write_lock():
+        try:
+            await db.execute("BEGIN IMMEDIATE")
+            async with db.execute(
+                "SELECT revision, server_mtime, json FROM overlay WHERE id = 1"
+            ) as cur:
+                row = await cur.fetchone()
 
-    # We use a single write transaction via execute + commit
-    async with db.execute("SELECT revision, client_mtime, json FROM overlay WHERE id = 1") as cur:
-        row = await cur.fetchone()
+            if row is None:
+                await db.execute(
+                    """
+                    INSERT INTO overlay (id, json, revision, client_mtime, server_mtime, device_id)
+                    VALUES (1, ?, 1, ?, ?, ?)
+                    """,
+                    (overlay_json, body.client_mtime, now_ms, device_id),
+                )
+                await db.commit()
+                return SyncPushResponse(revision=1, accepted=True)
 
-    if row is None:
-        # First push ever
-        await db.execute(
-            """
-            INSERT INTO overlay (id, json, revision, client_mtime, server_mtime, device_id)
-            VALUES (1, ?, 1, ?, ?, ?)
-            """,
-            (overlay_json, body.client_mtime, now_ms, device_id),
-        )
-        await db.commit()
-        return SyncPushResponse(revision=1, accepted=True)
+            server_revision = row["revision"]
 
-    server_revision = row["revision"]
+            if body.base_revision != server_revision:
+                await db.rollback()
+                return JSONResponse(
+                    status_code=status.HTTP_409_CONFLICT,
+                    content=SyncConflict(
+                        accepted=False,
+                        server_revision=server_revision,
+                        server_mtime=row["server_mtime"],
+                        overlay=json.loads(row["json"]),
+                    ).model_dump(),
+                )
 
-    if body.base_revision != server_revision:
-        # Conflict — return server state so client can LWW-merge
-        return JSONResponse(
-            status_code=status.HTTP_409_CONFLICT,
-            content=SyncConflict(
-                accepted=False,
-                server_revision=server_revision,
-                server_mtime=row["client_mtime"],
-                overlay=json.loads(row["json"]),
-            ).model_dump(),
-        )
-
-    new_revision = server_revision + 1
-    await db.execute(
-        """
-        UPDATE overlay
-        SET json = ?, revision = ?, client_mtime = ?, server_mtime = ?, device_id = ?
-        WHERE id = 1
-        """,
-        (overlay_json, new_revision, body.client_mtime, now_ms, device_id),
-    )
-    await db.commit()
-    return SyncPushResponse(revision=new_revision, accepted=True)
+            new_revision = server_revision + 1
+            cur = await db.execute(
+                """
+                UPDATE overlay
+                SET json = ?, revision = ?, client_mtime = ?, server_mtime = ?, device_id = ?
+                WHERE id = 1 AND revision = ?
+                """,
+                (overlay_json, new_revision, body.client_mtime, now_ms, device_id, server_revision),
+            )
+            if cur.rowcount != 1:
+                await db.rollback()
+                return JSONResponse(
+                    status_code=status.HTTP_409_CONFLICT,
+                    content=SyncConflict(
+                        accepted=False,
+                        server_revision=server_revision,
+                        server_mtime=row["server_mtime"],
+                        overlay=json.loads(row["json"]),
+                    ).model_dump(),
+                )
+            await db.commit()
+            return SyncPushResponse(revision=new_revision, accepted=True)
+        except Exception:
+            await db.rollback()
+            raise

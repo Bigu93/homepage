@@ -128,6 +128,10 @@ initSync({
   onConflict: (winner) => console.info("[sync] conflict resolved:", winner),
 });
 
+document.addEventListener("overlay:saved", () => {
+  syncPush();
+});
+
 // When search clears, re-render the grid normally.
 document.addEventListener("search:cleared", () => {
   state.searchQuery = "";
@@ -180,7 +184,7 @@ document.body.appendChild(fab);
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("/service-worker.js")
+      .register("service-worker.js")
       .catch((err) => console.warn("[sw] registration failed:", err));
   });
 }
